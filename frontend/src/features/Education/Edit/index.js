@@ -60,7 +60,6 @@ const EducationEdit = () => {
   return (
     <div className="min-h-screen bg-base-100 py-8 px-4 sm:px-6 lg:px-8">
       <div className="text-center mb-8">
-        <img src="/logo192.png" alt="Logo" className="w-24 h-24 mx-auto" />
         <h1 className="text-3xl font-bold text-primary mt-4">
           Edit Data <span className="text-secondary">Materi</span>
         </h1>
