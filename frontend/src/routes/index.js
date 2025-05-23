@@ -32,6 +32,13 @@ const EducationCreate = lazy(() => import("../pages/protected/educationCreate"))
 const EducationEdit = lazy(() => import("../pages/protected/educationEdit"));
 const EducationDetail = lazy(() => import("../pages/protected/educationDetails"));
 
+const GameTK = lazy(() => import("../pages/protected/gameTK"));
+const GameSD = lazy(() => import("../pages/protected/gameSD"));
+const GameSMP = lazy(() => import("../pages/protected/gameSMP"));
+const GameSMA = lazy(() => import("../pages/protected/gameSMA"));
+const GameMasyarakat = lazy(() => import("../pages/protected/gameMasyarakat"));
+const GameEdit = lazy(() => import("../pages/protected/gameEdit"));
+
 const UserSuperAdmin = lazy(() => import("../pages/protected/DataAdminSuperAdmin"));
 const AdminCreate = lazy(() => import("../pages/protected/DataAdminSuperAdminCreate"));
 const AdminEdit = lazy(() => import("../pages/protected/DataAdminSuperAdminEdit"));
@@ -142,6 +149,31 @@ const routes = [
     component: EducationDetail,
   },
 
+  {
+    path: "/GameTK",
+    component: GameTK,
+  },
+  {
+    path: "/GameSD",
+    component: GameSD,
+  },
+  {
+    path: "/GameSMP",
+    component: GameSMP,
+  },
+  {
+    path: "/GameSMA",
+    component: GameSMA,
+  },
+  {
+    path: "/GameMasyarakat",
+    component: GameMasyarakat,
+  },
+  {
+    path: "/GameMasyarakat/Edit",
+    component: GameEdit,
+  },
+  
 
   {
     path: "/SuperAdmin/DataAdmin",

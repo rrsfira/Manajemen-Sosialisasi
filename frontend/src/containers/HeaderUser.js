@@ -431,8 +431,80 @@ function Header() {
             currentPath === "/app/Education" ? "font-bold text-primary" : ""
           }`}
         >
-          Materi
+          Materi 
         </Link>
+
+        <div className="dropdown dropdown-hover">{/* Bagian Game */}
+          <label
+            tabIndex={0}
+            className={`btn btn-ghost normal-case hidden md:inline-flex text-lg ${currentPath.startsWith("/app/game") ? "font-bold text-primary" : ""
+              }`}
+          >
+            Game
+          </label>
+
+          <ul
+            tabIndex={0}
+            className="dropdown-content menu p-2 shadow bg-secondary rounded-box w-52"
+          >
+            <li className="relative group">
+              <Link
+                to="/app/GameTK"
+                className={`text-lg cursor-pointer ${currentPath === "/app/GameTK"
+                    ? "font-bold text-primary"
+                    : ""
+                  }`}
+              >
+                Tingkat TK
+              </Link>
+            </li>
+            <li className="relative group">
+              <Link
+                to="/app/GameSD"
+                className={`text-lg cursor-pointer ${currentPath === "/app/GameSD"
+                    ? "font-bold text-primary"
+                    : ""
+                  }`}
+              >
+                Tingkat SD
+              </Link>
+            </li>
+            <li className="relative group">
+              <Link
+                to="/app/GameSMP"
+                className={`text-lg cursor-pointer ${currentPath === "/app/GameSMP"
+                    ? "font-bold text-primary"
+                    : ""
+                  }`}
+              >
+                Tingkat SMP
+              </Link>
+            </li>
+            <li className="relative group">
+              <Link
+                to="/app/GameSMA"
+                className={`text-lg cursor-pointer ${currentPath === "/app/GameSMA"
+                    ? "font-bold text-primary"
+                    : ""
+                  }`}
+              >
+                Tingkat SMA
+              </Link>
+            </li>
+            <li className="relative group">
+              <Link
+                to="/app/GameMasyarakat"
+                className={`text-lg cursor-pointer ${currentPath === "/app/GameMasyarakat"
+                    ? "font-bold text-primary"
+                    : ""
+                  }`}
+              >
+                Tingkat Masyarakat
+              </Link>
+            </li>
+          </ul>
+        </div>
+
         {isLoggedIn && role === "admin" && (
           <Link
             to="/app/Profile"
