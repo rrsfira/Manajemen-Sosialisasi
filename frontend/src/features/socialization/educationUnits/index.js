@@ -114,11 +114,7 @@ const EducationUnits = () => {
       console.error("Error fetching drilldown data:", error);
     }
   };
-  // untuk menampilkan data dalam bentuk bar chart
-  const handleBackFromDrilldown = () => {
-    setSelectedRegion(null);
-    processPieData(data);
-  };
+
   const processPieData = (inputData) => {
     const summary = inputData.reduce((acc, curr) => {
       const key = curr.region || "Tidak diketahui"; // pastikan key sesuai dengan field yang benar
@@ -132,30 +128,6 @@ const EducationUnits = () => {
     }, []);
     console.log("Processed Pie Data:", summary); // Tambahkan log untuk debug
     setPieChartData(summary);
-  };
-  const pieConfig = {
-    appendPadding: 10,
-    data: pieChartData,
-    angleField: "value",
-    colorField: "type",
-    radius: 1,
-    label: {
-      type: "spider",
-      content: "{name} ({percentage})",
-    },
-    interactions: [{ type: "element-active" }],
-    tooltip: {
-      formatter: (datum) => ({ name: datum.type, value: datum.value }),
-    },
-    onReady: (plot) => {
-      plot.on("element:click", (e) => {
-        const region = e.data?.data?.type;
-        if (region) {
-          fetchDrilldownData(region);
-          setSelectedRegion(region);
-        }
-      });
-    },
   };
 
   // fungsi untuk klik summary card
@@ -191,45 +163,29 @@ const EducationUnits = () => {
     }
   }, []);
 
-
   //export excel
   const handleExportExcel = () => {
     const exportSource = filteredData.length > 0 ? filteredData : data;
 
-    // Ambil role dari localStorage
-    const storedRole = localStorage.getItem("role")?.trim().toLowerCase();
-
-    let exportData = [];
-
-    if (storedRole === "admin") {
-      exportData = exportSource.map((item) => ({
-        ID: item.id,
-        Nama: item.name,
-        Jenjang: item.group,
-        Kegiatan: item.activity,
-        Instansi: item.instance,
-        Wilayah: item.region,
-        Kecamatan: item.subdistrict,
-        Alamat: item.address,
-        Tanggal: item.date,
-        "Ketua Tim": item.leader,
-        SK: item.suratK,
-        Perempuan: item.gender_woman,
-        Laki: item.gender_man,
-        "Umur Dibawah 6 Tahun": item.age_under6years,
-        "Umur 6 - 10 Tahun": item.age_6to10years,
-        "Umur 11 - 18 Tahun": item.age_11to18years,
-        "Umur 44 Tahun Keatas": item.age_over4years,
-      }));
-    } else {
-      exportData = exportSource.map((item) => ({
-        Nama: item.name,
-        Alamat: item.address,
-        Wilayah: item.region,
-        Kecamatan: item.subdistrict,
-        Tanggal: item.date,
-      }));
-    }
+    const exportData = exportSource.map((item) => ({
+      ID: item.id,
+      Nama: item.name,
+      Jenjang: item.group,
+      Kegiatan: item.activity,
+      Instansi: item.instance,
+      Wilayah: item.region,
+      Kecamatan: item.subdistrict,
+      Alamat: item.address,
+      Tanggal: item.date,
+      "Ketua Tim": item.leader,
+      SK: item.suratK,
+      Perempuan: item.gender_woman,
+      Laki: item.gender_man,
+      "Umur Dibawah 6 Tahun": item.age_under6years,
+      "Umur 6 - 10 Tahun": item.age_6to10years,
+      "Umur 11 - 18 Tahun": item.age_11to18years,
+      "Umur 44 Tahun Keatas": item.age_over4years,
+    }));
 
     const worksheet = XLSX.utils.json_to_sheet(exportData);
     const workbook = XLSX.utils.book_new();
@@ -319,7 +275,6 @@ const EducationUnits = () => {
   };
 
   return (
-    
     <div className="min-h-screen bg-base-200 px-6 py-10 space-y-12">
       {/* Filter Sidebar (button) */}
       {isFilterVisible && (
@@ -359,8 +314,8 @@ const EducationUnits = () => {
       </div>
 
       {/* Pie Chart */}
-   
-        <EducationUnitsChart />
+
+      <EducationUnitsChart />
 
       {/* Drilldown Table */}
       {selectedRegion && (
