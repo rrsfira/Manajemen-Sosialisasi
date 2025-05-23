@@ -60,7 +60,7 @@ const ApartementsChart = () => {
   }, []);
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow">
+    <div className="bg-base-100 p-6 rounded-lg shadow">
       <HighchartsReact highcharts={Highcharts} options={chartOptions} />
     </div>
   );

@@ -17,7 +17,8 @@ const officesRoute = require("./controllers/offices"); //perkantoran
 const apartementsRoute = require("./controllers/apartements"); //apartement
 const urbanVillageRoute = require("./controllers/urbanVillage"); //kelurahan 
 const regionRoute = require("./controllers/region"); //region
-const chartRoute = require("./controllers/chart"); //region
+const chartRoute = require("./controllers/chart"); //chart
+const educationsRoute = require("./controllers/educations"); //educations
 
 // Membuat instance aplikasi Express
 const app = express();
@@ -50,7 +51,8 @@ app.use("/offices", officesRoute); //perkantoran
 app.use("/apartements", apartementsRoute); //apartement
 app.use("/urban_village", urbanVillageRoute); //kelurahan tangguh
 app.use("/region", regionRoute); //kelurahan tangguh
-app.use("/", chartRoute); //kelurahan tangguh
+app.use("/chart", chartRoute); //chart
+app.use("/educations", educationsRoute); //educations
 
 
 

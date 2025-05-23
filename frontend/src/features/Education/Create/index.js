@@ -17,16 +17,29 @@ const EducationCreate = () => {
     setForm({ ...form, [name]: value });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const formData = new FormData();
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  const formData = new FormData();
+  formData.append("name", form.name);
+  if (materi) {
+    formData.append("materi", materi);
+  }
 
-    Object.keys(form).forEach((key) => {
-      formData.append(key, form[key]);
+  try {
+    await axios.post("http://localhost:5000/educations", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
     });
+    alert("Data berhasil disimpan");
+    setForm({ name: "", materi: "" });
+    setMateri(null);
+  } catch (error) {
+    console.error("Gagal upload:", error);
+    alert("Gagal menyimpan data");
+  }
+};
 
-    if (materi) formData.append("materi", materi);
-  };
 
   return (
     <div className="min-h-screen bg-base-100 py-8 px-4 sm:px-6 lg:px-8">
@@ -59,7 +72,7 @@ const EducationCreate = () => {
               </label>
               {form.materi && (
                 <a
-                  href={`http://localhost:5000/uploads/${form.materi}`}
+                  href={`http://localhost:5000/uploads/materi/${form.materi}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="block text-blue-600 underline mb-2"
@@ -69,14 +82,14 @@ const EducationCreate = () => {
               )}
               <input
                 type="file"
-                accept=".pdf,.doc,.docx"
+                accept=".pdf,.ppt,.pptx"
                 onChange={(e) => setMateri(e.target.files[0])}
                 className="file-input file-input-bordered w-full"
               />
             </div>
           </div>
         </div>
-          
+
         <button
           type="submit"
           className="w-full py-2 rounded-md text-white bg-primary"
