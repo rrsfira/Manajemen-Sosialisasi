@@ -170,7 +170,7 @@ const EducationUnitEdit = () => {
 
     // Append new photos (File objects)
     newPhotos.forEach((file) => {
-      if (file) formData.append("photos", file);
+      if (file) formData.append("photo", file);
     });
 
     // Append old SK file (string URL), kalau masih ada

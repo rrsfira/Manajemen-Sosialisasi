@@ -247,32 +247,41 @@ router.put(
       WHERE id = ?
     `;
 
-      const values = [
-        fields.name,
-        fields.address,
-        fields.region_id,
-        fields.subdistrict_id,
-        fields.group,
-        fields.instance,
-        fields.leader,
-        fields.activity,
-        fields.time,
-        fields.gender_man,
-        fields.gender_women,
-        fields.age_under6years,
-        fields.age_6to10years,
-        fields.age_11to18years,
-        fields.age_over44years,
-        newPhoto,
-        newVideo,
-        newSk,
-        id,
-      ];
 
-      db.query(updateSql, values, (err) => {
-        if (err) return res.status(500).json({ error: err.message });
-        res.json({ message: "Data berhasil diupdate" });
-      });
+      const values = [
+  fields.name || oldData.name,
+  fields.address || oldData.address,
+  parseInt(fields.region_id) || oldData.region_id,
+  parseInt(fields.subdistrict_id) || oldData.subdistrict_id,
+  fields.group || oldData.group,
+  fields.instance || oldData.instance,
+  fields.leader || oldData.leader,
+  fields.activity || oldData.activity,
+  fields.time || oldData.time,
+  parseInt(fields.gender_man) || oldData.gender_man,
+  parseInt(fields.gender_women) || oldData.gender_women,
+  parseInt(fields.age_under6years) || oldData.age_under6years,
+  parseInt(fields.age_6to10years) || oldData.age_6to10years,
+  parseInt(fields.age_11to18years) || oldData.age_11to18years,
+  parseInt(fields.age_over44years) || oldData.age_over44years,
+  newPhoto,
+  newVideo,
+  newSk,
+  id,
+];
+
+      
+console.log("VALUES TO UPDATE:", values);
+console.log("SQL UPDATE:", updateSql);
+
+db.query(updateSql, values, (err) => {
+  if (err) {
+    console.error("❌ UPDATE ERROR:", err); // sangat penting
+    return res.status(500).json({ error: err.message });
+  }
+  res.json({ message: "Data berhasil diupdate" });
+});
+
     });
   }
 );
