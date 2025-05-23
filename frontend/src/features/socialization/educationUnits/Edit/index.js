@@ -394,7 +394,7 @@ const EducationUnitEdit = () => {
               {form.SK ? (
                 <div className="flex items-center gap-3 border rounded p-3 bg-gray-50 shadow-sm">
                   <a
-                    href={form.SK}
+                    href={form.SK_url}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-blue-600 underline truncate max-w-xs"
@@ -424,9 +424,15 @@ const EducationUnitEdit = () => {
                 type="file"
                 accept=".pdf,.doc,.docx"
                 onChange={handleSkChange}
-                className="block w-full border border-gray-300 rounded p-2"
+                disabled={!!form.SK}
+                className="block w-full border border-gray-300 rounded p-2 bg-white disabled:bg-gray-100 disabled:cursor-not-allowed"
               />
-              {skFile && (
+              {form.SK && (
+                <p className="text-sm text-gray-500 mt-1">
+                  Hapus SK lama terlebih dahulu untuk bisa unggah SK baru.
+                </p>
+              )}
+              {skFile && !form.SK && (
                 <p className="mt-2 text-sm text-gray-700 truncate max-w-xs">
                   File baru: {skFile.name}
                 </p>

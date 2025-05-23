@@ -69,6 +69,28 @@ router.post(
     const files = req.files;
     const user = req.user?.username || "anonymous";
 
+    // ✅ Daftar kolom yang memang ada di tabel MySQL
+    const allowedFields = [
+      "name",
+      "address",
+      "region_id",
+      "subdistrict_id",
+      "group",
+      "instance",
+      "leader",
+      "activity",
+      "time",
+      "gender_man",
+      "gender_women",
+      "age_under6years",
+      "age_6to10years",
+      "age_11to18years",
+      "age_over44years",
+      "video",
+      "photo",
+      "SK",
+    ];
+
     // Ambil semua nama file foto (kalau ada), dan simpan sebagai array JSON
     const photoFilenames = files?.photo?.map((file) => file.filename) || [];
 
@@ -78,6 +100,24 @@ router.post(
       SK: files?.sk?.[0]?.filename || null,
       video: data.video || null,
     };
+    // Bersihkan kolom tanggal kosong
+    for (const key in payload) {
+      if (
+        key.toLowerCase().includes("date") ||
+        key.toLowerCase().includes("tanggal")
+      ) {
+        if (!payload[key] || payload[key].trim() === "") {
+          payload[key] = null;
+        }
+      }
+    }
+
+    // Hapus field yang tidak ada di tabel
+    Object.keys(payload).forEach((key) => {
+      if (!allowedFields.includes(key)) {
+        delete payload[key];
+      }
+    });
 
     db.query("INSERT INTO education_units SET ?", payload, (err, result) => {
       if (err) {
@@ -337,29 +377,6 @@ router.delete("/:id", (req, res) => {
 
       res.json({ message: "Data dan file berhasil dihapus" });
     });
-  });
-});
-
-// Fetch subdistricts for a specific region
-router.get("/region/:region", (req, res) => {
-  // Pastikan ini menggunakan :region bukan query
-  const region = req.params.region; // Mengambil parameter wilayah
-  const sql = `
-    SELECT 
-      s.name AS subdistrict,
-      COUNT(e.id) AS value
-    FROM subdistricts s
-    JOIN regions r ON s.region_id = r.id
-    LEFT JOIN education_units e ON e.subdistrict_id = s.id
-    WHERE r.name = ?
-    GROUP BY s.name
-  `;
-
-  db.query(sql, [region], (err, results) => {
-    if (err) {
-      return res.status(500).json({ error: err.message });
-    }
-    res.json(results); // Mengirim data sebagai JSON
   });
 });
 
