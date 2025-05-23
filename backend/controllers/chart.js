@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const db = require("../config/db"); // koneksi database
 
-router.get('/chart/health_facilities', (req, res) => {
+router.get('/health_facilities', (req, res) => {
   const regionQuery = `
     SELECT r.id AS region_id, r.name AS region_name, COUNT(ph.id) AS total
     FROM health_facilities ph
@@ -49,7 +49,7 @@ router.get('/chart/health_facilities', (req, res) => {
   });
 });
 
-router.get('/chart/education_units', (req, res) => {
+router.get('/education_units', (req, res) => {
   const regionQuery = `
     SELECT r.id AS region_id, r.name AS region_name, COUNT(ph.id) AS total
     FROM education_units ph
@@ -97,7 +97,7 @@ router.get('/chart/education_units', (req, res) => {
 });
 
 
-router.get('/chart/apartments', (req, res) => {
+router.get('/apartments', (req, res) => {
   const regionQuery = `
     SELECT r.id AS region_id, r.name AS region_name, COUNT(ph.id) AS total
     FROM apartments ph
@@ -145,7 +145,7 @@ router.get('/chart/apartments', (req, res) => {
 });
 
 
-router.get('/chart/public_housing', (req, res) => {
+router.get('/public_housing', (req, res) => {
   const regionQuery = `
     SELECT r.id AS region_id, r.name AS region_name, COUNT(ph.id) AS total
     FROM public_housings ph
@@ -192,7 +192,7 @@ router.get('/chart/public_housing', (req, res) => {
   });
 });
 
-router.get('/chart/urban_villages', (req, res) => {
+router.get('/urban_villages', (req, res) => {
   const regionQuery = `
     SELECT r.id AS region_id, r.name AS region_name, COUNT(ph.id) AS total
     FROM urban_villages ph
@@ -239,7 +239,7 @@ router.get('/chart/urban_villages', (req, res) => {
   });
 });
 
-router.get('/chart/offices', (req, res) => {
+router.get('/offices', (req, res) => {
   const regionQuery = `
     SELECT r.id AS region_id, r.name AS region_name, COUNT(ph.id) AS total
     FROM offices ph
@@ -286,7 +286,7 @@ router.get('/chart/offices', (req, res) => {
   });
 });
 
-router.get('/chart/malls', (req, res) => {
+router.get('/malls', (req, res) => {
   const regionQuery = `
     SELECT r.id AS region_id, r.name AS region_name, COUNT(ph.id) AS total
     FROM malls ph
@@ -333,7 +333,7 @@ router.get('/chart/malls', (req, res) => {
   });
 });
 
-router.get('/chart/hotels', (req, res) => {
+router.get('/hotels', (req, res) => {
   const regionQuery = `
     SELECT r.id AS region_id, r.name AS region_name, COUNT(ph.id) AS total
     FROM hotels ph

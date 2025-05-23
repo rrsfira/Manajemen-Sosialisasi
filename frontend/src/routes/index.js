@@ -141,11 +141,11 @@ const routes = [
     component: EducationCreate,
   },
   {
-    path: "/Education/Edit",
+    path: "/Education/Edit/:id",
     component: EducationEdit,
   },
   {
-    path: "/Education/Details",
+    path: "/Education/Details/:id",
     component: EducationDetail,
   },
 

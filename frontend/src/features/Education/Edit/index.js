@@ -1,31 +1,60 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 const EducationEdit = () => {
-  const { id } = useParams(); // Ambil id dari URL
+  const { id } = useParams();
+  const navigate = useNavigate();
 
   const [form, setForm] = useState({
     name: "",
     materi: "",
   });
+  const [materi, setMateri] = useState(null); // file baru
 
-  const [materi, setMateri] = useState(null);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await axios.get(`http://localhost:5000/educations/${id}`);
+        setForm({
+          name: res.data.data.name,
+          materi: res.data.data.materi,
+        });
+      } catch (error) {
+        console.error("Gagal mengambil data materi:", error);
+      }
+    };
+    fetchData();
+  }, [id]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm({ ...form, [name]: value });
+    setForm((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Validasi file ukuran max 10MB (optional)
+    if (materi && materi.size > 10 * 1024 * 1024) {
+      alert("Ukuran file maksimal 10MB");
+      return;
+    }
+
     const formData = new FormData();
-
-    Object.keys(form).forEach((key) => {
-      formData.append(key, form[key]);
-    });
-
+    formData.append("name", form.name);
     if (materi) formData.append("materi", materi);
+
+    try {
+      await axios.put(`http://localhost:5000/educations/${id}`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      alert("Data berhasil diperbarui");
+      navigate("/app/Education"); // redirect ke list
+    } catch (err) {
+      console.error("Gagal update:", err);
+      alert("Terjadi kesalahan saat update");
+    }
   };
 
   return (
@@ -38,7 +67,6 @@ const EducationEdit = () => {
       </div>
 
       <form onSubmit={handleSubmit} className="max-w-4xl mx-auto space-y-6">
-        {/* Informasi Satuan Pendidikan */}
         <div className="border rounded-lg shadow-sm">
           <div className="bg-secondary px-4 py-2 font-semibold text-white">
             📘 Data Materi
@@ -57,15 +85,17 @@ const EducationEdit = () => {
               <label className="block mb-1 font-medium">
                 📄 Materi (PDF, DOC, DOCX)
               </label>
-              {form.materi && (
+              {form.materi ? (
                 <a
-                  href={`http://localhost:5000/uploads/${form.materi}`}
+                  href={`http://localhost:5000/uploads/materi/${form.materi}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="block text-blue-600 underline mb-2"
                 >
                   Lihat Materi
                 </a>
+              ) : (
+                <span className="text-gray-400 italic">Tidak ada file</span>
               )}
               <input
                 type="file"
@@ -76,7 +106,7 @@ const EducationEdit = () => {
             </div>
           </div>
         </div>
-          
+
         <button
           type="submit"
           className="w-full py-2 rounded-md text-white bg-primary"
