@@ -48,6 +48,14 @@ function Header() {
     "/app/UrbanVillages/Create",
   ];
 
+    //array untuk path dropdown
+  const GamePaths = [
+    "/app/GameTK",
+    "/app/GameSD",
+    "/app/GameSMP",
+    "/app/GameSMA",
+    "/app/GameMasyarakat",
+  ];
   useEffect(() => {
     const storedRole = localStorage.getItem("role");
     const storedToken = localStorage.getItem("token");
@@ -140,6 +148,30 @@ function Header() {
               >
                 Materi
               </Link>
+
+              <details className="dropdown">
+                <summary className="text-white text-lg cursor-pointer">
+                  Game
+                </summary>
+                <div className="pl-4 flex flex-col space-y-2 mt-2">
+                  {[
+                    { to: "/app/GameTK", label: "Tingkat TK" },
+                    { to: "/app/GameSD", label: "Tingkat SD" },
+                    { to: "/app/GameSMP", label: "Tingkat SMP" },
+                    { to: "/app/GameSMA", label: "Tingkat SMA" },
+                    { to: "/app/GameMasyarakat", label: "Tingkat Masyarakat" },
+                  ].map(({ to, label }) => (
+                    <Link
+                      key={to}
+                      to={to}
+                      className="text-white text-base"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      {label}
+                    </Link>
+                  ))}
+                </div>
+              </details>
 
               {isLoggedIn && role === "admin" && (
                 <Link
@@ -431,14 +463,18 @@ function Header() {
             currentPath === "/app/Education" ? "font-bold text-primary" : ""
           }`}
         >
-          Materi 
+          Materi
         </Link>
 
-        <div className="dropdown dropdown-hover">{/* Bagian Game */}
+        <div className="dropdown dropdown-hover">
+          {/* Bagian Game */}
           <label
             tabIndex={0}
-            className={`btn btn-ghost normal-case hidden md:inline-flex text-lg ${currentPath.startsWith("/app/game") ? "font-bold text-primary" : ""
-              }`}
+            className={`btn btn-ghost normal-case hidden md:inline-flex text-lg ${
+              GamePaths.includes(currentPath)
+                ? "font-bold text-primary"
+                : ""
+            }`}
           >
             Game
           </label>
@@ -450,10 +486,9 @@ function Header() {
             <li className="relative group">
               <Link
                 to="/app/GameTK"
-                className={`text-lg cursor-pointer ${currentPath === "/app/GameTK"
-                    ? "font-bold text-primary"
-                    : ""
-                  }`}
+                className={`text-lg cursor-pointer ${
+                  currentPath === "/app/GameTK" ? "font-bold text-primary" : ""
+                }`}
               >
                 Tingkat TK
               </Link>
@@ -461,10 +496,9 @@ function Header() {
             <li className="relative group">
               <Link
                 to="/app/GameSD"
-                className={`text-lg cursor-pointer ${currentPath === "/app/GameSD"
-                    ? "font-bold text-primary"
-                    : ""
-                  }`}
+                className={`text-lg cursor-pointer ${
+                  currentPath === "/app/GameSD" ? "font-bold text-primary" : ""
+                }`}
               >
                 Tingkat SD
               </Link>
@@ -472,10 +506,9 @@ function Header() {
             <li className="relative group">
               <Link
                 to="/app/GameSMP"
-                className={`text-lg cursor-pointer ${currentPath === "/app/GameSMP"
-                    ? "font-bold text-primary"
-                    : ""
-                  }`}
+                className={`text-lg cursor-pointer ${
+                  currentPath === "/app/GameSMP" ? "font-bold text-primary" : ""
+                }`}
               >
                 Tingkat SMP
               </Link>
@@ -483,10 +516,9 @@ function Header() {
             <li className="relative group">
               <Link
                 to="/app/GameSMA"
-                className={`text-lg cursor-pointer ${currentPath === "/app/GameSMA"
-                    ? "font-bold text-primary"
-                    : ""
-                  }`}
+                className={`text-lg cursor-pointer ${
+                  currentPath === "/app/GameSMA" ? "font-bold text-primary" : ""
+                }`}
               >
                 Tingkat SMA
               </Link>
@@ -494,10 +526,11 @@ function Header() {
             <li className="relative group">
               <Link
                 to="/app/GameMasyarakat"
-                className={`text-lg cursor-pointer ${currentPath === "/app/GameMasyarakat"
+                className={`text-lg cursor-pointer ${
+                  currentPath === "/app/GameMasyarakat"
                     ? "font-bold text-primary"
                     : ""
-                  }`}
+                }`}
               >
                 Tingkat Masyarakat
               </Link>

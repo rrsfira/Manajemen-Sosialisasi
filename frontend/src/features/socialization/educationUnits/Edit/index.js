@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
-import { XMarkIcon } from "@heroicons/react/24/solid"; 
+import { XMarkIcon } from "@heroicons/react/24/solid";
+import { useNavigate } from "react-router-dom";
 
 const EducationUnitEdit = () => {
   const { id } = useParams(); // Ambil id dari URL
+  const navigate = useNavigate();
 
   const [form, setForm] = useState({
     name: "", // Nama unit pendidikan
-    address: "", // string alamat 
+    address: "", // string alamat
     region_id: "", // id region dari education_units
     subdistrict_id: "", // id subdistrict dari education_units
     group: "", // string group TK, SD, SMP, SMA
@@ -191,11 +193,19 @@ const EducationUnitEdit = () => {
           }
         );
       } else {
-        await axios.post("http://localhost:5000/education_units", formData, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
+        const res = await axios.post(
+          "http://localhost:5000/education_units",
+          formData,
+          {
+            headers: { "Content-Type": "multipart/form-data" },
+          }
+        );
+        // Jika ID baru dibuat saat post
+        id = res.data.id; // asumsi respons mengembalikan ID baru
       }
+
       alert("Data berhasil disimpan");
+      navigate(`/app/EducationUnit/Detail/${id}`);
     } catch (err) {
       console.error(err);
       alert("Gagal menyimpan data");
@@ -205,7 +215,6 @@ const EducationUnitEdit = () => {
   return (
     <div className="min-h-screen bg-base-100 py-8 px-4 sm:px-6 lg:px-8">
       <div className="text-center mb-8">
-        <img src="/logo192.png" alt="Logo" className="w-24 h-24 mx-auto" />
         <h1 className="text-3xl font-bold text-primary mt-4">
           Edit Data <span className="text-secondary">Satuan Pendidikan</span>
         </h1>
@@ -464,9 +473,10 @@ const EducationUnitEdit = () => {
                     type="text"
                     readOnly
                     value={
-                      ("WILAYAH "+form.region || "Wilayah tidak tersedia") +
+                      ("WILAYAH " + form.region || "Wilayah tidak tersedia") +
                       "          -          " +
-                      ("KECAMATAN "+form.subdistrict || "Kecamatan tidak tersedia")
+                      ("KECAMATAN " + form.subdistrict ||
+                        "Kecamatan tidak tersedia")
                     }
                     onClick={() => setEditingLocation(true)}
                     className="input input-bordered bg-gray-50 hover:bg-gray-100 w-full text-center transition duration-150"
