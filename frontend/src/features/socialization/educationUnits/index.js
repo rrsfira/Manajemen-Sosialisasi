@@ -1,22 +1,20 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import axios from "axios";
-import { Pie } from "@ant-design/plots"; // drilldown diagram
+import React, { useEffect, useState } from "react"; //menyimpan dan mengatur state lokal 
+import { useNavigate, useLocation } from "react-router-dom"; //menggunakan hook untuk mengakses alamat URL
+import axios from "axios"; //menggunakan axios untuk mengirimkan request ke server
 import * as XLSX from "xlsx"; //excel
 import Swal from "sweetalert2"; // popup notif
 import EducationFilterSidebar from "./Filter"; // import button filter
+import EducationUnitsChart from "../educationUnits/chart"; // import drilldown chart
 import {
   DocumentArrowDownIcon,
   FunnelIcon,
   EyeIcon,
   CheckCircleIcon,
   XCircleIcon,
-  ArrowLeftIcon,
   PencilSquareIcon,
   TrashIcon,
   PlusIcon,
-} from "@heroicons/react/24/outline";
-import EducationUnitsChart from "../educationUnits/chart";
+} from "@heroicons/react/24/outline"; // import icon
 
 const EducationUnits = () => {
   const navigate = useNavigate(); // hook untuk navigasi
@@ -35,12 +33,8 @@ const EducationUnits = () => {
   const [filterName, setFilterName] = useState("");
   const [filterAddress, setFilterAddress] = useState("");
   const [filterRegion, setFilterRegion] = useState("");
-  // drilldown diagram
-  const [drilldownData, setDrilldownData] = useState([]); // untuk menampilkan data yang telah di filter di diagram
-  const [selectedRegion, setSelectedRegion] = useState(null); // untuk menampilkan data yang telah di filter di diagram
-  const [pieChartData, setPieChartData] = useState([]); // untuk menampilkan data yang telah di filter di diagram
-
   const [data, setData] = useState([]); // state untuk data
+
   // untuk menampilkan data dari backend
   useEffect(() => {
     fetchEducationUnits();
@@ -50,7 +44,6 @@ const EducationUnits = () => {
       const response = await axios.get("http://localhost:5000/education_units");
       console.log("Fetched Data:", response.data); // Log the data
       setData(response.data);
-      processPieData(response.data);
     } catch (error) {
       console.error("Error fetching education unit data:", error);
     }
@@ -83,51 +76,6 @@ const EducationUnits = () => {
         }
       }
     });
-  };
-
-  // untuk menampilkan data dalam bentuk pie chart
-  const fetchDrilldownData = async (region) => {
-    try {
-      const response = await axios.get(
-        `http://localhost:5000/education_units/region/${region}`
-      );
-      console.log("Fetched Drilldown Data:", response.data); // Periksa struktur data yang diterima
-
-      if (!response.data || response.data.length === 0) {
-        console.log("No data received for drilldown.");
-        return;
-      }
-      const groupedBySubdistrict = response.data.reduce((acc, curr) => {
-        const key = curr.subdistrict || "Tidak diketahui"; // Pastikan subdistrict ada
-        const found = acc.find((item) => item.type === key);
-        if (found) {
-          found.value += 1;
-        } else {
-          acc.push({ type: key, value: 1 });
-        }
-        return acc;
-      }, []);
-
-      console.log("Grouped by Subdistrict:", groupedBySubdistrict); // Periksa data yang sudah digrupkan
-      setDrilldownData(groupedBySubdistrict); // Set data drilldown dengan data yang sudah digrupkan
-    } catch (error) {
-      console.error("Error fetching drilldown data:", error);
-    }
-  };
-
-  const processPieData = (inputData) => {
-    const summary = inputData.reduce((acc, curr) => {
-      const key = curr.region || "Tidak diketahui"; // pastikan key sesuai dengan field yang benar
-      const found = acc.find((item) => item.type === key);
-      if (found) {
-        found.value += 1;
-      } else {
-        acc.push({ type: key, value: 1 });
-      }
-      return acc;
-    }, []);
-    console.log("Processed Pie Data:", summary); // Tambahkan log untuk debug
-    setPieChartData(summary);
   };
 
   // fungsi untuk klik summary card
@@ -166,7 +114,6 @@ const EducationUnits = () => {
   //export excel
   const handleExportExcel = () => {
     const exportSource = filteredData.length > 0 ? filteredData : data;
-
     const exportData = exportSource.map((item) => ({
       ID: item.id,
       Nama: item.name,
@@ -313,53 +260,8 @@ const EducationUnits = () => {
         </div>
       </div>
 
-      {/* Pie Chart */}
-
+      {/* Drilldown Chart */}
       <EducationUnitsChart />
-
-      {/* Drilldown Table */}
-      {selectedRegion && (
-        <div className="bg-base-100 p-6 rounded-xl shadow-lg">
-          <h3 className="text-xl font-semibold mb-4">
-            Daftar Satuan Pendidikan di Kecamatan {selectedRegion}
-          </h3>
-          <div className="overflow-x-auto">
-            <table className="table w-full">
-              <thead>
-                <tr>
-                  <th className="text-center">No.</th>
-                  <th className="text-center">Nama</th>
-                  <th className="text-center">Alamat</th>
-                  <th className="text-center">Wilayah</th>
-                  <th className="text-center">Kecamatan</th>
-                  <th className="text-center">SK</th>
-                  <th className="text-center">Tgl Kegiatan</th>
-                  <th className="text-center">Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {drilldownData.map((item, idx) => (
-                  <tr key={idx}>
-                    <td className="text-center">{idx + 1}</td>
-                    <td className="text-center">{item.name}</td>
-                    <td className="text-center">{item.address}</td>
-                    <td className="text-center">{item.region}</td>
-                    <td className="text-center">{item.subdistrict}</td>
-                    <td className="text-center">
-                      {item.suratK ? (
-                        <CheckCircleIcon className="w-5 h-5 text-success mx-auto" />
-                      ) : (
-                        <XCircleIcon className="w-5 h-5 text-error mx-auto" />
-                      )}
-                    </td>
-                    <td className="text-center">{item.date}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
 
       {/* Table */}
       <div className="bg-base-100 p-6 rounded-xl shadow-lg">
@@ -388,25 +290,27 @@ const EducationUnits = () => {
               <FunnelIcon className="w-5 h-5 mr-1" />
               Filter
             </button>
-            <button
-              onClick={handleExportExcel}
-              className="btn btn-outline btn-success"
-            >
-              <DocumentArrowDownIcon className="w-4 h-4 mr-1" />
-              Excel
-            </button>
             {role === "admin" && (
-              <button
-                className={`btn btn-primary flex items-center text-lg cursor-pointer ${
-                  currentPath === "/app/EducationUnitCreate"
-                    ? "font-bold text-primary"
-                    : ""
-                }`}
-                onClick={() => navigate("/app/EducationUnit/Create")} // navigasi saat diklik
-              >
-                <PlusIcon className="w-4 h-4 mr-1" />
-                Tambah
-              </button>
+              <>
+                <button
+                  onClick={handleExportExcel}
+                  className="btn btn-outline btn-success"
+                >
+                  <DocumentArrowDownIcon className="w-4 h-4 mr-1" />
+                  Excel
+                </button>
+                <button
+                  className={`btn btn-primary flex items-center text-lg cursor-pointer ${
+                    currentPath === "/app/EducationUnitCreate"
+                      ? "font-bold text-primary"
+                      : ""
+                  }`}
+                  onClick={() => navigate("/app/EducationUnit/Create")}
+                >
+                  <PlusIcon className="w-4 h-4 mr-1" />
+                  Tambah
+                </button>
+              </>
             )}
           </div>
         </div>

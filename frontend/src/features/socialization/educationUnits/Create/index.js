@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { XMarkIcon } from "@heroicons/react/24/outline";
+import { useNavigate } from "react-router-dom";
 
 const EducationUnitForm = () => {
   const [form, setForm] = useState({
@@ -25,6 +26,7 @@ const EducationUnitForm = () => {
   const [subdistricts, setSubdistricts] = useState([]);
   const [isSubdistrictDisabled, setIsSubdistrictDisabled] = useState(true);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchRegions = async () => {
@@ -99,12 +101,21 @@ const EducationUnitForm = () => {
     }
 
     try {
-      await axios.post("http://localhost:5000/education_units", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const response = await axios.post(
+        "http://localhost:5000/education_units",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
       alert("Data berhasil dikirim");
+
+      const newId = response.data.id; // pastikan backend mengembalikan { id: newId }
+
+      navigate(`/app/EducationUnit/Detail/${newId}`);
 
       // Reset form
       setForm({
@@ -233,7 +244,7 @@ const EducationUnitForm = () => {
             <input
               type="date"
               name="time"
-              value={form.time}
+              value={form.time || ""}
               onChange={handleChange}
               className="input"
             />
@@ -251,16 +262,17 @@ const EducationUnitForm = () => {
               <label className="block mb-1 font-medium">
                 🖼️ Foto Kegiatan (maks. 3)
               </label>
+              <p className="text-sm text-gray-500 mb-2">
+                Format JPG,JPEG,PNG, maksimal 2MB per foto.
+              </p>
 
               {photoFiles.map((file, index) => (
-                <div
-                  key={index}
-                  className="flex items-center gap-2 relative border rounded p-2 mt-2 bg-gray-50"
-                >
+                <div className="flex items-center gap-2 relative border rounded p-2 mt-2 bg-gray-50">
                   <input
                     type="file"
                     accept="image/jpeg,image/png,image/jpg"
                     onChange={(e) => handleSinglePhotoChange(e, index)}
+                    className="w-full"
                   />
                   {file ? (
                     <span className="text-sm text-gray-700 truncate max-w-xs">
@@ -271,13 +283,14 @@ const EducationUnitForm = () => {
                       Belum ada foto
                     </span>
                   )}
+
                   <button
                     type="button"
                     onClick={() => handleRemovePhoto(index)}
-                    className="text-red-500 hover:text-red-700 text-lg absolute top-6 right-1"
+                    className="text-red-500 hover:text-red-700"
                     title="Hapus Foto"
                   >
-                    <XMarkIcon className="h-8 w-8" />
+                    <XMarkIcon className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8" />
                   </button>
                 </div>
               ))}
@@ -308,9 +321,10 @@ const EducationUnitForm = () => {
 
             {/* Upload SK */}
             <div>
-              <label className="block mb-1 font-medium">
-                📄 SK (PDF, DOC, DOCX)
-              </label>
+              <label className="block mb-1 font-medium">📄 SK</label>
+              <p className="text-sm text-gray-500 mb-2">
+                Format PDF/DOC/DOCX, maksimal 5MB.
+              </p>
               <input
                 type="file"
                 accept=".pdf,.doc,.docx"
