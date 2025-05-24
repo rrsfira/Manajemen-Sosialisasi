@@ -6,6 +6,7 @@ require("dotenv").config();
 // modul route (rute)
 const dashboardRoute = require("./controllers/dashboard"); //dashboard
 const authRoutes = require("./controllers/auth"); // login dan register
+const auditRoutes = require("./controllers/auditSuperAdmin"); //audit
 const usersRoutes = require("./controllers/profile"); // profile
 const adminRoutes = require("./controllers/admin"); // data admin
 const educationUnitsRoute = require("./controllers/educationUnits"); // satuan pendidikan
@@ -40,6 +41,7 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 // Menangani request GET ke root URL ("/")
 app.use("/dashboard", dashboardRoute); //dashboard
 app.use("/auth", authRoutes); //login dan register
+app.use("/audit", auditRoutes); //audit
 app.use("/users", usersRoutes); //profile
 app.use("/admin", adminRoutes); //data admin
 app.use("/education_units", educationUnitsRoute); //satuan pendidikan

@@ -184,12 +184,17 @@ const EducationUnitEdit = () => {
     }
 
     try {
+      const token = localStorage.getItem("token"); // ← letakkan di sini
+
       if (id) {
         await axios.put(
           `http://localhost:5000/education_units/${id}`,
           formData,
           {
-            headers: { "Content-Type": "multipart/form-data" },
+            headers: {
+              "Content-Type": "multipart/form-data",
+              Authorization: `Bearer ${token}`,
+            },
           }
         );
       } else {
@@ -197,10 +202,12 @@ const EducationUnitEdit = () => {
           "http://localhost:5000/education_units",
           formData,
           {
-            headers: { "Content-Type": "multipart/form-data" },
+            headers: {
+              "Content-Type": "multipart/form-data",
+              Authorization: `Bearer ${token}`,
+            },
           }
         );
-        // Jika ID baru dibuat saat post
         id = res.data.id; // asumsi respons mengembalikan ID baru
       }
 
