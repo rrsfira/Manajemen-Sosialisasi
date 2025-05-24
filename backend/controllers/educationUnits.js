@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const db = require("../config/db");
+const { verifyToken } = require("../middleware/authMiddleware");
 
 const multer = require("multer");
 const fs = require("fs");
@@ -24,30 +25,31 @@ const upload = multer({ storage });
 router.get("/", (req, res) => {
   const sql = `
   SELECT 
-   e.id,
-   e.name,
-   e.address,
-   r.name AS region,
-   s.name AS subdistrict,
-   e.group,
-   e.instance,
-   e.leader,
-   e.activity,
-   e.gender_man,
-   e.gender_women,
-   e.age_under6years,
-   e.age_6to10years,
-   e.age_11to18years,
-   e.age_over44years,
-   e.photo,
-   e.video,
-  DATE_FORMAT(e.time, '%d-%m-%Y') as date,
-  IF(e.SK IS NULL OR LENGTH(e.SK) = 0, '', e.SK) AS suratK
-FROM education_units e
-LEFT JOIN subdistricts s ON e.subdistrict_id = s.id
-LEFT JOIN regions r ON s.region_id = r.id
-ORDER BY e.id ASC
-`;
+    e.id,
+    e.name,
+    e.address,
+    r.name AS region,
+    s.name AS subdistrict,
+    e.group,
+    e.instance,
+    e.leader,
+    e.activity,
+    e.gender_man,
+    e.gender_women,
+    e.age_under6years,
+    e.age_6to10years,
+    e.age_11to18years,
+    e.age_over44years,
+    e.photo,
+    e.video,
+    DATE_FORMAT(e.time, '%d-%m-%Y') as date,
+    IF(e.SK IS NULL OR LENGTH(e.SK) = 0, '', e.SK) AS suratK
+  FROM education_units e
+  LEFT JOIN subdistricts s ON e.subdistrict_id = s.id
+  LEFT JOIN regions r ON s.region_id = r.id
+  WHERE e.deleted_at IS NULL
+  ORDER BY e.id ASC
+  `;
 
   db.query(sql, (err, results) => {
     if (err) {
@@ -60,6 +62,7 @@ ORDER BY e.id ASC
 // ✅ CREATE Education Unit
 router.post(
   "/",
+  verifyToken,
   upload.fields([
     { name: "photo", maxCount: 3 }, // izinkan sampai 5 foto
     { name: "sk", maxCount: 1 },
@@ -67,7 +70,7 @@ router.post(
   (req, res) => {
     const data = req.body;
     const files = req.files;
-    const user = req.user?.username || "anonymous";
+    const userId = req.user?.id;
 
     // ✅ Daftar kolom yang memang ada di tabel MySQL
     const allowedFields = [
@@ -89,6 +92,8 @@ router.post(
       "video",
       "photo",
       "SK",
+      "created_by",
+      "created_at",
     ];
 
     // Ambil semua nama file foto (kalau ada), dan simpan sebagai array JSON
@@ -99,6 +104,8 @@ router.post(
       photo: JSON.stringify(photoFilenames), // simpan sebagai string JSON
       SK: files?.sk?.[0]?.filename || null,
       video: data.video || null,
+      created_by: userId,
+      created_at: new Date(),
     };
     // Bersihkan kolom tanggal kosong
     for (const key in payload) {
@@ -223,6 +230,7 @@ router.get("/:id", (req, res) => {
 // ✅ UPDATE Education Unit
 router.put(
   "/:id",
+  verifyToken,
   upload.fields([
     { name: "photo", maxCount: 3 },
     { name: "sk", maxCount: 1 },
@@ -230,6 +238,7 @@ router.put(
   (req, res) => {
     const { id } = req.params;
     const fields = req.body;
+    const userId = req.user?.id;
 
     const getOldQuery = "SELECT * FROM education_units WHERE id = ?";
     db.query(getOldQuery, [id], (err, oldResults) => {
@@ -278,7 +287,8 @@ router.put(
         time = ?, gender_man = ?, gender_women = ?, 
         age_under6years = ?, age_6to10years = ?, 
         age_11to18years = ?, age_over44years = ?, 
-        photo = ?, video = ?, SK = ? 
+        photo = ?, video = ?, SK = ?, 
+        updated_by = ?, updated_at = NOW()
       WHERE id = ?
     `;
 
@@ -301,6 +311,7 @@ router.put(
         newPhoto,
         newVideo,
         newSk,
+        userId,
         id,
       ];
 
@@ -316,10 +327,10 @@ router.put(
 );
 
 // ✅ DELETE Education Unit// DELETE /education_units/:id
-router.delete("/:id", (req, res) => {
+router.delete("/:id", verifyToken, (req, res) => {
   const { id } = req.params;
+  const userId = req.user?.id;
 
-  // 1. Ambil data dulu (photo & SK)
   const selectSql = "SELECT photo, SK FROM education_units WHERE id = ?";
   db.query(selectSql, [id], (err, result) => {
     if (err) return res.status(500).json({ error: err.message });
@@ -328,7 +339,7 @@ router.delete("/:id", (req, res) => {
 
     const { photo, SK } = result[0];
 
-    // Hapus file SK jika ada
+    // Hapus SK
     if (SK) {
       const skPath = path.join(__dirname, "../uploads/education_units", SK);
       if (fs.existsSync(skPath)) {
@@ -338,41 +349,34 @@ router.delete("/:id", (req, res) => {
       }
     }
 
-    // Hapus file foto (jika array atau string)
+    // Hapus foto
+    let photos = [];
     try {
-      const photos = JSON.parse(photo);
-      if (Array.isArray(photos)) {
-        photos.forEach((file) => {
-          const filePath = path.join(
-            __dirname,
-            "../uploads/education_units",
-            file
-          );
-          if (fs.existsSync(filePath)) {
-            fs.unlink(filePath, (err) => {
-              if (err) console.error("Gagal hapus foto:", err);
-            });
-          }
-        });
+      if (photo?.startsWith("[")) {
+        photos = JSON.parse(photo);
+      } else if (photo) {
+        photos = [photo];
       }
     } catch (e) {
-      if (photo) {
-        const photoPath = path.join(
-          __dirname,
-          "../uploads/education_units",
-          photo
-        );
-        if (fs.existsSync(photoPath)) {
-          fs.unlink(photoPath, (err) => {
-            if (err) console.error("Gagal hapus foto tunggal:", err);
-          });
-        }
-      }
+      photos = [photo];
     }
 
-    // 2. Setelah file dihapus, hapus data di DB
-    const deleteSql = "DELETE FROM education_units WHERE id = ?";
-    db.query(deleteSql, [id], (err, result) => {
+    photos.forEach((file) => {
+      const filePath = path.join(__dirname, "../uploads/education_units", file);
+      if (fs.existsSync(filePath)) {
+        fs.unlink(filePath, (err) => {
+          if (err) console.error("Gagal hapus foto:", err);
+        });
+      }
+    });
+
+    // Update record
+    const deleteSql = `
+      UPDATE education_units
+      SET deleted_by = ?, deleted_at = NOW()
+      WHERE id = ?
+    `;
+    db.query(deleteSql, [userId, id], (err, result) => {
       if (err) return res.status(500).json({ error: err.message });
 
       res.json({ message: "Data dan file berhasil dihapus" });

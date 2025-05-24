@@ -73,7 +73,7 @@ const EducationUnitForm = () => {
     if (loading) return; // mencegah submit berkali-kali
     setLoading(true);
 
-    // Validasi ukuran SK (jika ada)
+    // Validasi ukuran SK (maks 5MB)
     if (skFile && skFile.size > 5 * 1024 * 1024) {
       alert("File SK maksimal 5MB.");
       setLoading(false);
@@ -83,41 +83,43 @@ const EducationUnitForm = () => {
     const formData = new FormData();
 
     // Tambahkan semua input dari form (kecuali file)
-    Object.keys(form).forEach((key) => {
-      formData.append(key, form[key]);
+    Object.entries(form).forEach(([key, val]) => {
+      formData.append(key, val);
     });
 
-    // Tambahkan file foto satu per satu
-    photoFiles.forEach((file, index) => {
-      formData.append(`photo`, file); // Gunakan key yang sama agar backend bisa terima sebagai array
+    // Tambahkan file foto
+    photoFiles.forEach((file) => {
+      if (file) formData.append("photo", file); // Gunakan key sama untuk array
     });
 
-    // Tambahkan link video
-    formData.append("video", videoLink);
+    // Tambahkan video link
+    formData.append("video", videoLink || "");
 
-    // Tambahkan file SK
+    // Tambahkan file SK (jika ada)
     if (skFile) {
       formData.append("sk", skFile);
     }
 
     try {
+      const token = localStorage.getItem("token"); // Ambil token dari localStorage
+
       const response = await axios.post(
         "http://localhost:5000/education_units",
         formData,
         {
           headers: {
             "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`,
           },
         }
       );
 
       alert("Data berhasil dikirim");
 
-      const newId = response.data.id; // pastikan backend mengembalikan { id: newId }
-
+      const newId = response.data.id;
       navigate(`/app/EducationUnit/Detail/${newId}`);
 
-      // Reset form
+      // Reset form hanya jika sukses
       setForm({
         name: "",
         address: "",
@@ -139,7 +141,7 @@ const EducationUnitForm = () => {
       setVideoLink("");
       setSkFile(null);
     } catch (err) {
-      console.error(err);
+      console.error("❌ Submit Error:", err);
       alert("Gagal menyimpan data");
     } finally {
       setLoading(false);

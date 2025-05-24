@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"; //menyimpan dan mengatur state lokal 
+import React, { useEffect, useState } from "react"; //menyimpan dan mengatur state lokal
 import { useNavigate, useLocation } from "react-router-dom"; //menggunakan hook untuk mengakses alamat URL
 import axios from "axios"; //menggunakan axios untuk mengirimkan request ke server
 import * as XLSX from "xlsx"; //excel
@@ -63,7 +63,14 @@ const EducationUnits = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          await axios.delete(`http://localhost:5000/education_units/${id}`);
+          const token = localStorage.getItem("token"); // ambil token dari localStorage
+
+          await axios.delete(`http://localhost:5000/education_units/${id}`, {
+            headers: {
+              Authorization: `Bearer ${token}`, // kirim token di header
+            },
+          });
+
           fetchEducationUnits(); // refresh data
           Swal.fire("Terhapus!", "Data berhasil dihapus.", "success");
         } catch (error) {
