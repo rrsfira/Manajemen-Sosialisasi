@@ -50,40 +50,47 @@ const EducationUnits = () => {
   };
 
   // popup notifikasi hapus data
-  const handleDelete = async (id) => {
-    Swal.fire({
-      title: "Yakin ingin menghapus?",
-      text: "Data yang dihapus tidak dapat dikembalikan.",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#d33",
-      cancelButtonColor: "#3085d6",
-      confirmButtonText: "Ya, hapus!",
-      cancelButtonText: "Batal",
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        try {
-          const token = localStorage.getItem("token"); // ambil token dari localStorage
+const handleDelete = async (id) => {
+  const isDarkMode = document.documentElement.classList.contains('dark');
 
-          await axios.delete(`http://localhost:5000/education_units/${id}`, {
-            headers: {
-              Authorization: `Bearer ${token}`, // kirim token di header
-            },
-          });
+  Swal.fire({
+  title: "Yakin ingin menghapus?",
+  text: "Data yang dihapus tidak dapat dikembalikan.",
+  icon: "warning",
+  showCancelButton: true,
+  confirmButtonText: "Ya, hapus!",
+  cancelButtonText: "Batal",
+  willOpen: () => {
+    const popup = document.querySelector('.swal2-popup');
+    if (document.documentElement.classList.contains('dark')) {
+      popup.classList.add('swal2-dark');
+      popup.querySelector('.swal2-title')?.classList.add('swal2-title-dark');
+      popup.querySelector('.swal2-html-container')?.classList.add('swal2-content-dark');
+      popup.querySelector('.swal2-confirm')?.classList.add('swal2-confirm-dark');
+      popup.querySelector('.swal2-cancel')?.classList.add('swal2-cancel-dark');
+    }
+  }
+}).then(async (result) => {
+    if (result.isConfirmed) {
+      try {
+        const token = localStorage.getItem("token");
 
-          fetchEducationUnits(); // refresh data
-          Swal.fire("Terhapus!", "Data berhasil dihapus.", "success");
-        } catch (error) {
-          console.error("Gagal menghapus data:", error);
-          Swal.fire(
-            "Gagal!",
-            "Terjadi kesalahan saat menghapus data.",
-            "error"
-          );
-        }
+        await axios.delete(`http://localhost:5000/education_units/${id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        fetchEducationUnits();
+        Swal.fire("Terhapus!", "Data berhasil dihapus.", "success");
+      } catch (error) {
+        console.error("Gagal menghapus data:", error);
+        Swal.fire("Gagal!", "Terjadi kesalahan saat menghapus data.", "error");
       }
-    });
-  };
+    }
+  });
+};
+
 
   // fungsi untuk klik summary card
   const handleGroupCardClick = (group) => {

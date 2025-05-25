@@ -19,7 +19,7 @@ const GameSMA = () => {
   return (
     <div className="min-h-screen bg-base-200 px-6 py-10 relative">
       <div className="bg-base-100 p-6 rounded-xl shadow-lg">
-        <h2 className="text-2xl font-bold mb-6 text-left text-black">
+        <h2 className="text-xl font-bold mb-4">
           Games Tingkat SMA
         </h2>
 
