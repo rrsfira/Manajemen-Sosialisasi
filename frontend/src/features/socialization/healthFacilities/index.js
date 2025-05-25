@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Pie } from "@ant-design/plots";
+import axios from "axios";
+import HealthFacilitiesChart from "./chart/index.js";
 import * as XLSX from "xlsx";
 import {
   DocumentArrowDownIcon,
@@ -11,8 +12,6 @@ import {
   TrashIcon,
   PlusIcon,
 } from "@heroicons/react/24/outline";
-import axios from "axios";
-import HealthFacilitiesChart from "./chart/index.js";
 
 const HealthFacility = () => {
   const [healthFacilities, setHealthFacilities] = useState([]);

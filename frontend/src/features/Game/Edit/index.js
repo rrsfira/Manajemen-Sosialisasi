@@ -1,21 +1,20 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 const GameEdit = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
 
   const [form, setForm] = useState({
-    name: "",
-    leader: "",
     quizizz_url: "",
   });
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await axios.get(`http://localhost:5000/education_units/${id}`);
-        setForm(res.data);
+        const res = await axios.get(`http://localhost:5000/games/${id}`);
+        setForm({ quizizz_url: res.data.quizizz_url || "" });
       } catch (error) {
         console.error("Gagal mengambil data:", error);
       }
@@ -27,29 +26,35 @@ const GameEdit = () => {
   }, [id]);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setForm({ ...form, [name]: value });
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const idToPathMap = {
+    1: "/app/GameTK",
+    2: "/app/GameSD",
+    3: "/app/GameSMP",
+    4: "/app/GameSMA",
+    5: "/app/GameMasyarakat",
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const formData = new FormData();
-
-    Object.keys(form).forEach((key) => {
-      formData.append(key, form[key]);
-    });
 
     try {
-      if (id) {
-        await axios.put(`http://localhost:5000/education_units/${id}`, formData, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
-      } else {
-        await axios.post("http://localhost:5000/education_units", formData, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
-      }
+      const token = localStorage.getItem("token");
+
+      await axios.put(`http://localhost:5000/games/${id}`, form, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
       alert("Data berhasil disimpan");
+
+      // Navigate ke halaman asal
+      const targetPath = idToPathMap[parseInt(id)] || "/app/GameMasyarakat";
+      navigate(targetPath);
     } catch (err) {
       console.error(err);
       alert("Gagal menyimpan data");
@@ -65,7 +70,6 @@ const GameEdit = () => {
       </div>
 
       <form onSubmit={handleSubmit} className="max-w-4xl mx-auto space-y-6">
-        {/* Informasi Satuan Pendidikan */}
         <div className="border rounded-lg shadow-sm">
           <div className="bg-secondary px-4 py-2 font-semibold text-white">
             📘 Game Quizizz
@@ -78,6 +82,7 @@ const GameEdit = () => {
               placeholder="Link Quizizz"
               className="input"
               type="url"
+              required
             />
           </div>
         </div>
