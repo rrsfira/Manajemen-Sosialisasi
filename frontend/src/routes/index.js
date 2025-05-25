@@ -170,7 +170,7 @@ const routes = [
     component: GameMasyarakat,
   },
   {
-    path: "/GameMasyarakat/Edit",
+    path: "/Game/Edit/:id",
     component: GameEdit,
   },
   

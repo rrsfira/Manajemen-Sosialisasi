@@ -6,7 +6,7 @@ const AuditAdminSuper = () => {
   const [data, setData] = useState([]);
   const [searchText, setSearchText] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [table, setTable] = useState("education_units");
+  const [table, setTable] = useState("education_units", "games");
   const rowsPerPage = 10;
 
   useEffect(() => {
@@ -60,8 +60,7 @@ const AuditAdminSuper = () => {
             onChange={(e) => setTable(e.target.value)}
           >
             <option value="education_units">Education Units</option>
-            <option value="transactions">Transactions</option>
-            <option value="feedbacks">Feedbacks</option>
+            <option value="games">Game</option>
             {/* Tambah tabel lain jika diperlukan */}
           </select>
           <input

@@ -20,6 +20,7 @@ const urbanVillageRoute = require("./controllers/urbanVillage"); //kelurahan
 const regionRoute = require("./controllers/region"); //region
 const chartRoute = require("./controllers/chart"); //chart
 const educationsRoute = require("./controllers/educations"); //educations
+const gamesRoute = require("./controllers/games"); //games
 
 // Membuat instance aplikasi Express
 const app = express();
@@ -55,6 +56,7 @@ app.use("/urban_village", urbanVillageRoute); //kelurahan tangguh
 app.use("/region", regionRoute); //kelurahan tangguh
 app.use("/chart", chartRoute); //chart
 app.use("/educations", educationsRoute); //educations
+app.use("/games", gamesRoute); //games
 
 
 

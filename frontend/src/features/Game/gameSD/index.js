@@ -1,20 +1,34 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const GameSD = () => {
-  const [iframeUrl, setIframeUrl] = useState(
-    "https://quizizz.com/pro/join/quiz/66f9c58d271c172706c02b48/start?studentShare=true"
-  );
+  const [iframeUrl, setIframeUrl] = useState("");
+  const [gameSDId, setGameSDId] = useState(""); // untuk link explore
   const [role, setRole] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
     const storedRole = localStorage.getItem("role") || "";
     setRole(storedRole);
-  }, []);
 
-  // ID quiz Quizizz yang ingin ditautkan di link explore
-  const educationUnitId = "5e781af722b30f001ba06a6b";
+    const fetchGameData = async () => {
+      try {
+        const res = await axios.get("http://localhost:5000/games/2");
+        setIframeUrl(res.data.quizizz_url);
+        
+        // jika ingin ambil ID quiz dari URL Quizizz
+        const match = res.data.quizizz_url.match(/quiz\/([^/?]+)/);
+        if (match) {
+          setGameSDId(match[1]);
+        }
+      } catch (error) {
+        console.error("Gagal mengambil data game:", error);
+      }
+    };
+
+    fetchGameData();
+  }, []);
 
   return (
     <div className="min-h-screen bg-base-200 px-6 py-10 relative">
@@ -34,21 +48,23 @@ const GameSD = () => {
           />
         </div>
 
-        <div className="text-left mt-4">
-          <a
-            href={`https://quizizz.com/admin/quiz/${educationUnitId}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-sm text-blue-600 hover:underline"
-          >
-            Explore more at Quizizz.
-          </a>
-        </div>
+        {gameSDId && (
+          <div className="text-left mt-4">
+            <a
+              href={`https://quizizz.com/admin/quiz/${gameSDId}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-blue-600 hover:underline"
+            >
+              Explore more at Quizizz.
+            </a>
+          </div>
+        )}
 
         {role === "admin" && (
           <div className="flex justify-end mt-6">
             <button
-              onClick={() => navigate(" ")}
+              onClick={() => navigate(`/app/Game/Edit/${2}`)} 
               className="btn bg-[#2F2FAF] text-white hover:bg-[#1f1f8f] min-w-[100px]"
             >
               Edit
