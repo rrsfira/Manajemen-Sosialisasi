@@ -72,9 +72,9 @@ const Mall = () => {
   };
 
   return (
-   <div className="min-h-screen bg-base-200 px-6 py-10 space-y-12">
+    <div className="min-h-screen bg-base-200 px-6 py-10 space-y-12">
       {/* Pie Chart */}
-        <MallsChart />
+      <MallsChart />
 
       {/* Table + Filter */}
       <div className="bg-base-100 p-6 rounded-xl shadow-lg">
@@ -96,18 +96,20 @@ const Mall = () => {
               <FunnelIcon className="w-5 h-5 mr-1" />
               Filter
             </button>
-            <button
-              onClick={handleExportExcel}
-              className="btn btn-outline btn-success"
-            >
-              <DocumentArrowDownIcon className="w-4 h-4 mr-1" />
-              Excel
-            </button>
             {role === "admin" && (
-              <button className="btn btn-primary flex items-center">
-                <PlusIcon className="w-4 h-4 mr-1" />
-                Tambah
-              </button>
+              <>
+                <button
+                  onClick={handleExportExcel}
+                  className="btn btn-outline btn-success"
+                >
+                  <DocumentArrowDownIcon className="w-4 h-4 mr-1" />
+                  Excel
+                </button>
+                <button className="btn btn-primary flex items-center">
+                  <PlusIcon className="w-4 h-4 mr-1" />
+                  Tambah
+                </button>
+              </>
             )}
           </div>
         </div>

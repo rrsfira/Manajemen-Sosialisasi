@@ -17,6 +17,11 @@ const EducationUnitsEdit = lazy(() => import("../pages/protected/educationUnitEd
 const EducationUnitsDetail = lazy(() => import("../pages/protected/educationUnitDetail"));
 
 const HealthFacilities = lazy(() => import("../pages/protected/healthFacility"));
+const HealthFacilitiesCreate = lazy(() => import("../pages/protected/healthFacilityCreate"));
+const HealthFacilitiesEdit = lazy(() => import("../pages/protected/healthFacilityEdit"));
+const HealthFacilitiesDetail = lazy(() => import("../pages/protected/healthFacilityDetail"));
+
+
 const PublicHousings = lazy(() => import("../pages/protected/publicHousing"));
 const Malls = lazy(() => import("../pages/protected/mall"));
 const Hotels = lazy(() => import("../pages/protected/hotel"));
@@ -97,6 +102,21 @@ const routes = [
     path: "/HealthFacility",
     component: HealthFacilities,
   },
+
+  {
+    path: "/HealthFacility/Create",
+    component: HealthFacilitiesCreate,
+  },
+  {
+    path: "/HealthFacility/Edit/:id",
+    component: HealthFacilitiesEdit,
+  },
+  {
+    path: "/HealthFacility/Detail/:id",
+    component: HealthFacilitiesDetail,
+  },
+
+
   {
     path: "/UrbanVillage",
     component: UrbanVillages,
@@ -149,6 +169,7 @@ const routes = [
     component: EducationDetail,
   },
 
+  
   {
     path: "/GameTK",
     component: GameTK,
@@ -187,8 +208,6 @@ const routes = [
     path: "/SuperAdmin/AdminEdit/:id",
     component: AdminEdit,
   },
-
-
   {
     path: "/SuperAdmin/AuditAdmin",
     component: AuditAdmin,

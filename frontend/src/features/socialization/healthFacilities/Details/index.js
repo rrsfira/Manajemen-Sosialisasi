@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { FiArrowLeft, FiArrowRight } from "react-icons/fi";
 
-const EducationUnitDetail = () => {
+const HealthFacilitiesDetail = () => {
   const [role, setRole] = useState(""); // untuk memberi hak role
   const { id } = useParams();
   const [data, setData] = useState(null);
@@ -10,10 +10,10 @@ const EducationUnitDetail = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch(`http://localhost:5000/education_units/${id}`)
+    fetch(`http://localhost:5000/health_facilities/${id}`)
       .then((res) => res.json())
       .then((res) => {
-        setData(res);
+        setData(res); // gunakan langsung data dari backend tanpa manipulasi ulang
         setCurrentIndex(0);
       })
       .catch((err) => console.error("Fetch error:", err));
@@ -75,7 +75,7 @@ const EducationUnitDetail = () => {
         )}
       </div>
       {/* Foto Carousel */}
-      <div className="bg-base-100 p-6 rounded-xl shadow-lg relative">
+      <div className="bg-base-100 p-6 rounded-xl shadow-lg">
         <div className="relative">
           {images.length > 0 ? (
             <div className=" p-6 rounded-xl ">
@@ -102,7 +102,7 @@ const EducationUnitDetail = () => {
                           className="absolute top-1/2 right-2 transform -translate-y-1/2 bg-white text-black w-8 h-8 rounded-full flex items-center justify-center shadow-md hover:bg-gray-200"
                           style={{ zIndex: 1 }}
                         >
-                          <FiArrowRight size={20} />
+                         <FiArrowRight size={20} />
                         </button>
                       </>
                     )}
@@ -129,6 +129,7 @@ const EducationUnitDetail = () => {
             <DetailItem label="Alamat" value={data.address} />
             <DetailItem label="Wilayah" value={data.region} />
             <DetailItem label="Kecamatan" value={data.subdistrict} />
+
             <div className="flex">
               <span className="w-40 font-semibold">SK</span>
               <span className="mr-1">:</span>
@@ -146,10 +147,10 @@ const EducationUnitDetail = () => {
               )}
             </div>
             <DetailItem label="Nama Ketua Tim" value={data.leader} />
-            <DetailItem label="Jenis Kegiatan" value={data.activity} />
           </div>
 
           <div className="space-y-3">
+            <DetailItem label="Jenis Kegiatan" value={data.activity} />
             <DetailItem
               label="Tanggal Kegiatan"
               value={
@@ -164,9 +165,7 @@ const EducationUnitDetail = () => {
             />
             <DetailItem label="Jumlah Laki-Laki" value={data.gender_man} />
             <DetailItem label="Jumlah Perempuan" value={data.gender_women} />
-            <DetailItem label="Usia <6 Tahun" value={data.age_under6years} />
-            <DetailItem label="Usia 6–10 Tahun" value={data.age_6to10years} />
-            <DetailItem label="Usia 11–18 Tahun" value={data.age_11to18years} />
+            <DetailItem label="Usia 19–44 Tahun" value={data.age_19to44years} />
             <DetailItem label="Usia >44 Tahun" value={data.age_over44years} />
           </div>
         </div>
@@ -175,7 +174,7 @@ const EducationUnitDetail = () => {
             <>
               <button
                 className="w-full py-1 rounded-md text-white bg-primary"
-                onClick={() => navigate(`/app/EducationUnit/Edit/${data.id}`)}
+                onClick={() => navigate(`/app/HealthFacility/Edit/${data.id}`)}
               >
                 Edit Data
               </button>
@@ -195,4 +194,4 @@ const DetailItem = ({ label, value }) => (
   </div>
 );
 
-export default EducationUnitDetail;
+export default HealthFacilitiesDetail;

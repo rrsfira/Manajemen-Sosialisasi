@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom"; //menggunakan hook untuk mengakses alamat URL
 import axios from "axios";
 import HealthFacilitiesChart from "./chart/index.js";
 import * as XLSX from "xlsx";
@@ -15,15 +16,16 @@ import {
 
 const HealthFacility = () => {
   const [healthFacilities, setHealthFacilities] = useState([]);
-  const [healthFacilitiesCount, setHealthFacilitiesCount] = useState({});
   const [isFilterVisible, setIsFilterVisible] = useState(false);
-  const [pieData, setPieData] = useState([]);
   const [data, setData] = useState([]);
   const [searchText, setSearchText] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage] = useState(5);
   const [role, setRole] = useState("");
   const [selectedGroup, setSelectedGroup] = useState(null);
+  const location = useLocation(); // untuk mendapatkan lokasi
+  const currentPath = location.pathname; // untuk mendapatkan path lokasi
+  const navigate = useNavigate(); // hook untuk navigasi
 
   useEffect(() => {
     const storedRole = localStorage.getItem("role");
@@ -62,25 +64,8 @@ const HealthFacility = () => {
       .catch((error) => {
         console.error("Error fetching health facilities data:", error);
       });
-
-    // Fetch health facilities count (Puskesmas, Klinik, Rumah Sakit)
-    axios
-      .get("http://localhost:5000/health_facilities/count")
-      .then((response) => {
-        setHealthFacilitiesCount(response.data);
-        const { puskesmas, klinik, rumah_sakit } = response.data;
-        setPieData([
-          { type: "Puskesmas", value: puskesmas },
-          { type: "Klinik", value: klinik },
-          { type: "Rumah Sakit", value: rumah_sakit },
-        ]);
-      })
-      .catch((error) => {
-        console.error("Error fetching health facilities count:", error);
-      });
   }, []);
 
-  
   const handleExportExcel = () => {
     const worksheet = XLSX.utils.json_to_sheet(healthFacilities);
     const workbook = XLSX.utils.book_new();
@@ -126,7 +111,6 @@ const HealthFacility = () => {
   };
 
   return (
-    
     <div className="min-h-screen bg-base-200 px-6 py-10 space-y-12">
       {/* Top Summary Cards */}
       <div className="w-full px-4">
@@ -148,9 +132,8 @@ const HealthFacility = () => {
         </div>
       </div>
 
-      
       {/* Pie Chart */}
-        <HealthFacilitiesChart />
+      <HealthFacilitiesChart />
 
       {/* Table + Filter */}
       <div className="bg-base-100 p-6 rounded-xl shadow-lg">
@@ -182,18 +165,27 @@ const HealthFacility = () => {
               <FunnelIcon className="w-5 h-5 mr-1" />
               Filter
             </button>
-            <button
-              onClick={handleExportExcel}
-              className="btn btn-outline btn-success"
-            >
-              <DocumentArrowDownIcon className="w-4 h-4 mr-1" />
-              Excel
-            </button>
             {role === "admin" && (
-              <button className="btn btn-primary flex items-center">
-                <PlusIcon className="w-4 h-4 mr-1" />
-                Tambah
-              </button>
+              <>
+                <button
+                  onClick={handleExportExcel}
+                  className="btn btn-outline btn-success"
+                >
+                  <DocumentArrowDownIcon className="w-4 h-4 mr-1" />
+                  Excel
+                </button>
+                <button
+                  className={`btn btn-primary flex items-center text-lg cursor-pointer ${
+                    currentPath === "/app/HealthFacility/Create"
+                      ? "font-bold text-primary"
+                      : ""
+                  }`}
+                  onClick={() => navigate("/app/HealthFacility/Create")}
+                >
+                  <PlusIcon className="w-4 h-4 mr-1" />
+                  Tambah
+                </button>
+              </>
             )}
           </div>
         </div>
@@ -248,12 +240,22 @@ const HealthFacility = () => {
                       : "Tidak ada data"}
                   </td>
                   <td className="text-center flex justify-center gap-1">
-                    <button className="btn btn-sm btn-primary">
+                    <button
+                      className="btn btn-sm btn-primary mr-1"
+                      onClick={() =>
+                        navigate(`/app/HealthFacility/Detail/${item.id}`)
+                      }
+                    >
                       <EyeIcon className="w-5 h-5" />
                     </button>
                     {role === "admin" && (
                       <>
-                        <button className="btn btn-sm btn-warning mr-1">
+                        <button
+                          className="btn btn-sm btn-warning mr-1"
+                          onClick={() =>
+                            navigate(`/app/HealthFacility/Edit/${item.id}`)
+                          }
+                        >
                           <PencilSquareIcon className="w-5 h-5" />
                         </button>
                         <button className="btn btn-sm btn-error">

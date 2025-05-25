@@ -80,7 +80,7 @@ function Header() {
   }, []);
 
   return (
-    <div className="navbar sticky top-0 bg-secondary text-white text-lg z-10 shadow-md py-4">
+    <div className="navbar fixed top-0 bg-secondary text-white text-lg z-10 shadow-md py-4">
       <div className="flex-1 flex items-center gap-2">
         <img
           className="mask mask-squircle w-10"

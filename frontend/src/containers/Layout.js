@@ -30,13 +30,15 @@ function Layout() {
   return (
     <>
       {/* Left drawer - containing page content and side bar (always open) */}
-      <div className="drawer  lg:drawer-open">
+      <div className="drawer lg:drawer-open">
         <input
           id="left-sidebar-drawer"
           type="checkbox"
           className="drawer-toggle"
         />
-        <PageContent />
+        <div className="drawer-content flex flex-col pt-20">
+          <PageContent />
+        </div>
       </div>
 
       {/* Right drawer - containing secondary content like notifications list etc.. */}
