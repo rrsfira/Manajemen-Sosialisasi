@@ -3,22 +3,20 @@ import axios from "axios";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
 
-const EducationUnitForm = () => {
+const HealthFacilitiesForm = () => {
   const [form, setForm] = useState({
     name: "",
     address: "",
     region_id: "",
     subdistrict_id: "",
-    group: "",
-    instance: "",
+    category: "",
+    type: "",
     leader: "",
     activity: "",
     time: "",
     gender_man: "",
     gender_women: "",
-    age_under6years: "",
-    age_6to10years: "",
-    age_11to18years: "",
+    age_19to44years: "",
     age_over44years: "",
   });
 
@@ -109,7 +107,7 @@ const EducationUnitForm = () => {
       const token = localStorage.getItem("token"); // Ambil token dari localStorage
 
       const response = await axios.post(
-        "http://localhost:5000/education_units",
+        "http://localhost:5000/health_facilities",
         formData,
         {
           headers: {
@@ -122,7 +120,7 @@ const EducationUnitForm = () => {
       alert("Data berhasil dikirim");
 
       const newId = response.data.id;
-      navigate(`/app/EducationUnit/Detail/${newId}`);
+      navigate(`/app/HealthFacility/Detail/${newId}`);
 
       // Reset form hanya jika sukses
       setForm({
@@ -130,16 +128,14 @@ const EducationUnitForm = () => {
         address: "",
         region_id: "",
         subdistrict_id: "",
-        group: "",
-        instance: "",
+        category: "",
+        type: "",
         leader: "",
         activity: "",
         time: "",
         gender_man: "",
         gender_women: "",
-        age_under6years: "",
-        age_6to10years: "",
-        age_11to18years: "",
+        age_19to44years: "",
         age_over44years: "",
       });
       setPhotoFiles([]);
@@ -182,15 +178,15 @@ const EducationUnitForm = () => {
     <div className="max-w-6xl mx-auto bg-base-100 p-8 rounded-lg shadow space-y-8">
       <div className="text-center mb-8">
         <h1 className="text-3xl font-bold text-primary mt-4">
-          Tambah Data <span className="text-secondary">Satuan Pendidikan</span>
+          Tambah Data <span className="text-secondary">Fasilitas Kesehatan</span>
         </h1>
       </div>
 
       <form onSubmit={handleSubmit} className="max-w-4xl mx-auto space-y-6">
-        {/* Informasi Satuan Pendidikan */}
+        {/* Informasi Fasilitas Kesehatan */}
         <div className="border rounded-lg shadow-sm">
           <div className="bg-secondary px-4 py-2 font-semibold text-white">
-            📘 Data Satuan Pendidikan
+            📘 Data Fasilitas Kesehatan
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
             <input
@@ -198,24 +194,23 @@ const EducationUnitForm = () => {
               value={form.name}
               onChange={handleChange}
               required
-              placeholder="Nama Satuan Pendidikan"
+              placeholder="Nama Fasilitas Kesehatan"
               className="input"
             />
 
             <select
-              name="group"
-              value={form.group}
+              name="category"
+              value={form.category}
               onChange={handleChange}
               required
               className="select select-bordered w-full"
             >
               <option value="" disabled>
-                Pilih Kategori Pendidikan
+                Pilih Kategori Fasilitas Kesehatan
               </option>
-              <option value="TK">TK</option>
-              <option value="SD/MI">SD/MI</option>
-              <option value="SMP/MTS">SMP/MTS</option>
-              <option value="SMA/SMK/MA">SMA/SMK/MA</option>
+              <option value="klinik">klinik</option>
+              <option value="Puskesmas">Puskesmas</option>
+              <option value="RumahSakit">Rumah Sakit</option>
             </select>
 
             <input
@@ -227,17 +222,17 @@ const EducationUnitForm = () => {
             />
 
             <select
-              name="instance"
-              value={form.instance}
+              name="type"
+              value={form.type}
               onChange={handleChange}
               required
               className="select select-bordered w-full"
             >
               <option value="" disabled>
-                Pilih Instansi Pendidikan
+                Pilih Instansi Fasilitas Kesehatan
               </option>
               <option value="Swasta">Swasta</option>
-              <option value="Negeri">Negeri</option>
+              <option value="Negeri">Pemerintah</option>
             </select>
 
             <input
@@ -420,26 +415,10 @@ const EducationUnitForm = () => {
             />
             <input
               type="number"
-              name="age_under6years"
-              value={form.age_under6years}
+              name="age_19to44years"
+              value={form.age_19to44years}
               onChange={handleChange}
-              placeholder="<6 Tahun"
-              className="input"
-            />
-            <input
-              type="number"
-              name="age_6to10years"
-              value={form.age_6to10years}
-              onChange={handleChange}
-              placeholder="6-10 Tahun"
-              className="input"
-            />
-            <input
-              type="number"
-              name="age_11to18years"
-              value={form.age_11to18years}
-              onChange={handleChange}
-              placeholder="11-18 Tahun"
+              placeholder="19-44 Tahun"
               className="input"
             />
             <input
@@ -465,4 +444,4 @@ const EducationUnitForm = () => {
   );
 };
 
-export default EducationUnitForm;
+export default HealthFacilitiesForm;

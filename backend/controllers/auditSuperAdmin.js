@@ -4,7 +4,7 @@ const db = require("../config/db");
 
 router.get("/:table", (req, res) => {
   const { table } = req.params;
-  const validTables = ["education_units", "games"];
+  const validTables = ["education_units", "health_facilities", "public_housings", "malls", "hotels", "offices", "apartements", "urban_villages", "games"];
 
   if (!validTables.includes(table)) {
     return res.status(400).json({ error: "Tabel tidak valid" });

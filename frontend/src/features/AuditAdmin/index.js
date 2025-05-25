@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { EyeIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
 
 const AuditAdminSuper = () => {
   const [data, setData] = useState([]);
   const [searchText, setSearchText] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [table, setTable] = useState("education_units", "games");
+  const [table, setTable] = useState("education_units", "health_facilities", "public_housings", "malls", "hotels", "offices", "apartements", "urban_villages", "educations", "games");
   const rowsPerPage = 10;
 
   useEffect(() => {
@@ -59,7 +58,15 @@ const AuditAdminSuper = () => {
             value={table}
             onChange={(e) => setTable(e.target.value)}
           >
-            <option value="education_units">Education Units</option>
+            <option value="education_units">Satuan Pendidikan</option>
+            <option value="health_facilities">Fasilitas Kesehatan</option> 
+            <option value="public_housings">Rusun</option>
+            <option value="malls">Mall</option>
+            <option value="hotels">Hotel</option> 
+            <option value="offices">Perkantoran</option>
+            <option value="apartements">Apartement</option>
+            <option value="urban_villages">Kelurahan Tangguh</option>
+            <option value="educations">Materi</option>
             <option value="games">Game</option>
             {/* Tambah tabel lain jika diperlukan */}
           </select>
