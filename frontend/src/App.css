@@ -37,7 +37,7 @@
   }
 }
 
-/* Fix visibility dan tampilan tombol SweetAlert2 */
+/* Tombol light mode (default) */
 .swal2-confirm,
 .swal2-cancel {
   visibility: visible !important;
@@ -56,3 +56,34 @@
   background-color: #3085d6 !important;
 }
 
+/* Dark mode */
+.swal2-dark {
+  background-color: #1f2937 !important;
+  color: #e5e7eb !important;
+}
+
+.swal2-title-dark {
+  color: #e5e7eb !important;
+}
+
+.swal2-content-dark {
+  color: #d1d5db !important;
+}
+
+.swal2-confirm-dark {
+  background-color: #b91c1c !important;
+  color: white !important;
+}
+
+.swal2-cancel-dark {
+  background-color: #2563eb !important;
+  color: white !important;
+}
+
+.swal2-confirm-dark:hover {
+  background-color: #7f1d1d !important;
+}
+
+.swal2-cancel-dark:hover {
+  background-color: #1e40af !important;
+}
