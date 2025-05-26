@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom"; //menggunakan hook 
 import axios from "axios";
 import HealthFacilitiesChart from "./chart/index.js";
 import * as XLSX from "xlsx";
+import Swal from "sweetalert2"; // popup notif
 import {
   DocumentArrowDownIcon,
   CheckCircleIcon,
@@ -46,32 +47,77 @@ const HealthFacility = () => {
     setSearchText("");
     setSelectedGroup(null);
   };
-  const currentData = filteredData.slice(
+  // filter button untuk hari
+  const convertToISODate = (dateStr) => {
+    if (!dateStr) return null; // hindari error jika null
+    const [day, month, year] = dateStr.split("-");
+    return `${year}-${month}-${day}`;
+  };
+  const sortedData = filteredData.slice().sort((a, b) => {
+    const dateA = new Date(convertToISODate(a.date));
+    const dateB = new Date(convertToISODate(b.date));
+
+    const validA = !isNaN(dateA);
+    const validB = !isNaN(dateB);
+
+    if (validA && validB) {
+      return dateB - dateA;
+    } else if (validA) {
+      return -1; // valid tanggal dulu
+    } else if (validB) {
+      return 1;
+    } else {
+      return b.id - a.id;
+    }
+  });
+
+  const currentData = sortedData.slice(
     (currentPage - 1) * rowsPerPage,
     currentPage * rowsPerPage
   );
-
   const totalPages = Math.ceil(filteredData.length / rowsPerPage);
 
+  // untuk menampilkan data dari backend
   useEffect(() => {
-    // Fetch health facilities data
-    axios
-      .get("http://localhost:5000/health_facilities")
-      .then((response) => {
-        setData(response.data);
-        setHealthFacilities(response.data);
-      })
-      .catch((error) => {
-        console.error("Error fetching health facilities data:", error);
-      });
+    fetchHealthFacilities();
   }, []);
+  const fetchHealthFacilities = async () => {
+    try {
+      const response = await axios.get("http://localhost:5000/health_facilities");
+      console.log("Fetched Data:", response.data); // Log the data
+      setData(response.data);
+    } catch (error) {
+      console.error("Error fetching education unit data:", error);
+    }
+  };
 
   const handleExportExcel = () => {
-    const worksheet = XLSX.utils.json_to_sheet(healthFacilities);
+    const exportSource = filteredData.length > 0 ? filteredData : data;
+    const exportData = exportSource.map((item) => ({
+      ID: item.id,
+      Nama: item.name,
+      Kategori: item.category,
+      Kegiatan: item.activity,
+      Type: item.type,
+      Wilayah: item.region,
+      Kecamatan: item.subdistrict,
+      Alamat: item.address,
+      Tanggal: item.date,
+      "Ketua Tim": item.leader,
+      SK: item.suratK,
+      Perempuan: item.gender_woman,
+      Laki: item.gender_man,
+      "Umur 19 - 44 Tahun": item.age_19to44years,
+      "Umur 44 Tahun Keatas": item.age_over4years,
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(exportData);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Fasilitas Kesehatan");
+
     XLSX.writeFile(workbook, "FasilitasKesehatan.xlsx");
   };
+
 
   const targetGroups = ["puskesmas", "klinik", "rumah sakit"];
   const groupSummary = {
@@ -109,6 +155,49 @@ const HealthFacility = () => {
   const handleGroupCardClick = (group) => {
     setSelectedGroup(group);
   };
+
+    // popup notifikasi hapus data
+const handleDelete = async (id) => {
+  const isDarkMode = document.documentElement.classList.contains('dark');
+
+  Swal.fire({
+  title: "Yakin ingin menghapus?",
+  text: "Data yang dihapus tidak dapat dikembalikan.",
+  icon: "warning",
+  showCancelButton: true,
+  confirmButtonText: "Ya, hapus!",
+  cancelButtonText: "Batal",
+  willOpen: () => {
+    const popup = document.querySelector('.swal2-popup');
+    if (document.documentElement.classList.contains('dark')) {
+      popup.classList.add('swal2-dark');
+      popup.querySelector('.swal2-title')?.classList.add('swal2-title-dark');
+      popup.querySelector('.swal2-html-container')?.classList.add('swal2-content-dark');
+      popup.querySelector('.swal2-confirm')?.classList.add('swal2-confirm-dark');
+      popup.querySelector('.swal2-cancel')?.classList.add('swal2-cancel-dark');
+    }
+  }
+}).then(async (result) => {
+    if (result.isConfirmed) {
+      try {
+        const token = localStorage.getItem("token");
+
+        await axios.delete(`http://localhost:5000/health_facilities/${id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        fetchHealthFacilities();
+        Swal.fire("Terhapus!", "Data berhasil dihapus.", "success");
+      } catch (error) {
+        console.error("Gagal menghapus data:", error);
+        Swal.fire("Gagal!", "Terjadi kesalahan saat menghapus data.", "error");
+      }
+    }
+  });
+};
+
 
   return (
     <div className="min-h-screen bg-base-200 px-6 py-10 space-y-12">
@@ -231,13 +320,7 @@ const HealthFacility = () => {
                     )}
                   </td>
                   <td className="text-center">
-                    {item.time
-                      ? new Date(item.time).toLocaleDateString("id-ID", {
-                          day: "numeric",
-                          month: "long",
-                          year: "numeric",
-                        })
-                      : "Tidak ada data"}
+                    {item.date || "Tidak ada data"}
                   </td>
                   <td className="text-center flex justify-center gap-1">
                     <button
@@ -258,7 +341,10 @@ const HealthFacility = () => {
                         >
                           <PencilSquareIcon className="w-5 h-5" />
                         </button>
-                        <button className="btn btn-sm btn-error">
+                        <button
+                          className="btn btn-sm btn-error"
+                          onClick={() => handleDelete(item.id)}
+                        >
                           <TrashIcon className="w-5 h-5" />
                         </button>
                       </>

@@ -5,7 +5,18 @@ const AuditAdminSuper = () => {
   const [data, setData] = useState([]);
   const [searchText, setSearchText] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [table, setTable] = useState("education_units", "health_facilities", "public_housings", "malls", "hotels", "offices", "apartements", "urban_villages", "educations", "games");
+  const [table, setTable] = useState(
+    "education_units",
+    "health_facilities",
+    "public_housings",
+    "malls",
+    "hotels",
+    "offices",
+    "apartments",
+    "urban_villages",
+    "educations",
+    "games"
+  );
   const rowsPerPage = 10;
 
   useEffect(() => {
@@ -48,7 +59,7 @@ const AuditAdminSuper = () => {
 
   return (
     <div className="min-h-screen bg-base-200 px-6 py-10 space-y-12 relative">
-      <div className="bg-white rounded-xl shadow-md p-6">
+      <div className="bg-base-100 rounded-xl shadow-md p-6">
         <h2 className="text-xl font-bold mb-4">Data Tabel Audit Aktivitas</h2>
 
         {/* Dropdown + Search */}
@@ -59,10 +70,10 @@ const AuditAdminSuper = () => {
             onChange={(e) => setTable(e.target.value)}
           >
             <option value="education_units">Satuan Pendidikan</option>
-            <option value="health_facilities">Fasilitas Kesehatan</option> 
+            <option value="health_facilities">Fasilitas Kesehatan</option>
             <option value="public_housings">Rusun</option>
             <option value="malls">Mall</option>
-            <option value="hotels">Hotel</option> 
+            <option value="hotels">Hotel</option>
             <option value="offices">Perkantoran</option>
             <option value="apartements">Apartement</option>
             <option value="urban_villages">Kelurahan Tangguh</option>
@@ -91,18 +102,26 @@ const AuditAdminSuper = () => {
               </tr>
             </thead>
             <tbody>
-              {currentData.map((item, idx) => (
-                <tr key={idx}>
-                  <td className="text-center">
-                    {(currentPage - 1) * rowsPerPage + idx + 1}
+              {currentData.length === 0 ? (
+                <tr>
+                  <td colSpan="4" className="text-center py-4">
+                    Tidak ada data yang ditemukan.
                   </td>
-                  <td className="text-center font-bold text-orange-600">
-                    {item.name}
-                  </td>
-                  <td className="text-center">{item.activity}</td>
-                  <td className="text-center">{formatDateTime(item.time)}</td>
                 </tr>
-              ))}
+              ) : (
+                currentData.map((item, idx) => (
+                  <tr key={idx}>
+                    <td className="text-center">
+                      {(currentPage - 1) * rowsPerPage + idx + 1}
+                    </td>
+                    <td className="text-center font-bold text-orange-600">
+                      {item.name}
+                    </td>
+                    <td className="text-center">{item.activity}</td>
+                    <td className="text-center">{formatDateTime(item.time)}</td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>

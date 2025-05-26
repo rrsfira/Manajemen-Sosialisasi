@@ -50,47 +50,58 @@ const EducationUnits = () => {
   };
 
   // popup notifikasi hapus data
-const handleDelete = async (id) => {
-  const isDarkMode = document.documentElement.classList.contains('dark');
+  const handleDelete = async (id) => {
+    const isDarkMode = document.documentElement.classList.contains("dark");
 
-  Swal.fire({
-  title: "Yakin ingin menghapus?",
-  text: "Data yang dihapus tidak dapat dikembalikan.",
-  icon: "warning",
-  showCancelButton: true,
-  confirmButtonText: "Ya, hapus!",
-  cancelButtonText: "Batal",
-  willOpen: () => {
-    const popup = document.querySelector('.swal2-popup');
-    if (document.documentElement.classList.contains('dark')) {
-      popup.classList.add('swal2-dark');
-      popup.querySelector('.swal2-title')?.classList.add('swal2-title-dark');
-      popup.querySelector('.swal2-html-container')?.classList.add('swal2-content-dark');
-      popup.querySelector('.swal2-confirm')?.classList.add('swal2-confirm-dark');
-      popup.querySelector('.swal2-cancel')?.classList.add('swal2-cancel-dark');
-    }
-  }
-}).then(async (result) => {
-    if (result.isConfirmed) {
-      try {
-        const token = localStorage.getItem("token");
+    Swal.fire({
+      title: "Yakin ingin menghapus?",
+      text: "Data yang dihapus tidak dapat dikembalikan.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Ya, hapus!",
+      cancelButtonText: "Batal",
+      willOpen: () => {
+        const popup = document.querySelector(".swal2-popup");
+        if (document.documentElement.classList.contains("dark")) {
+          popup.classList.add("swal2-dark");
+          popup
+            .querySelector(".swal2-title")
+            ?.classList.add("swal2-title-dark");
+          popup
+            .querySelector(".swal2-html-container")
+            ?.classList.add("swal2-content-dark");
+          popup
+            .querySelector(".swal2-confirm")
+            ?.classList.add("swal2-confirm-dark");
+          popup
+            .querySelector(".swal2-cancel")
+            ?.classList.add("swal2-cancel-dark");
+        }
+      },
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const token = localStorage.getItem("token");
 
-        await axios.delete(`http://localhost:5000/education_units/${id}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+          await axios.delete(`http://localhost:5000/education_units/${id}`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
 
-        fetchEducationUnits();
-        Swal.fire("Terhapus!", "Data berhasil dihapus.", "success");
-      } catch (error) {
-        console.error("Gagal menghapus data:", error);
-        Swal.fire("Gagal!", "Terjadi kesalahan saat menghapus data.", "error");
+          fetchEducationUnits();
+          Swal.fire("Terhapus!", "Data berhasil dihapus.", "success");
+        } catch (error) {
+          console.error("Gagal menghapus data:", error);
+          Swal.fire(
+            "Gagal!",
+            "Terjadi kesalahan saat menghapus data.",
+            "error"
+          );
+        }
       }
-    }
-  });
-};
-
+    });
+  };
 
   // fungsi untuk klik summary card
   const handleGroupCardClick = (group) => {
@@ -108,12 +119,35 @@ const handleDelete = async (id) => {
       : true;
     return matchesSearch && matchesGroup;
   });
+  // filter button untuk hari
+  const convertToISODate = (dateStr) => {
+    if (!dateStr) return null; // hindari error jika null
+    const [day, month, year] = dateStr.split("-");
+    return `${year}-${month}-${day}`;
+  };
+  const sortedData = searchedData.slice().sort((a, b) => {
+    const dateA = new Date(convertToISODate(a.date));
+    const dateB = new Date(convertToISODate(b.date));
 
-  // fungsi untuk mengubah data menjadi format yang diinginkan
-  const currentData = searchedData.slice(
+    const validA = !isNaN(dateA);
+    const validB = !isNaN(dateB);
+
+    if (validA && validB) {
+      return dateB - dateA;
+    } else if (validA) {
+      return -1; // valid tanggal dulu
+    } else if (validB) {
+      return 1;
+    } else {
+      return b.id - a.id;
+    }
+  });
+
+  const currentData = sortedData.slice(
     (currentPage - 1) * rowsPerPage,
     currentPage * rowsPerPage
   );
+
   const totalPages = Math.ceil(searchedData.length / rowsPerPage);
 
   // Gunakan useEffect agar setRole dipanggil sekali saat komponen mount
@@ -195,13 +229,6 @@ const handleDelete = async (id) => {
   const handleReset = () => {
     setSearchText("");
     setSelectedGroup(null);
-  };
-
-  // filter button untuk hari
-  const convertToISODate = (dateStr) => {
-    if (!dateStr) return null; // hindari error jika null
-    const [day, month, year] = dateStr.split("-");
-    return `${year}-${month}-${day}`;
   };
 
   //filter button
@@ -315,7 +342,7 @@ const handleDelete = async (id) => {
                 </button>
                 <button
                   className={`btn btn-primary flex items-center text-lg cursor-pointer ${
-                    currentPath === "/app/EducationUnitCreate"
+                    currentPath === "/app/EducationUnit"
                       ? "font-bold text-primary"
                       : ""
                   }`}

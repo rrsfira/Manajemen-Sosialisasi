@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { FiArrowLeft, FiArrowRight } from "react-icons/fi";
+import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
 
 const EducationUnitDetail = () => {
   const [role, setRole] = useState(""); // untuk memberi hak role
@@ -95,14 +95,14 @@ const EducationUnitDetail = () => {
                           className="absolute top-1/2 left-2 transform -translate-y-1/2 bg-white text-black w-8 h-8 rounded-full flex items-center justify-center shadow-md hover:bg-gray-200"
                           style={{ zIndex: 1 }}
                         >
-                          <FiArrowLeft size={20} />
+                          <ArrowLeftIcon className="w-4 h-4" />
                         </button>
                         <button
                           onClick={nextImage}
                           className="absolute top-1/2 right-2 transform -translate-y-1/2 bg-white text-black w-8 h-8 rounded-full flex items-center justify-center shadow-md hover:bg-gray-200"
                           style={{ zIndex: 1 }}
                         >
-                          <FiArrowRight size={20} />
+                          <ArrowRightIcon className="w-4 h-4" />
                         </button>
                       </>
                     )}
@@ -129,22 +129,7 @@ const EducationUnitDetail = () => {
             <DetailItem label="Alamat" value={data.address} />
             <DetailItem label="Wilayah" value={data.region} />
             <DetailItem label="Kecamatan" value={data.subdistrict} />
-            <div className="flex">
-              <span className="w-40 font-semibold">SK</span>
-              <span className="mr-1">:</span>
-              {data.SK ? (
-                <a
-                  href={data.SK_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="ml-4 text-blue-600 underline"
-                >
-                  {data.SK}
-                </a>
-              ) : (
-                <span className="ml-4 text-gray-400">-</span>
-              )}
-            </div>
+            <DetailLinkItem label="SK" value={data.SK} href={data.SK_url} />
             <DetailItem label="Nama Ketua Tim" value={data.leader} />
             <DetailItem label="Jenis Kegiatan" value={data.activity} />
           </div>
@@ -188,11 +173,33 @@ const EducationUnitDetail = () => {
 };
 
 const DetailItem = ({ label, value }) => (
-  <div className="flex">
-    <span className="w-40 font-semibold">{label}</span>
-    <span className="mr-1">:</span>
-    <span className="ml-4">{value || "-"}</span>
+  <div className="flex items-start mb-2">
+    <div className="w-40 font-semibold">{label}</div>
+    <div className="mr-1">:</div>
+    <div className="flex-1 break-words">{value || <span className="text-gray-400">-</span>}</div>
   </div>
 );
+
+const DetailLinkItem = ({ label, value, href }) => (
+  <div className="flex items-start mb-2">
+    <div className="w-40 font-semibold">{label}</div>
+    <div className="mr-1">:</div>
+    <div className="flex-1 break-words">
+      {value ? (
+        <a
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-blue-600 underline break-words"
+        >
+          {value}
+        </a>
+      ) : (
+        <span className="text-gray-400">-</span>
+      )}
+    </div>
+  </div>
+);
+
 
 export default EducationUnitDetail;
