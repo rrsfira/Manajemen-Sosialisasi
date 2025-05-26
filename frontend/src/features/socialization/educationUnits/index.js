@@ -150,7 +150,7 @@ const paginatedData = currentData.slice(
 
 
 
-  const totalPages = Math.ceil(searchedData.length / rowsPerPage);
+const totalPages = Math.ceil(currentData.length / rowsPerPage);
 
   // Gunakan useEffect agar setRole dipanggil sekali saat komponen mount
   useEffect(() => {
