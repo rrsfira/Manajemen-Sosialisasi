@@ -313,7 +313,7 @@ const handleDelete = async (id) => {
                     {item.subdistrict || "Tidak ada data"}
                   </td>
                   <td className="text-center">
-                    {item.SK ? (
+                    {item.suratK ? (
                       <CheckCircleIcon className="w-5 h-5 text-success mx-auto" />
                     ) : (
                       <XCircleIcon className="w-5 h-5 text-error mx-auto" />

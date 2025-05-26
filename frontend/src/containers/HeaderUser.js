@@ -42,10 +42,10 @@ function Header() {
     "/app/Hotel/Create",
     "/app/Office",
     "/app/Office/Create",
-    "/app/Apartement",
-    "/app/Apartement/Create",
-    "/app/UrbanVillages",
-    "/app/UrbanVillages/Create",
+    "/app/Apartment",
+    "/app/Apartment/Create",
+    "/app/UrbanVillage",
+    "/app/UrbanVillage/Create",
   ];
 
     //array untuk path dropdown
@@ -398,14 +398,14 @@ function Header() {
 
             <li className="relative group">
               <Link
-                to="/app/Apartement"
+                to="/app/Apartment"
                 className={`text-lg cursor-pointer ${
-                  currentPath === "/app/Apartement"
+                  currentPath === "/app/Apartment"
                     ? "font-bold text-primary"
                     : ""
                 }`}
               >
-                Apartement
+                Apartment
               </Link>
               {/* Submenu Create muncul di kanan saat hover */}
               {role === "admin" && (
@@ -414,7 +414,7 @@ function Header() {
                     <Link
                       to="/app/Apartement/Create"
                       className={`text-lg cursor-pointer ${
-                        currentPath === "/app/Apartement/Create"
+                        currentPath === "/app/Apartment/Create"
                           ? "font-bold text-primary"
                           : ""
                       }`}
@@ -428,9 +428,9 @@ function Header() {
 
             <li className="relative group">
               <Link
-                to="/app/UrbanVillages"
+                to="/app/UrbanVillage"
                 className={`text-lg cursor-pointer ${
-                  currentPath === "/app/UrbanVillages"
+                  currentPath === "/app/UrbanVillage"
                     ? "font-bold text-primary"
                     : ""
                 }`}
@@ -442,9 +442,9 @@ function Header() {
                 <ul className="absolute left-full top-0 ml-2 z-20 bg-secondary p-2 rounded shadow w-40 hidden group-hover:flex group-hover:flex-col">
                   <li>
                     <Link
-                      to="/app/UrbanVillages/Create"
+                      to="/app/UrbanVillage/Create"
                       className={`text-lg cursor-pointer ${
-                        currentPath === "/app/UrbanVillages/Create"
+                        currentPath === "/app/UrbanVillage/Create"
                           ? "font-bold text-primary"
                           : ""
                       }`}

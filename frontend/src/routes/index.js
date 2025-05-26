@@ -21,10 +21,10 @@ const HealthFacilitiesCreate = lazy(() => import("../pages/protected/healthFacil
 const HealthFacilitiesEdit = lazy(() => import("../pages/protected/healthFacilityEdit"));
 const HealthFacilitiesDetail = lazy(() => import("../pages/protected/healthFacilityDetail"));
 
-const PublicHousings = lazy(() => import("../pages/protected/publicHousing"));
-const PublicHousingsCreate = lazy(() => import("../pages/protected/publicHousingCreate"));
-const PublicHousingsEdit = lazy(() => import("../pages/protected/publicHousingEdit"));
-const PublicHousingsDetail = lazy(() => import("../pages/protected/publicHousingDetail"));
+const PublicHousing = lazy(() => import("../pages/protected/publicHousing"));
+const PublicHousingCreate = lazy(() => import("../pages/protected/publicHousingCreate"));
+const PublicHousingEdit = lazy(() => import("../pages/protected/publicHousingEdit"));
+const PublicHousingDetail = lazy(() => import("../pages/protected/publicHousingDetail"));
 
 
 const Malls = lazy(() => import("../pages/protected/mall"));
@@ -46,9 +46,9 @@ const OfficesDetail = lazy(() => import("../pages/protected/officeDetail"));
 
 
 const Apartements = lazy(() => import("../pages/protected/apartement"));
-const ApartementDetail = lazy(() => import("../pages/protected/apartementDetails"));
-const ApartementsCreate = lazy(() => import("../pages/protected/apartementCreate"));
-const ApartementsEdit = lazy(() => import("../pages/protected/apartementEdit"));
+const ApartmentDetail = lazy(() => import("../pages/protected/apartementDetails"));
+const ApartmentsCreate = lazy(() => import("../pages/protected/apartementCreate"));
+const ApartmentsEdit = lazy(() => import("../pages/protected/apartementEdit"));
 
 
 const UrbanVillages = lazy(() => import("../pages/protected/urbanVillage"));
@@ -145,19 +145,19 @@ const routes = [
 
   {
     path: "/PublicHousing",
-    component: PublicHousings,
+    component: PublicHousing,
   },
   {
     path: "/PublicHousing/Create",
-    component: PublicHousingsCreate,
+    component: PublicHousingCreate,
   },
   {
     path: "/PublicHousing/Edit/:id",
-    component: PublicHousingsEdit,
+    component: PublicHousingEdit,
   },
   {
     path: "/PublicHousing/Detail/:id",
-    component: PublicHousingsDetail,
+    component: PublicHousingDetail,
   },
 
 
@@ -216,20 +216,20 @@ const routes = [
 
 
   {
-    path: "/Apartement",
+    path: "/Apartment",
     component: Apartements,
   },
   {
-    path: "/Apartement/Details",
-    component: ApartementDetail,
+    path: "/Apartment/Detail/:id",
+    component: ApartmentDetail,
   },
   {
-    path: "/Apartement/Create",
-    component: ApartementsCreate,
+    path: "/Apartment/Create",
+    component: ApartmentsCreate,
   },
   {
-    path: "/Apartement/Edit/:id",
-    component: ApartementsEdit,
+    path: "/Apartment/Edit/:id",
+    component: ApartmentsEdit,
   },
 
 
