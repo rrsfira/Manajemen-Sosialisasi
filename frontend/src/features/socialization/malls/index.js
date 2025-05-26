@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { Pie } from "@ant-design/plots";
+import { useNavigate, useLocation } from "react-router-dom";
 import * as XLSX from "xlsx";
+import Swal from "sweetalert2"; // popup notif
+import axios from "axios";
+import MallsChart from "./chart/index.js";
 import {
   DocumentArrowDownIcon,
   FunnelIcon,
@@ -11,14 +14,11 @@ import {
   TrashIcon,
   PlusIcon,
 } from "@heroicons/react/24/outline";
-import axios from "axios";
-import MallsChart from "./chart/index.js";
 
 const Mall = () => {
-  const [healthFacilities, setHealthFacilities] = useState([]);
-  const [healthFacilitiesCount, setHealthFacilitiesCount] = useState({});
-  const [isFilterVisible, setIsFilterVisible] = useState(false);
-  const [pieData, setPieData] = useState([]);
+  const navigate = useNavigate(); // hook untuk navigasi
+  const location = useLocation(); // untuk mendapatkan lokasi
+  const currentPath = location.pathname; // untuk mendapatkan path lokasi
   const [data, setData] = useState([]);
   const [searchText, setSearchText] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -30,44 +30,133 @@ const Mall = () => {
     if (storedRole) setRole(storedRole);
   }, []);
 
+  useEffect(() => {
+    fetchMalls();
+  }, []);
+  const fetchMalls = async () => {
+    try {
+      const response = await axios.get("http://localhost:5000/malls");
+      console.log("Fetched Data:", response.data); // Log the data
+      setData(response.data);
+    } catch (error) {
+      console.error("Error fetching malls data:", error);
+    }
+  };
+
   // Filtering data based on the search text
   const filteredData = data.filter((item) =>
     Object.values(item).some((val) =>
       String(val).toLowerCase().includes(searchText.toLowerCase())
     )
   );
+  // filter button untuk hari
+  const convertToISODate = (dateStr) => {
+    if (!dateStr) return null; // hindari error jika null
+    const [day, month, year] = dateStr.split("-");
+    return `${year}-${month}-${day}`;
+  };
+  const sortedData = filteredData.slice().sort((a, b) => {
+    const dateA = new Date(convertToISODate(a.date));
+    const dateB = new Date(convertToISODate(b.date));
 
-  const currentData = filteredData.slice(
+    const validA = !isNaN(dateA);
+    const validB = !isNaN(dateB);
+
+    if (validA && validB) {
+      return dateB - dateA;
+    } else if (validA) {
+      return -1; // valid tanggal dulu
+    } else if (validB) {
+      return 1;
+    } else {
+      return b.id - a.id;
+    }
+  });
+
+  const currentData = sortedData.slice(
     (currentPage - 1) * rowsPerPage,
     currentPage * rowsPerPage
   );
 
   const totalPages = Math.ceil(filteredData.length / rowsPerPage);
 
-  useEffect(() => {
-    // Fetch mall data
-    axios
-      .get("http://localhost:5000/malls")
-      .then((response) => {
-        setData(response.data);
-        setHealthFacilities(response.data);
-      })
-      .catch((error) => {
-        console.error("Error fetching Mall data:", error);
-      });
-  }, []);
+  // popup notifikasi hapus data
+  const handleDelete = async (id) => {
+    const isDarkMode = document.documentElement.classList.contains("dark");
 
-  const openFilter = () => setIsFilterVisible(true);
-  const closeFilter = () => setIsFilterVisible(false);
+    Swal.fire({
+      title: "Yakin ingin menghapus?",
+      text: "Data yang dihapus tidak dapat dikembalikan.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Ya, hapus!",
+      cancelButtonText: "Batal",
+      willOpen: () => {
+        const popup = document.querySelector(".swal2-popup");
+        if (document.documentElement.classList.contains("dark")) {
+          popup.classList.add("swal2-dark");
+          popup
+            .querySelector(".swal2-title")
+            ?.classList.add("swal2-title-dark");
+          popup
+            .querySelector(".swal2-html-container")
+            ?.classList.add("swal2-content-dark");
+          popup
+            .querySelector(".swal2-confirm")
+            ?.classList.add("swal2-confirm-dark");
+          popup
+            .querySelector(".swal2-cancel")
+            ?.classList.add("swal2-cancel-dark");
+        }
+      },
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const token = localStorage.getItem("token");
 
-  const handleViewDetails = (id) => {
-    console.log("View details for ID:", id);
+          await axios.delete(`http://localhost:5000/malls/${id}`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+
+          fetchMalls();
+          Swal.fire("Terhapus!", "Data berhasil dihapus.", "success");
+        } catch (error) {
+          console.error("Gagal menghapus data:", error);
+          Swal.fire(
+            "Gagal!",
+            "Terjadi kesalahan saat menghapus data.",
+            "error"
+          );
+        }
+      }
+    });
   };
 
+  //export excel
   const handleExportExcel = () => {
-    const worksheet = XLSX.utils.json_to_sheet(filteredData);
+    const exportSource = filteredData.length > 0 ? filteredData : data;
+    const exportData = exportSource.map((item) => ({
+      ID: item.id,
+      Nama: item.name,
+      Kegiatan: item.activity,
+      Wilayah: item.region,
+      Kecamatan: item.subdistrict,
+      Alamat: item.address,
+      Tanggal: item.date,
+      "Ketua Tim": item.leader,
+      SK: item.suratK,
+      Perempuan: item.gender_woman,
+      Laki: item.gender_man,
+      "Umur 19 - 44 Tahun": item.age_19to44years,
+      "Umur 44 Tahun Keatas": item.age_over4years,
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(exportData);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Mall");
+
     XLSX.writeFile(workbook, "Mall.xlsx");
   };
 
@@ -89,10 +178,7 @@ const Mall = () => {
             onChange={(e) => setSearchText(e.target.value)}
           />
           <div className="flex gap-2 w-full sm:w-1/3 justify-end">
-            <button
-              onClick={openFilter}
-              className="btn btn-outline btn-info flex items-center text-sm h-10"
-            >
+            <button className="btn btn-outline btn-info flex items-center text-sm h-10">
               <FunnelIcon className="w-5 h-5 mr-1" />
               Filter
             </button>
@@ -105,7 +191,12 @@ const Mall = () => {
                   <DocumentArrowDownIcon className="w-4 h-4 mr-1" />
                   Excel
                 </button>
-                <button className="btn btn-primary flex items-center">
+                <button
+                  className={`btn btn-primary flex items-center text-lg cursor-pointer ${
+                    currentPath === "/app/Mall/Create" ? "font-bold text-primary" : ""
+                  }`}
+                  onClick={() => navigate("/app/Mall/Create")}
+                >
                   <PlusIcon className="w-4 h-4 mr-1" />
                   Tambah
                 </button>
@@ -150,31 +241,38 @@ const Mall = () => {
                       {item.subdistrict || "Tidak ada data"}
                     </td>
                     <td className="text-center">
-                      {item.SK ? (
+                      {item.suratK ? (
                         <CheckCircleIcon className="w-5 h-5 text-success mx-auto" />
                       ) : (
                         <XCircleIcon className="w-5 h-5 text-error mx-auto" />
                       )}
                     </td>
                     <td className="text-center">
-                      {item.time
-                        ? new Date(item.time).toLocaleDateString("id-ID", {
-                            day: "numeric",
-                            month: "long",
-                            year: "numeric",
-                          })
-                        : "Tidak ada data"}
+                      {item.date || "Tidak ada data"}
                     </td>
                     <td className="text-center flex justify-center gap-1">
-                      <button className="btn btn-sm btn-primary">
+                      <button
+                        className="btn btn-sm btn-primary mr-1"
+                        onClick={() =>
+                          navigate(`/app/Mall/Detail/${item.id}`)
+                        }
+                      >
                         <EyeIcon className="w-5 h-5" />
                       </button>
                       {role === "admin" && (
                         <>
-                          <button className="btn btn-sm btn-warning mr-1">
+                          <button
+                            className="btn btn-sm btn-warning mr-1"
+                            onClick={() =>
+                              navigate(`/app/Mall/Edit/${item.id}`)
+                            }
+                          >
                             <PencilSquareIcon className="w-5 h-5" />
                           </button>
-                          <button className="btn btn-sm btn-error">
+                          <button
+                            className="btn btn-sm btn-error"
+                            onClick={() => handleDelete(item.id)}
+                          >
                             <TrashIcon className="w-5 h-5" />
                           </button>
                         </>

@@ -16,7 +16,7 @@ const ApartementsChart = () => {
             type: 'pie',
           },
           title: {
-            text: 'Sosialisasi Apartement Berdasarkan Wilayah',
+            text: 'Sosialisasi Apartment Berdasarkan Wilayah',
           },
           subtitle: {
             text: 'Klik untuk lihat detail per kecamatan',

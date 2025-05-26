@@ -372,8 +372,8 @@ useEffect(() => {
                 </button>
                 <button
                   className={`btn btn-primary flex items-center text-lg cursor-pointer ${
-                    currentPath === "/app/EducationUnit"
-                      ? "font-bold text-primary"
+                    currentPath === "/app/EducationUnit/Create"
+                      ? "font-bold"
                       : ""
                   }`}
                   onClick={() => navigate("/app/EducationUnit/Create")}

@@ -166,7 +166,7 @@ const Apartement = () => {
 
       {/* Table + Filter */}
       <div className="bg-base-100 p-6 rounded-xl shadow-lg">
-        <h2 className="text-xl font-bold mb-4">Data Tabel Apartement</h2>
+        <h2 className="text-xl font-bold mb-4">Data Tabel Apartments</h2>
 
         <div className="flex flex-col sm:flex-row sm:justify-between gap-4 mb-4">
           <input
@@ -192,11 +192,11 @@ const Apartement = () => {
                 </button>
                 <button
                   className={`btn btn-primary flex items-center text-lg cursor-pointer ${
-                    currentPath === "/app/Apartments"
+                    currentPath === "/app/Apartments/Create"
                       ? "font-bold text-primary"
                       : ""
                   }`}
-                  onClick={() => navigate("/app/Apartments/Create")}
+                  onClick={() => navigate("/app/Apartment/Create")}
                 >
                   <PlusIcon className="w-4 h-4 mr-1" />
                   Tambah
@@ -242,7 +242,7 @@ const Apartement = () => {
                       {item.subdistrict || "Tidak ada data"}
                     </td>
                     <td className="text-center">
-                      {item.SK ? (
+                      {item.suratK ? (
                         <CheckCircleIcon className="w-5 h-5 text-success mx-auto" />
                       ) : (
                         <XCircleIcon className="w-5 h-5 text-error mx-auto" />
@@ -255,7 +255,7 @@ const Apartement = () => {
                       <button
                         className="btn btn-sm btn-primary mr-1"
                         onClick={() =>
-                          navigate(`/app/Apartments/Detail/${item.id}`)
+                          navigate(`/app/Apartment/Detail/${item.id}`)
                         }
                       >
                         <EyeIcon className="w-5 h-5" />
@@ -265,7 +265,7 @@ const Apartement = () => {
                           <button
                             className="btn btn-sm btn-warning mr-1"
                             onClick={() =>
-                              navigate(`/app/Apartments/Edit/${item.id}`)
+                              navigate(`/app/Apartment/Edit/${item.id}`)
                             }
                           >
                             <PencilSquareIcon className="w-5 h-5" />

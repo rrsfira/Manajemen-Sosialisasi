@@ -21,9 +21,7 @@ const HealthFacilitiesEdit = () => {
     time: "", // tanggal
     gender_man: "", // gender laki-laki
     gender_women: "", // gender perempuan
-    age_under6years: "", // umur dibawah 6 tahun
-    age_6to10years: "", // umur 6-10 tahun
-    age_11to18years: "", // umur 11-18 tahun
+    age_19to44years: "", // umur 11-18 tahun
     age_over44years: "", // umur diatas 44 tahun
     photo: [], // array string URL/file lama foto
     video: "", // link video

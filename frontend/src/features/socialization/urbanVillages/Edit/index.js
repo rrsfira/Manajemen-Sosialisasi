@@ -4,26 +4,22 @@ import { useParams } from "react-router-dom";
 import { XMarkIcon } from "@heroicons/react/24/solid";
 import { useNavigate } from "react-router-dom";
 
-const UrbanVillagesEdit = () => {
+const UrbanVillageEdit = () => {
   const { id } = useParams(); // Ambil id dari URL
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
-    name: "", // Nama fasilitas kesehatan
+    name: "", // Nama UrbanVillage
     address: "", // string alamat
-    region_id: "", // id region dari health_facilities
-    subdistrict_id: "", // id subdistrict dari health_facilities
-    category: "", // string group
-    type: "", // string instance (swasta/negeri)
+    region_id: "", // id region dari UrbanVillage
+    subdistrict_id: "", // id subdistrict dari UrbanVillage
     SK: "", // string URL/file lama
     leader: "", // ketua tim
     activity: "", // aktivitas sosialisasi
     time: "", // tanggal
     gender_man: "", // gender laki-laki
     gender_women: "", // gender perempuan
-    age_under6years: "", // umur dibawah 6 tahun
-    age_6to10years: "", // umur 6-10 tahun
-    age_11to18years: "", // umur 11-18 tahun
+    age_19to44years: "", // umur 11-18 tahun
     age_over44years: "", // umur diatas 44 tahun
     photo: [], // array string URL/file lama foto
     video: "", // link video
@@ -45,7 +41,7 @@ const UrbanVillagesEdit = () => {
     const fetchData = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:5000/health_facilities/${id}`
+          `http://localhost:5000/urban_village/${id}`
         );
         const data = res.data;
 
@@ -188,7 +184,7 @@ const UrbanVillagesEdit = () => {
 
       if (id) {
         await axios.put(
-          `http://localhost:5000/health_facilities/${id}`,
+          `http://localhost:5000/urban_village/${id}`,
           formData,
           {
             headers: {
@@ -199,7 +195,7 @@ const UrbanVillagesEdit = () => {
         );
       } else {
         const res = await axios.post(
-          "http://localhost:5000/health_facilities",
+          "http://localhost:5000/urban_village",
           formData,
           {
             headers: {
@@ -212,7 +208,7 @@ const UrbanVillagesEdit = () => {
       }
 
       alert("Data berhasil disimpan");
-      navigate(`/app/HealthFacility/Detail/${id}`);
+      navigate(`/app/UrbanVillage/Detail/${id}`);
     } catch (err) {
       console.error(err);
       alert("Gagal menyimpan data");
@@ -223,7 +219,7 @@ const UrbanVillagesEdit = () => {
     <div className="min-h-screen bg-base-100 py-8 px-4 sm:px-6 lg:px-8">
       <div className="text-center mb-8">
         <h1 className="text-3xl font-bold text-primary mt-4">
-          Edit Data <span className="text-secondary">Fasilitas Kesehatan</span>
+          Edit Data <span className="text-secondary">Kelurahan Tangguh</span>
         </h1>
       </div>
 
@@ -232,10 +228,10 @@ const UrbanVillagesEdit = () => {
         className="max-w-4xl mx-auto space-y-6"
         encType="multipart/form-data"
       >
-        {/* Informasi Fasilitas Kesehatan */}
+        {/* Informasi UrbanVillage */}
         <div className="border rounded-lg shadow-sm">
           <div className="bg-secondary px-4 py-2 font-semibold text-white">
-            📘 Data Fasilitas Kesehatan
+            📘 Data Kelurahan Tangguh
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
             <input
@@ -243,25 +239,9 @@ const UrbanVillagesEdit = () => {
               value={form.name}
               onChange={handleChange}
               required
-              placeholder="Nama Fasilitas Kesehatan"
+              placeholder="Nama Kelurahan Tangguh"
               className="input"
             />
-
-            <select
-              name="category"
-              value={form.category}
-              onChange={handleChange}
-              required
-              className="select select-bordered w-full"
-            >
-              <option value="" disabled>
-                Pilih Kategori Fasilitas Kesehatan
-              </option>
-              <option value="klinik">klinik</option>
-              <option value="Puskesmas">Puskesmas</option>
-              <option value="RumahSakit">Rumah Sakit</option>
-            </select>
-
             <input
               name="leader"
               value={form.leader}
@@ -269,20 +249,6 @@ const UrbanVillagesEdit = () => {
               placeholder="Nama Ketua"
               className="input"
             />
-
-            <select
-              name="type"
-              value={form.tyep}
-              onChange={handleChange}
-              required
-              className="select select-bordered w-full"
-            >
-              <option value="" disabled>
-                Pilih Instansi Fasilitas Kesehatan
-              </option>
-              <option value="Swasta">Swasta</option>
-              <option value="Negeri">Pemerintah</option>
-            </select>
 
             <input
               name="activity"
@@ -599,4 +565,4 @@ const UrbanVillagesEdit = () => {
   );
 };
 
-export default UrbanVillagesEdit;
+export default UrbanVillageEdit;

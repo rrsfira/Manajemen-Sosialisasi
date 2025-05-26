@@ -3,14 +3,12 @@ import axios from "axios";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
 
-const ApartementForm = () => {
+const ApartmentForm = () => {
   const [form, setForm] = useState({
     name: "",
     address: "",
     region_id: "",
     subdistrict_id: "",
-    category: "",
-    type: "",
     leader: "",
     activity: "",
     time: "",
@@ -107,7 +105,7 @@ const ApartementForm = () => {
       const token = localStorage.getItem("token"); // Ambil token dari localStorage
 
       const response = await axios.post(
-        "http://localhost:5000/health_facilities",
+        "http://localhost:5000/apartments",
         formData,
         {
           headers: {
@@ -120,7 +118,7 @@ const ApartementForm = () => {
       alert("Data berhasil dikirim");
 
       const newId = response.data.id;
-      navigate(`/app/HealthFacility/Detail/${newId}`);
+      navigate(`/app/Apartment/Detail/${newId}`);
 
       // Reset form hanya jika sukses
       setForm({
@@ -128,8 +126,6 @@ const ApartementForm = () => {
         address: "",
         region_id: "",
         subdistrict_id: "",
-        category: "",
-        type: "",
         leader: "",
         activity: "",
         time: "",
@@ -178,15 +174,15 @@ const ApartementForm = () => {
     <div className="max-w-6xl mx-auto bg-base-100 p-8 rounded-lg shadow space-y-8">
       <div className="text-center mb-8">
         <h1 className="text-3xl font-bold text-primary mt-4">
-          Tambah Data <span className="text-secondary">Fasilitas Kesehatan</span>
+          Tambah Data <span className="text-secondary">Apartments</span>
         </h1>
       </div>
 
       <form onSubmit={handleSubmit} className="max-w-4xl mx-auto space-y-6">
-        {/* Informasi Fasilitas Kesehatan */}
+        {/* Informasi Apartments */}
         <div className="border rounded-lg shadow-sm">
           <div className="bg-secondary px-4 py-2 font-semibold text-white">
-            📘 Data Fasilitas Kesehatan
+            📘 Data Apartments
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
             <input
@@ -194,24 +190,9 @@ const ApartementForm = () => {
               value={form.name}
               onChange={handleChange}
               required
-              placeholder="Nama Fasilitas Kesehatan"
+              placeholder="Nama Apartments"
               className="input"
             />
-
-            <select
-              name="category"
-              value={form.category}
-              onChange={handleChange}
-              required
-              className="select select-bordered w-full"
-            >
-              <option value="" disabled>
-                Pilih Kategori Fasilitas Kesehatan
-              </option>
-              <option value="klinik">klinik</option>
-              <option value="Puskesmas">Puskesmas</option>
-              <option value="RumahSakit">Rumah Sakit</option>
-            </select>
 
             <input
               name="leader"
@@ -220,20 +201,6 @@ const ApartementForm = () => {
               placeholder="Nama Ketua"
               className="input"
             />
-
-            <select
-              name="type"
-              value={form.type}
-              onChange={handleChange}
-              required
-              className="select select-bordered w-full"
-            >
-              <option value="" disabled>
-                Pilih Instansi Fasilitas Kesehatan
-              </option>
-              <option value="Swasta">Swasta</option>
-              <option value="Negeri">Pemerintah</option>
-            </select>
 
             <input
               name="activity"
@@ -444,4 +411,4 @@ const ApartementForm = () => {
   );
 };
 
-export default ApartementForm;
+export default ApartmentForm;

@@ -10,7 +10,7 @@ const MallsDetail = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch(`http://localhost:5000/health_facilities/${id}`)
+    fetch(`http://localhost:5000/malls/${id}`)
       .then((res) => res.json())
       .then((res) => {
         setData(res); // gunakan langsung data dari backend tanpa manipulasi ulang
@@ -158,7 +158,7 @@ const MallsDetail = () => {
             <>
               <button
                 className="w-full py-1 rounded-md text-white bg-primary"
-                onClick={() => navigate(`/app/HealthFacility/Edit/${data.id}`)}
+                onClick={() => navigate(`/app/Mall/Edit/${data.id}`)}
               >
                 Edit Data
               </button>
