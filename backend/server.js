@@ -51,7 +51,7 @@ app.use("/public_housings", publicHousingsRoute); //rusun
 app.use("/malls", mallsRoute); //mall
 app.use("/hotels", hotelsRoute); //hotel
 app.use("/offices", officesRoute); //perkantoran
-app.use("/apartements", apartementsRoute); //apartement
+app.use("/apartments", apartementsRoute); //apartement
 app.use("/urban_village", urbanVillageRoute); //kelurahan tangguh
 app.use("/region", regionRoute); //kelurahan tangguh
 app.use("/chart", chartRoute); //chart

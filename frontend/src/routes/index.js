@@ -21,21 +21,47 @@ const HealthFacilitiesCreate = lazy(() => import("../pages/protected/healthFacil
 const HealthFacilitiesEdit = lazy(() => import("../pages/protected/healthFacilityEdit"));
 const HealthFacilitiesDetail = lazy(() => import("../pages/protected/healthFacilityDetail"));
 
-
 const PublicHousings = lazy(() => import("../pages/protected/publicHousing"));
+const PublicHousingsCreate = lazy(() => import("../pages/protected/publicHousingCreate"));
+const PublicHousingsEdit = lazy(() => import("../pages/protected/publicHousingEdit"));
+const PublicHousingsDetail = lazy(() => import("../pages/protected/publicHousingDetail"));
+
+
 const Malls = lazy(() => import("../pages/protected/mall"));
+const MallsCreate = lazy(() => import("../pages/protected/mallCreate"));
+const MallsEdit = lazy(() => import("../pages/protected/mallEdit"));
+const MallsDetail = lazy(() => import("../pages/protected/mallDetail"));
+
+
 const Hotels = lazy(() => import("../pages/protected/hotel"));
+const HotelsCreate = lazy(() => import("../pages/protected/hotelCreate"));
+const HotelsEdit = lazy(() => import("../pages/protected/hotelEdit"));
+const HotelsDetail = lazy(() => import("../pages/protected/hotelDetail"));
+
+
 const Offices = lazy(() => import("../pages/protected/office"));
+const OfficesCreate = lazy(() => import("../pages/protected/officeCreate"));
+const OfficesEdit = lazy(() => import("../pages/protected/officeEdit"));
+const OfficesDetail = lazy(() => import("../pages/protected/officeDetail"));
+
 
 const Apartements = lazy(() => import("../pages/protected/apartement"));
-const ApartementDetails = lazy(() => import("../pages/protected/apartementDetails"));
+const ApartementDetail = lazy(() => import("../pages/protected/apartementDetails"));
+const ApartementsCreate = lazy(() => import("../pages/protected/apartementCreate"));
+const ApartementsEdit = lazy(() => import("../pages/protected/apartementEdit"));
+
 
 const UrbanVillages = lazy(() => import("../pages/protected/urbanVillage"));
+const UrbanVillagesCreate = lazy(() => import("../pages/protected/urbanVillageCreate"));
+const UrbanVillagesEdit = lazy(() => import("../pages/protected/urbanVillageEdit"));
+const UrbanVillagesDetail = lazy(() => import("../pages/protected/urbanVillageDetail"));
+
 
 const Education = lazy(() => import("../pages/protected/education"));
 const EducationCreate = lazy(() => import("../pages/protected/educationCreate"));
 const EducationEdit = lazy(() => import("../pages/protected/educationEdit"));
 const EducationDetail = lazy(() => import("../pages/protected/educationDetails"));
+
 
 const GameTK = lazy(() => import("../pages/protected/gameTK"));
 const GameSD = lazy(() => import("../pages/protected/gameSD"));
@@ -44,11 +70,12 @@ const GameSMA = lazy(() => import("../pages/protected/gameSMA"));
 const GameMasyarakat = lazy(() => import("../pages/protected/gameMasyarakat"));
 const GameEdit = lazy(() => import("../pages/protected/gameEdit"));
 
+
 const UserSuperAdmin = lazy(() => import("../pages/protected/DataAdminSuperAdmin"));
 const AdminCreate = lazy(() => import("../pages/protected/DataAdminSuperAdminCreate"));
 const AdminEdit = lazy(() => import("../pages/protected/DataAdminSuperAdminEdit"));
-
 const AuditAdmin = lazy(() => import("../pages/protected/auditAdmin"));
+
 
 const routes = [
   {
@@ -102,7 +129,6 @@ const routes = [
     path: "/HealthFacility",
     component: HealthFacilities,
   },
-
   {
     path: "/HealthFacility/Create",
     component: HealthFacilitiesCreate,
@@ -118,37 +144,110 @@ const routes = [
 
 
   {
-    path: "/UrbanVillage",
-    component: UrbanVillages,
+    path: "/PublicHousing",
+    component: PublicHousings,
   },
+  {
+    path: "/PublicHousing/Create",
+    component: PublicHousingsCreate,
+  },
+  {
+    path: "/PublicHousing/Edit/:id",
+    component: PublicHousingsEdit,
+  },
+  {
+    path: "/PublicHousing/Detail/:id",
+    component: PublicHousingsDetail,
+  },
+
+
   {
     path: "/Mall",
     component: Malls,
   },
   {
+    path: "/Mall/Create",
+    component: MallsCreate,
+  },
+  {
+    path: "/Mall/Edit/:id",
+    component: MallsEdit,
+  },
+  {
+    path: "/Mall/Detail/:id",
+    component: MallsDetail,
+  },
+
+
+  {
     path: "/Hotel",
     component: Hotels,
   },
+  {
+    path: "/Hotel/Create",
+    component: HotelsCreate,
+  },
+  {
+    path: "/Hotel/Edit/:id",
+    component: HotelsEdit,
+  },
+  {
+    path: "/Hotel/Detail/:id",
+    component: HotelsDetail,
+  },
+
+
   {
     path: "/Office",
     component: Offices,
   },
   {
-    path: "/PublicHousing",
-    component: PublicHousings,
+    path: "/Office/Create",
+    component: OfficesCreate,
   },
+  {
+    path: "/Office/Edit/:id",
+    component: OfficesEdit,
+  },
+  {
+    path: "/Office/Detail/:id",
+    component: OfficesDetail,
+  },
+
+
   {
     path: "/Apartement",
     component: Apartements,
   },
   {
     path: "/Apartement/Details",
-    component: ApartementDetails,
+    component: ApartementDetail,
+  },
+  {
+    path: "/Apartement/Create",
+    component: ApartementsCreate,
+  },
+  {
+    path: "/Apartement/Edit/:id",
+    component: ApartementsEdit,
   },
 
+
   {
-    path: "/UrbanVillages",
+    path: "/UrbanVillage",
     component: UrbanVillages,
+  },
+  {
+    path: "/UrbanVillage/Create",
+    component: UrbanVillagesCreate,
+  },
+  {
+    path: "/UrbanVillage/Edit/:id",
+    component: UrbanVillagesEdit,
+  },
+  {
+    path: "/UrbanVillage/Detail/:id",
+    component: UrbanVillagesDetail,
   },
 
 
@@ -170,6 +269,8 @@ const routes = [
   },
 
   
+
+
   {
     path: "/GameTK",
     component: GameTK,
@@ -195,6 +296,8 @@ const routes = [
     component: GameEdit,
   },
   
+
+
 
   {
     path: "/SuperAdmin/DataAdmin",

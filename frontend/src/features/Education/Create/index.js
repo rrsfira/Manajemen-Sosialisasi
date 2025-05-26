@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 const EducationCreate = () => {
   const { id } = useParams(); // Ambil id dari URL
+    const navigate = useNavigate();
 
   const [form, setForm] = useState({
     name: "",
@@ -26,14 +27,18 @@ const handleSubmit = async (e) => {
   }
 
   try {
-    await axios.post("http://localhost:5000/educations", formData, {
+    const response = await axios.post("http://localhost:5000/educations", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
     });
+
     alert("Data berhasil disimpan");
     setForm({ name: "", materi: "" });
     setMateri(null);
+
+    const newId = response.data.id;
+    navigate(`/app/Education/Detail/${newId}`);
   } catch (error) {
     console.error("Gagal upload:", error);
     alert("Gagal menyimpan data");

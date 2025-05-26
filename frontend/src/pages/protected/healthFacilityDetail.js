@@ -7,7 +7,7 @@ function InternalPage(){
     const dispatch = useDispatch()
 
     useEffect(() => {
-        dispatch(setPageTitle({ title : "Sosialisasi | Fasilitas Kesehatan"}))
+        dispatch(setPageTitle({ title : "Sosialisasi | Fasilitas Kesehatan | Detail" }))
       }, [])
 
 

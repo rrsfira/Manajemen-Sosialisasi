@@ -117,7 +117,7 @@ const DataAdminSuperAdmin = () => {
           <table className="table w-full">
             <thead>
               <tr>
-                <th className="text-center">id</th>
+                <th className="text-center">No</th>
                 <th className="text-center">Nama</th>
                 <th className="text-center">Email</th>
                 <th className="text-center">Kontak</th>
@@ -129,9 +129,9 @@ const DataAdminSuperAdmin = () => {
                 console.log(item); // Add this to see the structure of the item
                 return (
                   <tr key={idx}>
-                    <td className="text-center">
-                      {item.id || "Tidak ada data"}
-                    </td>
+                  <td className="text-center">
+                    {(currentPage - 1) * rowsPerPage + idx + 1}
+                  </td>
                     <td className="text-center">
                       {item.name || "Tidak ada data"}
                     </td>
