@@ -7,7 +7,7 @@ const db = require("../config/db"); // koneksi database
 // ========================
 
 router.get("/health-facilities", (req, res) => {
-  const sql = `SELECT COUNT(*) AS total_health_facilities FROM health_facilities`;
+  const sql = `SELECT COUNT(*) AS total_health_facilities FROM health_facilities WHERE deleted_at IS NULL`;
   db.query(sql, (err, rows) => {
     if (err)
       return res.status(500).json({ message: "Error", error: err.message });
@@ -16,7 +16,7 @@ router.get("/health-facilities", (req, res) => {
 });
 
 router.get("/education-units", (req, res) => {
-  const sql = `SELECT COUNT(*) AS total_education_units FROM education_units`;
+  const sql = `SELECT COUNT(*) AS total_education_units FROM education_units WHERE deleted_at IS NULL`;
   db.query(sql, (err, rows) => {
     if (err)
       return res.status(500).json({ message: "Error", error: err.message });
@@ -25,7 +25,7 @@ router.get("/education-units", (req, res) => {
 });
 
 router.get("/apartments", (req, res) => {
-  const sql = `SELECT COUNT(*) AS total_apartments FROM apartments`;
+  const sql = `SELECT COUNT(*) AS total_apartments FROM apartments WHERE deleted_at IS NULL`;
   db.query(sql, (err, rows) => {
     if (err)
       return res.status(500).json({ message: "Error", error: err.message });
@@ -34,7 +34,7 @@ router.get("/apartments", (req, res) => {
 });
 
 router.get("/malls", (req, res) => {
-  const sql = `SELECT COUNT(*) AS total_malls FROM malls`;
+  const sql = `SELECT COUNT(*) AS total_malls FROM malls WHERE deleted_at IS NULL`;
   db.query(sql, (err, rows) => {
     if (err)
       return res.status(500).json({ message: "Error", error: err.message });
@@ -43,7 +43,7 @@ router.get("/malls", (req, res) => {
 });
 
 router.get("/hotels", (req, res) => {
-  const sql = `SELECT COUNT(*) AS total_hotels FROM hotels`;
+  const sql = `SELECT COUNT(*) AS total_hotels FROM hotels WHERE deleted_at IS NULL`;
   db.query(sql, (err, rows) => {
     if (err)
       return res.status(500).json({ message: "Error", error: err.message });
@@ -52,7 +52,7 @@ router.get("/hotels", (req, res) => {
 });
 
 router.get("/offices", (req, res) => {
-  const sql = `SELECT COUNT(*) AS total_offices FROM offices`;
+  const sql = `SELECT COUNT(*) AS total_offices FROM offices WHERE deleted_at IS NULL`;
   db.query(sql, (err, rows) => {
     if (err)
       return res.status(500).json({ message: "Error", error: err.message });
@@ -61,7 +61,7 @@ router.get("/offices", (req, res) => {
 });
 
 router.get("/public-housings", (req, res) => {
-  const sql = `SELECT COUNT(*) AS total_public_housings FROM public_housings`;
+  const sql = `SELECT COUNT(*) AS total_public_housings FROM public_housings WHERE deleted_at IS NULL`;
   db.query(sql, (err, rows) => {
     if (err)
       return res.status(500).json({ message: "Error", error: err.message });
@@ -70,7 +70,7 @@ router.get("/public-housings", (req, res) => {
 });
 
 router.get("/urban-villages", (req, res) => {
-  const sql = `SELECT COUNT(*) AS total_urban_villages FROM urban_villages`;
+  const sql = `SELECT COUNT(*) AS total_urban_villages FROM urban_villages WHERE deleted_at IS NULL`;
   db.query(sql, (err, rows) => {
     if (err)
       return res.status(500).json({ message: "Error", error: err.message });
@@ -104,6 +104,7 @@ router.get("/group-by-year/:table", (req, res) => {
   const sql = `
     SELECT YEAR(t.time) AS year, COUNT(*) AS value
     FROM ?? t
+    WHERE t.deleted_at IS NULL
     GROUP BY YEAR(t.time)
     ORDER BY YEAR(t.time)
   `;
@@ -129,28 +130,28 @@ router.get("/fasilitas", (req, res) => {
   COALESCE(uv.total, 0) AS urban_villages
 FROM regions r
 LEFT JOIN (
-  SELECT region_id, COUNT(*) AS total FROM education_units GROUP BY region_id
+  SELECT region_id, COUNT(*) AS total FROM education_units WHERE deleted_at IS NULL GROUP BY region_id
 ) e ON r.id = e.region_id
 LEFT JOIN (
-  SELECT region_id, COUNT(*) AS total FROM health_facilities GROUP BY region_id
+  SELECT region_id, COUNT(*) AS total FROM health_facilities WHERE deleted_at IS NULL GROUP BY region_id
 ) h ON r.id = h.region_id
 LEFT JOIN (
-  SELECT region_id, COUNT(*) AS total FROM malls GROUP BY region_id
+  SELECT region_id, COUNT(*) AS total FROM malls WHERE deleted_at IS NULL GROUP BY region_id
 ) m ON r.id = m.region_id
 LEFT JOIN (
-  SELECT region_id, COUNT(*) AS total FROM public_housings GROUP BY region_id
+  SELECT region_id, COUNT(*) AS total FROM public_housings WHERE deleted_at IS NULL GROUP BY region_id
 ) u ON r.id = u.region_id
 LEFT JOIN (
-  SELECT region_id, COUNT(*) AS total FROM hotels GROUP BY region_id
+  SELECT region_id, COUNT(*) AS total FROM hotels WHERE deleted_at IS NULL GROUP BY region_id
 ) ho ON r.id = ho.region_id
 LEFT JOIN (
-  SELECT region_id, COUNT(*) AS total FROM apartments GROUP BY region_id
+  SELECT region_id, COUNT(*) AS total FROM apartments WHERE deleted_at IS NULL GROUP BY region_id
 ) a ON r.id = a.region_id
 LEFT JOIN (
-  SELECT region_id, COUNT(*) AS total FROM offices GROUP BY region_id
+  SELECT region_id, COUNT(*) AS total FROM offices WHERE deleted_at IS NULL GROUP BY region_id
 ) o ON r.id = o.region_id
 LEFT JOIN (
-  SELECT region_id, COUNT(*) AS total FROM urban_villages GROUP BY region_id
+  SELECT region_id, COUNT(*) AS total FROM urban_villages WHERE deleted_at IS NULL GROUP BY region_id
 ) uv ON r.id = uv.region_id;
   `;
 

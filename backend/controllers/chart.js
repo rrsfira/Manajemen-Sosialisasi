@@ -7,6 +7,7 @@ router.get('/health_facilities', (req, res) => {
     SELECT r.id AS region_id, r.name AS region_name, COUNT(ph.id) AS total
     FROM health_facilities ph
     JOIN regions r ON ph.region_id = r.id
+    WHERE ph.deleted_at IS NULL
     GROUP BY ph.region_id
   `;
 
@@ -15,6 +16,7 @@ router.get('/health_facilities', (req, res) => {
     FROM health_facilities ph
     JOIN regions r ON ph.region_id = r.id
     JOIN subdistricts s ON ph.subdistrict_id = s.id
+    WHERE ph.deleted_at IS NULL
     GROUP BY ph.region_id, ph.subdistrict_id
   `;
 
@@ -54,6 +56,7 @@ router.get('/education_units', (req, res) => {
     SELECT r.id AS region_id, r.name AS region_name, COUNT(ph.id) AS total
     FROM education_units ph
     JOIN regions r ON ph.region_id = r.id
+    WHERE ph.deleted_at IS NULL
     GROUP BY ph.region_id
   `;
 
@@ -62,6 +65,7 @@ router.get('/education_units', (req, res) => {
     FROM education_units ph
     JOIN regions r ON ph.region_id = r.id
     JOIN subdistricts s ON ph.subdistrict_id = s.id
+    WHERE ph.deleted_at IS NULL
     GROUP BY ph.region_id, ph.subdistrict_id
   `;
 
@@ -102,6 +106,7 @@ router.get('/apartments', (req, res) => {
     SELECT r.id AS region_id, r.name AS region_name, COUNT(ph.id) AS total
     FROM apartments ph
     JOIN regions r ON ph.region_id = r.id
+    WHERE ph.deleted_at IS NULL
     GROUP BY ph.region_id
   `;
 
@@ -110,6 +115,7 @@ router.get('/apartments', (req, res) => {
     FROM apartments ph
     JOIN regions r ON ph.region_id = r.id
     JOIN subdistricts s ON ph.subdistrict_id = s.id
+    WHERE ph.deleted_at IS NULL
     GROUP BY ph.region_id, ph.subdistrict_id
   `;
 
@@ -150,6 +156,7 @@ router.get('/public_housing', (req, res) => {
     SELECT r.id AS region_id, r.name AS region_name, COUNT(ph.id) AS total
     FROM public_housings ph
     JOIN regions r ON ph.region_id = r.id
+    WHERE ph.deleted_at IS NULL
     GROUP BY ph.region_id
   `;
 
@@ -158,6 +165,7 @@ router.get('/public_housing', (req, res) => {
     FROM public_housings ph
     JOIN regions r ON ph.region_id = r.id
     JOIN subdistricts s ON ph.subdistrict_id = s.id
+    WHERE ph.deleted_at IS NULL
     GROUP BY ph.region_id, ph.subdistrict_id
   `;
 
@@ -197,6 +205,7 @@ router.get('/urban_villages', (req, res) => {
     SELECT r.id AS region_id, r.name AS region_name, COUNT(ph.id) AS total
     FROM urban_villages ph
     JOIN regions r ON ph.region_id = r.id
+    WHERE ph.deleted_at IS NULL
     GROUP BY ph.region_id
   `;
 
@@ -205,6 +214,7 @@ router.get('/urban_villages', (req, res) => {
     FROM urban_villages ph
     JOIN regions r ON ph.region_id = r.id
     JOIN subdistricts s ON ph.subdistrict_id = s.id
+    WHERE ph.deleted_at IS NULL
     GROUP BY ph.region_id, ph.subdistrict_id
   `;
 
@@ -244,6 +254,7 @@ router.get('/offices', (req, res) => {
     SELECT r.id AS region_id, r.name AS region_name, COUNT(ph.id) AS total
     FROM offices ph
     JOIN regions r ON ph.region_id = r.id
+    WHERE ph.deleted_at IS NULL
     GROUP BY ph.region_id
   `;
 
@@ -252,6 +263,7 @@ router.get('/offices', (req, res) => {
     FROM offices ph
     JOIN regions r ON ph.region_id = r.id
     JOIN subdistricts s ON ph.subdistrict_id = s.id
+    WHERE ph.deleted_at IS NULL
     GROUP BY ph.region_id, ph.subdistrict_id
   `;
 
@@ -291,6 +303,7 @@ router.get('/malls', (req, res) => {
     SELECT r.id AS region_id, r.name AS region_name, COUNT(ph.id) AS total
     FROM malls ph
     JOIN regions r ON ph.region_id = r.id
+    WHERE ph.deleted_at IS NULL
     GROUP BY ph.region_id
   `;
 
@@ -299,6 +312,7 @@ router.get('/malls', (req, res) => {
     FROM malls ph
     JOIN regions r ON ph.region_id = r.id
     JOIN subdistricts s ON ph.subdistrict_id = s.id
+    WHERE ph.deleted_at IS NULL
     GROUP BY ph.region_id, ph.subdistrict_id
   `;
 
@@ -338,6 +352,7 @@ router.get('/hotels', (req, res) => {
     SELECT r.id AS region_id, r.name AS region_name, COUNT(ph.id) AS total
     FROM hotels ph
     JOIN regions r ON ph.region_id = r.id
+    WHERE ph.deleted_at IS NULL
     GROUP BY ph.region_id
   `;
 
@@ -346,6 +361,7 @@ router.get('/hotels', (req, res) => {
     FROM hotels ph
     JOIN regions r ON ph.region_id = r.id
     JOIN subdistricts s ON ph.subdistrict_id = s.id
+    WHERE ph.deleted_at IS NULL
     GROUP BY ph.region_id, ph.subdistrict_id
   `;
 
