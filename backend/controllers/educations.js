@@ -107,7 +107,6 @@ router.delete("/:id", (req, res) => {
           if (err) {
             console.warn("File gagal dihapus:", err);
           } else {
-            console.log(`File ${fileName} berhasil dihapus`);
           }
         });
       }
@@ -117,7 +116,6 @@ router.delete("/:id", (req, res) => {
   });
 });
 
-
 // ✅ PUT update materi
 router.put("/:id", upload.single("materi"), (req, res) => {
   const { id } = req.params;
@@ -126,8 +124,10 @@ router.put("/:id", upload.single("materi"), (req, res) => {
   // Ambil materi lama untuk hapus file jika diganti
   const getSql = "SELECT materi FROM educations WHERE id = ?";
   db.query(getSql, [id], (err, results) => {
-    if (err) return res.status(500).json({ error: "Gagal mengambil data lama" });
-    if (results.length === 0) return res.status(404).json({ error: "Data tidak ditemukan" });
+    if (err)
+      return res.status(500).json({ error: "Gagal mengambil data lama" });
+    if (results.length === 0)
+      return res.status(404).json({ error: "Data tidak ditemukan" });
 
     const oldFile = results[0].materi;
     const newFile = req.file ? req.file.filename : oldFile;
@@ -146,6 +146,5 @@ router.put("/:id", upload.single("materi"), (req, res) => {
     });
   });
 });
-
 
 module.exports = router;
