@@ -17,8 +17,6 @@ import {
 } from "@heroicons/react/24/outline"; // import icon
 import moment from "moment";
 
-
-
 const EducationUnits = () => {
   const navigate = useNavigate(); // hook untuk navigasi
   const [role, setRole] = useState(""); // untuk memberi hak role
@@ -37,9 +35,9 @@ const EducationUnits = () => {
   const [filterAddress, setFilterAddress] = useState("");
   const [filterRegion, setFilterRegion] = useState("");
   const [data, setData] = useState([]); // state untuk data
-const [currentData, setCurrentData] = useState([]);
-  
-const [searchedData, setSearchedData] = useState([]);
+  const [currentData, setCurrentData] = useState([]);
+
+  const [searchedData, setSearchedData] = useState([]);
 
   // untuk menampilkan data dari backend
   useEffect(() => {
@@ -115,14 +113,11 @@ const [searchedData, setSearchedData] = useState([]);
   };
   // jika filter menggunakan button maka filter menggunakan search akan nonaktif
 
-
- 
-const convertToISODate = (dateStr) => {
+  const convertToISODate = (dateStr) => {
     if (!dateStr) return null; // hindari error jika null
     const [day, month, year] = dateStr.split("-");
     return `${year}-${month}-${day}`;
   };
-
 
   const sortedData = searchedData.slice().sort((a, b) => {
     const dateA = new Date(convertToISODate(a.date));
@@ -142,15 +137,13 @@ const convertToISODate = (dateStr) => {
     }
   });
 
- // Ganti nama currentData lokal jadi paginatedData
-const paginatedData = currentData.slice(
-  (currentPage - 1) * rowsPerPage,
-  currentPage * rowsPerPage
-);
+  // Ganti nama currentData lokal jadi paginatedData
+  const paginatedData = currentData.slice(
+    (currentPage - 1) * rowsPerPage,
+    currentPage * rowsPerPage
+  );
 
-
-
-const totalPages = Math.ceil(currentData.length / rowsPerPage);
+  const totalPages = Math.ceil(currentData.length / rowsPerPage);
 
   // Gunakan useEffect agar setRole dipanggil sekali saat komponen mount
   useEffect(() => {
@@ -233,54 +226,57 @@ const totalPages = Math.ceil(currentData.length / rowsPerPage);
     setSelectedGroup(null);
   };
 
- const applyFilterAndSearch = () => {
-  // Filter dulu dari sidebar filter
-  const filtered = data.filter((item) => {
-    const matchDate =
-      !filterDate ||
-      moment(item.date, ["DD-MM-YYYY"]).format("DD-MM-YYYY") ===
-        moment(filterDate, "YYYY-MM-DD").format("DD-MM-YYYY");
+  const applyFilterAndSearch = () => {
+    // Filter dulu dari sidebar filter
+    const filtered = data.filter((item) => {
+      const matchDate =
+        !filterDate ||
+        moment(item.date, ["DD-MM-YYYY"]).format("DD-MM-YYYY") ===
+          moment(filterDate, "YYYY-MM-DD").format("DD-MM-YYYY");
 
-    const matchName = filterName
-      ? item.name?.toLowerCase().includes(filterName.toLowerCase())
-      : true;
+      const matchName = filterName
+        ? item.name?.toLowerCase().includes(filterName.toLowerCase())
+        : true;
 
-    const matchAddress = filterAddress
-      ? item.address?.toLowerCase().includes(filterAddress.toLowerCase())
-      : true;
+      const matchAddress = filterAddress
+        ? item.address?.toLowerCase().includes(filterAddress.toLowerCase())
+        : true;
 
-    const matchRegion = filterRegion
-      ? item.region?.toLowerCase() === filterRegion.toLowerCase()
-      : true;
+      const matchRegion = filterRegion
+        ? item.region?.toLowerCase() === filterRegion.toLowerCase()
+        : true;
 
-    return matchDate && matchName && matchAddress && matchRegion;
-  });
+      return matchDate && matchName && matchAddress && matchRegion;
+    });
 
-  // Lalu search dari hasil filtered tadi
-  const searchedData = filtered.filter((item) => {
-    const matchesSearch = Object.values(item).some((val) =>
-      String(val).toLowerCase().includes(searchText.toLowerCase())
-    );
-    const matchesGroup = selectedGroup
-      ? item.group?.trim() === selectedGroup
-      : true;
+    // Lalu search dari hasil filtered tadi
+    const searchedData = filtered.filter((item) => {
+      const matchesSearch = Object.values(item).some((val) =>
+        String(val).toLowerCase().includes(searchText.toLowerCase())
+      );
+      const matchesGroup = selectedGroup
+        ? item.group?.trim() === selectedGroup
+        : true;
 
-    return matchesSearch && matchesGroup;
-  });
+      return matchesSearch && matchesGroup;
+    });
 
-  setCurrentData(searchedData);
-  setCurrentPage(1);
-};
+    setCurrentData(searchedData);
+    setCurrentPage(1);
+  };
 
-// Panggil applyFilterAndSearch setiap filter/search berubah
-useEffect(() => {
-  applyFilterAndSearch();
-}, [data, filterDate, filterName, filterAddress, filterRegion, searchText, selectedGroup]);
-
-
-
-
-
+  // Panggil applyFilterAndSearch setiap filter/search berubah
+  useEffect(() => {
+    applyFilterAndSearch();
+  }, [
+    data,
+    filterDate,
+    filterName,
+    filterAddress,
+    filterRegion,
+    searchText,
+    selectedGroup,
+  ]);
 
   //reset filter button
   const resetFilter = () => {
@@ -401,60 +397,72 @@ useEffect(() => {
               </tr>
             </thead>
             <tbody>
-   {paginatedData.length > 0 ? (
-    paginatedData.map((item, idx) => (
-      <tr key={idx}>
-        <td className="text-center">
-          {(currentPage - 1) * rowsPerPage + idx + 1}
-        </td>
-        <td className="text-center">{item.name || "Tidak ada data"}</td>
-        <td className="text-center">{item.address || "Tidak ada data"}</td>
-        <td className="text-center">{item.region || "Tidak ada data"}</td>
-        <td className="text-center">{item.subdistrict || "Tidak ada data"}</td>
-        <td className="text-center">
-          {item.suratK ? (
-            <CheckCircleIcon className="w-5 h-5 text-success mx-auto" />
-          ) : (
-            <XCircleIcon className="w-5 h-5 text-error mx-auto" />
-          )}
-        </td>
-        <td className="text-center">{item.date || "Tidak ada data"}</td>
-        <td className="text-center">
-          <button
-            className="btn btn-sm btn-primary mr-1"
-            onClick={() => navigate(`/app/EducationUnit/Detail/${item.id}`)}
-          >
-            <EyeIcon className="w-5 h-5" />
-          </button>
-          {role === "admin" && (
-            <>
-              <button
-                className="btn btn-sm btn-warning mr-1"
-                onClick={() => navigate(`/app/EducationUnit/Edit/${item.id}`)}
-              >
-                <PencilSquareIcon className="w-5 h-5" />
-              </button>
-              <button
-                className="btn btn-sm btn-error"
-                onClick={() => handleDelete(item.id)}
-              >
-                <TrashIcon className="w-5 h-5" />
-              </button>
-            </>
-          )}
-        </td>
-      </tr>
-    ))
-  ) : (
-    <tr>
-      <td colSpan={8} className="text-center py-4">
-        Tidak ada data
-      </td>
-    </tr>
-  )}
-</tbody>
-
-
+              {paginatedData.length > 0 ? (
+                paginatedData.map((item, idx) => (
+                  <tr key={idx}>
+                    <td className="text-center">
+                      {(currentPage - 1) * rowsPerPage + idx + 1}
+                    </td>
+                    <td className="text-center">
+                      {item.name || "Tidak ada data"}
+                    </td>
+                    <td className="text-center">
+                      {item.address || "Tidak ada data"}
+                    </td>
+                    <td className="text-center">
+                      {item.region || "Tidak ada data"}
+                    </td>
+                    <td className="text-center">
+                      {item.subdistrict || "Tidak ada data"}
+                    </td>
+                    <td className="text-center">
+                      {item.suratK ? (
+                        <CheckCircleIcon className="w-5 h-5 text-success mx-auto" />
+                      ) : (
+                        <XCircleIcon className="w-5 h-5 text-error mx-auto" />
+                      )}
+                    </td>
+                    <td className="text-center">
+                      {item.date || "Tidak ada data"}
+                    </td>
+                    <td className="text-center">
+                      <button
+                        className="btn btn-sm btn-primary mr-1"
+                        onClick={() =>
+                          navigate(`/app/EducationUnit/Detail/${item.id}`)
+                        }
+                      >
+                        <EyeIcon className="w-5 h-5" />
+                      </button>
+                      {role === "admin" && (
+                        <>
+                          <button
+                            className="btn btn-sm btn-warning mr-1"
+                            onClick={() =>
+                              navigate(`/app/EducationUnit/Edit/${item.id}`)
+                            }
+                          >
+                            <PencilSquareIcon className="w-5 h-5" />
+                          </button>
+                          <button
+                            className="btn btn-sm btn-error"
+                            onClick={() => handleDelete(item.id)}
+                          >
+                            <TrashIcon className="w-5 h-5" />
+                          </button>
+                        </>
+                      )}
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={8} className="text-center py-4">
+                    Tidak ada data
+                  </td>
+                </tr>
+              )}
+            </tbody>
           </table>
         </div>
         {/* Pagination Controls */}

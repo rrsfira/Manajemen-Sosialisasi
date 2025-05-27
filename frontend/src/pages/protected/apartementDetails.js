@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { setPageTitle } from '../../features/common/headerSlice'
-import ApartmentDetail from '../../features/socialization/apartements/Details'
+import ApartmentDetail from '../../features/socialization/apartements/details'
 
 function InternalPage(){
     const dispatch = useDispatch()
