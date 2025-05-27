@@ -38,7 +38,7 @@ const handleSubmit = async (e) => {
     setMateri(null);
 
     const newId = response.data.id;
-    navigate(`/app/Education/Detail/${newId}`);
+    navigate(`/app/Education/Details/${newId}`);
   } catch (error) {
     console.error("Gagal upload:", error);
     alert("Gagal menyimpan data");
