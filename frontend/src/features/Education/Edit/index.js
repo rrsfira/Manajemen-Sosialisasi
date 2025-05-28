@@ -59,61 +59,62 @@ const EducationEdit = () => {
 
   return (
     <div className="min-h-screen bg-base-100 py-8 px-4 sm:px-6 lg:px-8">
-      <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold text-primary mt-4">
-          Edit Data <span className="text-secondary">Materi</span>
-        </h1>
+  <div className="text-center mb-8">
+    <h1 className="text-3xl font-bold text-primary mt-4">
+      Edit Data <span className="text-secondary">Materi</span>
+    </h1>
+  </div>
+
+  <form onSubmit={handleSubmit} className="max-w-4xl mx-auto space-y-6">
+    <div className="border rounded-lg shadow-sm">
+      <div className="bg-secondary px-4 py-2 font-semibold text-white">
+        📘 Data Materi
       </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
+        <input
+          name="name"
+          value={form.name}
+          onChange={handleChange}
+          required
+          placeholder="Nama Materi"
+          className="input w-full"
+        />
 
-      <form onSubmit={handleSubmit} className="max-w-4xl mx-auto space-y-6">
-        <div className="border rounded-lg shadow-sm">
-          <div className="bg-secondary px-4 py-2 font-semibold text-white">
-            📘 Data Materi
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
-            <input
-              name="name"
-              value={form.name}
-              onChange={handleChange}
-              required
-              placeholder="Nama Materi"
-              className="input"
-            />
-
-            <div>
-              <label className="block mb-1 font-medium">
-                📄 Materi (PDF, DOC, DOCX)
-              </label>
-              {form.materi ? (
-                <a
-                  href={`http://localhost:5000/uploads/materi/${form.materi}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block text-blue-600 underline mb-2"
-                >
-                  Lihat Materi
-                </a>
-              ) : (
-                <span className="text-gray-400 italic">Tidak ada file</span>
-              )}
-              <input
-                type="file"
-                accept=".pdf,.doc,.docx"
-                onChange={(e) => setMateri(e.target.files[0])}
-                className="file-input file-input-bordered w-full"
-              />
-            </div>
-          </div>
+        <div>
+          <label className="block mb-1 font-medium">
+            📄 Materi (PDF, DOC, DOCX)
+          </label>
+          {form.materi ? (
+            <a
+              href={`http://localhost:5000/uploads/materi/${form.materi}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block text-blue-600 underline mb-2"
+            >
+              Lihat Materi
+            </a>
+          ) : (
+            <span className="text-gray-400 italic">Tidak ada file</span>
+          )}
+          <input
+            type="file"
+            accept=".pdf,.doc,.docx"
+            onChange={(e) => setMateri(e.target.files[0])}
+            className="file-input file-input-bordered w-full"
+          />
         </div>
-
-        <button
-          type="submit"
-          className="w-full py-2 rounded-md text-white bg-primary"
-        >
-          Simpan Data
-        </button>
-      </form>
+      </div>
     </div>
+
+    <button
+      type="submit"
+      className="w-full py-2 rounded-md text-white bg-primary hover:bg-primary-focus transition"
+    >
+      Simpan Data
+    </button>
+  </form>
+</div>
+
   );
 };
 

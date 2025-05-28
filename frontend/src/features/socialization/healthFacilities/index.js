@@ -156,47 +156,47 @@ const HealthFacility = () => {
     setSelectedGroup(group);
   };
 
-    // popup notifikasi hapus data
-const handleDelete = async (id) => {
-  const isDarkMode = document.documentElement.classList.contains('dark');
+  // popup notifikasi hapus data
+  const handleDelete = async (id) => {
+    const isDarkMode = document.documentElement.classList.contains('dark');
 
-  Swal.fire({
-  title: "Yakin ingin menghapus?",
-  text: "Data yang dihapus tidak dapat dikembalikan.",
-  icon: "warning",
-  showCancelButton: true,
-  confirmButtonText: "Ya, hapus!",
-  cancelButtonText: "Batal",
-  willOpen: () => {
-    const popup = document.querySelector('.swal2-popup');
-    if (document.documentElement.classList.contains('dark')) {
-      popup.classList.add('swal2-dark');
-      popup.querySelector('.swal2-title')?.classList.add('swal2-title-dark');
-      popup.querySelector('.swal2-html-container')?.classList.add('swal2-content-dark');
-      popup.querySelector('.swal2-confirm')?.classList.add('swal2-confirm-dark');
-      popup.querySelector('.swal2-cancel')?.classList.add('swal2-cancel-dark');
-    }
-  }
-}).then(async (result) => {
-    if (result.isConfirmed) {
-      try {
-        const token = localStorage.getItem("token");
-
-        await axios.delete(`http://localhost:5000/health_facilities/${id}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        fetchHealthFacilities();
-        Swal.fire("Terhapus!", "Data berhasil dihapus.", "success");
-      } catch (error) {
-        console.error("Gagal menghapus data:", error);
-        Swal.fire("Gagal!", "Terjadi kesalahan saat menghapus data.", "error");
+    Swal.fire({
+      title: "Yakin ingin menghapus?",
+      text: "Data yang dihapus tidak dapat dikembalikan.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Ya, hapus!",
+      cancelButtonText: "Batal",
+      willOpen: () => {
+        const popup = document.querySelector('.swal2-popup');
+        if (document.documentElement.classList.contains('dark')) {
+          popup.classList.add('swal2-dark');
+          popup.querySelector('.swal2-title')?.classList.add('swal2-title-dark');
+          popup.querySelector('.swal2-html-container')?.classList.add('swal2-content-dark');
+          popup.querySelector('.swal2-confirm')?.classList.add('swal2-confirm-dark');
+          popup.querySelector('.swal2-cancel')?.classList.add('swal2-cancel-dark');
+        }
       }
-    }
-  });
-};
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const token = localStorage.getItem("token");
+
+          await axios.delete(`http://localhost:5000/health_facilities/${id}`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+
+          fetchHealthFacilities();
+          Swal.fire("Terhapus!", "Data berhasil dihapus.", "success");
+        } catch (error) {
+          console.error("Gagal menghapus data:", error);
+          Swal.fire("Gagal!", "Terjadi kesalahan saat menghapus data.", "error");
+        }
+      }
+    });
+  };
 
 
   return (
@@ -230,8 +230,8 @@ const handleDelete = async (id) => {
           Data Tabel Fasilitas Kesehatan
         </h2>
 
-        <div className="flex flex-col sm:flex-row sm:justify-between gap-4 mb-4">
-          <div className="flex gap-2 w-full sm:w-1/2">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-4">
+          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-[66%]">
             <input
               type="text"
               placeholder="Search"
@@ -241,15 +241,15 @@ const handleDelete = async (id) => {
             />
             <button
               onClick={handleReset}
-              className="btn btn-secondary whitespace-nowrap"
+              className="btn btn-secondary whitespace-nowrap w-full sm:w-auto"
             >
               Reset Search
             </button>
           </div>
-          <div className="flex gap-2 w-full sm:w-1/3 justify-end">
+          <div className="flex flex-wrap gap-2 w-full sm:w-[66%] sm:justify-end">
             <button
               onClick={() => setIsFilterVisible(true)}
-              className="btn btn-outline btn-[#7B74DA]"
+              className="btn btn-outline text-[#7B74DA] w-full sm:w-auto"
             >
               <FunnelIcon className="w-5 h-5 mr-1" />
               Filter
@@ -258,18 +258,15 @@ const handleDelete = async (id) => {
               <>
                 <button
                   onClick={handleExportExcel}
-                  className="btn btn-outline btn-success"
+                  className="btn btn-outline btn-success flex items-center w-full sm:w-auto"
                 >
                   <DocumentArrowDownIcon className="w-4 h-4 mr-1" />
                   Excel
                 </button>
                 <button
-                  className={`btn btn-primary flex items-center text-lg cursor-pointer ${
-                    currentPath === "/app/HealthFacility/Create"
-                      ? "font-bold text-primary"
-                      : ""
-                  }`}
-                  onClick={() => navigate("/app/HealthFacility/Create")}
+                  className={`btn btn-primary flex items-center text-sm w-full sm:w-auto ${currentPath === "/app/EducationUnit/Create" ? "font-bold" : ""
+                    }`}
+                  onClick={() => navigate("/app/EducationUnit/Create")}
                 >
                   <PlusIcon className="w-4 h-4 mr-1" />
                   Tambah
@@ -356,7 +353,7 @@ const handleDelete = async (id) => {
           </table>
         </div>
         {/* Pagination Controls */}
-        <div className="flex items-center justify-between mt-4">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-2 mt-4">
           {/* Prev Button */}
           <button
             onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
@@ -367,7 +364,7 @@ const handleDelete = async (id) => {
           </button>
 
           {/* Page Numbers */}
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1 flex-wrap justify-center overflow-x-auto max-w-full px-2">
             {currentPage > 3 && (
               <>
                 <button
@@ -389,9 +386,8 @@ const handleDelete = async (id) => {
                 <button
                   key={page}
                   onClick={() => setCurrentPage(page)}
-                  className={`btn btn-sm ${
-                    page === currentPage ? "btn-primary" : "btn-outline"
-                  }`}
+                  className={`btn btn-sm ${page === currentPage ? "btn-primary" : "btn-outline"
+                    }`}
                 >
                   {page}
                 </button>

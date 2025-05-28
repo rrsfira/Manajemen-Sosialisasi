@@ -55,7 +55,9 @@ const EducationUnits = () => {
 
   // popup notifikasi hapus data
   const handleDelete = async (id) => {
+    HEAD
     const isDarkMode = document.documentElement.classList.contains("dark");
+
 
     Swal.fire({
       title: "Yakin ingin menghapus?",
@@ -107,11 +109,14 @@ const EducationUnits = () => {
     });
   };
 
+
   // fungsi untuk klik summary card
   const handleGroupCardClick = (group) => {
     setSelectedGroup(group);
   };
   // jika filter menggunakan button maka filter menggunakan search akan nonaktif
+
+
 
   const convertToISODate = (dateStr) => {
     if (!dateStr) return null; // hindari error jika null
@@ -142,6 +147,8 @@ const EducationUnits = () => {
     (currentPage - 1) * rowsPerPage,
     currentPage * rowsPerPage
   );
+
+
 
   const totalPages = Math.ceil(currentData.length / rowsPerPage);
 
@@ -232,7 +239,7 @@ const EducationUnits = () => {
       const matchDate =
         !filterDate ||
         moment(item.date, ["DD-MM-YYYY"]).format("DD-MM-YYYY") ===
-          moment(filterDate, "YYYY-MM-DD").format("DD-MM-YYYY");
+        moment(filterDate, "YYYY-MM-DD").format("DD-MM-YYYY");
 
       const matchName = filterName
         ? item.name?.toLowerCase().includes(filterName.toLowerCase())
@@ -268,15 +275,12 @@ const EducationUnits = () => {
   // Panggil applyFilterAndSearch setiap filter/search berubah
   useEffect(() => {
     applyFilterAndSearch();
-  }, [
-    data,
-    filterDate,
-    filterName,
-    filterAddress,
-    filterRegion,
-    searchText,
-    selectedGroup,
-  ]);
+  }, [data, filterDate, filterName, filterAddress, filterRegion, searchText, selectedGroup]);
+
+
+
+
+
 
   //reset filter button
   const resetFilter = () => {
@@ -333,26 +337,33 @@ const EducationUnits = () => {
       {/* Table */}
       <div className="bg-base-100 p-6 rounded-xl shadow-lg">
         <h2 className="text-xl font-bold mb-4">Data Tabel Satuan Pendidikan</h2>
-        <div className="flex flex-col sm:flex-row justify-between items-center mb-4">
-          <div className="flex gap-2 w-full sm:w-1/2">
-            <input
-              type="text"
-              placeholder="Search"
-              className="input input-bordered w-full"
-              value={searchText}
-              onChange={(e) => setSearchText(e.target.value)}
-            />
-            <button
-              onClick={handleReset}
-              className="btn btn-secondary whitespace-nowrap"
-            >
-              Reset Search
-            </button>
-          </div>
-          <div className="flex gap-2 w-full sm:w-1/3 justify-end">
+<<<<<<< HEAD
+  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-4">
+    <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-[66%]">
+=======
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4 mb-4 w-full">
+        {/* Search input (kiri) */}
+        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-1/2">
+>>>>>>> d5a14c6e850c0701228ec0e9d41ea04ffb65fb97
+          <input
+            type="text"
+            placeholder="Search"
+            className="input input-bordered w-full"
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+          />
+          <button
+            onClick={handleReset}
+            className="btn btn-secondary whitespace-nowrap w-full sm:w-auto"
+          >
+            Reset Search
+          </button>
+        </div>
+<<<<<<< HEAD
+          <div className="flex flex-wrap gap-2 w-full sm:w-[66%] sm:justify-end">
             <button
               onClick={() => setIsFilterVisible(true)}
-              className="btn btn-outline btn-[#7B74DA]"
+              className="btn btn-outline text-[#7B74DA] w-full sm:w-auto"
             >
               <FunnelIcon className="w-5 h-5 mr-1" />
               Filter
@@ -361,17 +372,14 @@ const EducationUnits = () => {
               <>
                 <button
                   onClick={handleExportExcel}
-                  className="btn btn-outline btn-success"
+                  className="btn btn-outline btn-success flex items-center w-full sm:w-auto"
                 >
                   <DocumentArrowDownIcon className="w-4 h-4 mr-1" />
                   Excel
                 </button>
                 <button
-                  className={`btn btn-primary flex items-center text-lg cursor-pointer ${
-                    currentPath === "/app/EducationUnit/Create"
-                      ? "font-bold"
-                      : ""
-                  }`}
+                  className={`btn btn-primary flex items-center text-sm w-full sm:w-auto ${currentPath === "/app/EducationUnit/Create" ? "font-bold" : ""
+                    }`}
                   onClick={() => navigate("/app/EducationUnit/Create")}
                 >
                   <PlusIcon className="w-4 h-4 mr-1" />
@@ -379,163 +387,205 @@ const EducationUnits = () => {
                 </button>
               </>
             )}
-          </div>
-        </div>
+=======
 
-        <div className="overflow-x-auto">
-          <table className="table w-full">
-            <thead>
-              <tr>
-                <th className="text-center">No.</th>
-                <th className="text-center">Nama</th>
-                <th className="text-center">Alamat</th>
-                <th className="text-center">Wilayah</th>
-                <th className="text-center">Kecamatan</th>
-                <th className="text-center">SK</th>
-                <th className="text-center">Tgl Kegiatan</th>
-                <th className="text-center">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {paginatedData.length > 0 ? (
-                paginatedData.map((item, idx) => (
-                  <tr key={idx}>
-                    <td className="text-center">
-                      {(currentPage - 1) * rowsPerPage + idx + 1}
-                    </td>
-                    <td className="text-center">
-                      {item.name || "Tidak ada data"}
-                    </td>
-                    <td className="text-center">
-                      {item.address || "Tidak ada data"}
-                    </td>
-                    <td className="text-center">
-                      {item.region || "Tidak ada data"}
-                    </td>
-                    <td className="text-center">
-                      {item.subdistrict || "Tidak ada data"}
-                    </td>
-                    <td className="text-center">
-                      {item.suratK ? (
-                        <CheckCircleIcon className="w-5 h-5 text-success mx-auto" />
-                      ) : (
-                        <XCircleIcon className="w-5 h-5 text-error mx-auto" />
-                      )}
-                    </td>
-                    <td className="text-center">
-                      {item.date || "Tidak ada data"}
-                    </td>
-                    <td className="text-center">
-                      <button
-                        className="btn btn-sm btn-primary mr-1"
-                        onClick={() =>
-                          navigate(`/app/EducationUnit/Detail/${item.id}`)
-                        }
-                      >
-                        <EyeIcon className="w-5 h-5" />
-                      </button>
-                      {role === "admin" && (
-                        <>
-                          <button
-                            className="btn btn-sm btn-warning mr-1"
-                            onClick={() =>
-                              navigate(`/app/EducationUnit/Edit/${item.id}`)
-                            }
-                          >
-                            <PencilSquareIcon className="w-5 h-5" />
-                          </button>
-                          <button
-                            className="btn btn-sm btn-error"
-                            onClick={() => handleDelete(item.id)}
-                          >
-                            <TrashIcon className="w-5 h-5" />
-                          </button>
-                        </>
-                      )}
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={8} className="text-center py-4">
-                    Tidak ada data
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-        {/* Pagination Controls */}
-        <div className="flex items-center justify-between mt-4">
-          {/* Prev Button */}
-          <button
-            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-            disabled={currentPage === 1}
-            className="btn btn-sm btn-outline"
-          >
-            ← Prev
-          </button>
-
-          {/* Page Numbers */}
-          <div className="flex items-center gap-1">
-            {currentPage > 3 && (
-              <>
-                <button
-                  onClick={() => setCurrentPage(1)}
-                  className="btn btn-sm btn-outline"
-                >
-                  1
-                </button>
-                {currentPage > 4 && (
-                  <span className="px-2 text-gray-500">...</span>
-                )}
-              </>
-            )}
-
-            {Array.from({ length: 5 }, (_, i) => {
-              const page = currentPage - 2 + i;
-              if (page < 1 || page > totalPages) return null;
-              return (
-                <button
-                  key={page}
-                  onClick={() => setCurrentPage(page)}
-                  className={`btn btn-sm ${
-                    page === currentPage ? "btn-primary" : "btn-outline"
-                  }`}
-                >
-                  {page}
-                </button>
-              );
-            })}
-
-            {currentPage < totalPages - 2 && (
-              <>
-                {currentPage < totalPages - 3 && (
-                  <span className="px-2 text-gray-500">...</span>
-                )}
-                <button
-                  onClick={() => setCurrentPage(totalPages)}
-                  className="btn btn-sm btn-outline"
-                >
-                  {totalPages}
-                </button>
-              </>
-            )}
-          </div>
-
-          {/* Next Button */}
-          <button
-            onClick={() =>
-              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-            }
-            disabled={currentPage === totalPages}
-            className="btn btn-sm btn-outline"
-          >
-            Next →
-          </button>
-        </div>
+          {/* Action Buttons (kanan) */}
+    <div className="flex flex-col sm:flex-row flex-wrap gap-2 w-full sm:w-auto sm:justify-end">
+      <div className="flex flex-wrap gap-2 justify-start sm:justify-end">
+        <button
+          onClick={() => setIsFilterVisible(true)}
+          className="btn btn-outline text-[#7B74DA] flex items-center whitespace-nowrap w-full sm:w-auto"
+        >
+          <FunnelIcon className="w-5 h-5 mr-1" />
+          Filter
+        </button>
+        {role === "admin" && (
+          <>
+            <button
+              onClick={handleExportExcel}
+              className="btn btn-outline btn-success flex items-center whitespace-nowrap w-full sm:w-auto"
+            >
+              <DocumentArrowDownIcon className="w-4 h-4 mr-1" />
+              Excel
+            </button>
+            <button
+              className={`btn btn-primary flex items-center text-lg whitespace-nowrap w-full sm:w-auto ${currentPath === "/app/EducationUnitCreate"
+                ? "font-bold text-primary"
+                : ""
+                }`}
+              onClick={() => navigate("/app/EducationUnit/Create")}
+            >
+              <PlusIcon className="w-4 h-4 mr-1" />
+              Tambah
+            </button>
+          </>
+        )}
       </div>
+>>>>>>> d5a14c6e850c0701228ec0e9d41ea04ffb65fb97
     </div>
+  </div>
+
+
+
+<<<<<<< HEAD
+=======
+        {/* table */}
+>>>>>>> d5a14c6e850c0701228ec0e9d41ea04ffb65fb97
+    <div className="overflow-x-auto">
+      <table className="table w-full">
+        <thead>
+          <tr>
+            <th className="text-center">No.</th>
+            <th className="text-center">Nama</th>
+            <th className="text-center">Alamat</th>
+            <th className="text-center">Wilayah</th>
+            <th className="text-center">Kecamatan</th>
+            <th className="text-center">SK</th>
+            <th className="text-center">Tgl Kegiatan</th>
+            <th className="text-center">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {paginatedData.length > 0 ? (
+            paginatedData.map((item, idx) => (
+              <tr key={idx}>
+                <td className="text-center">
+                  {(currentPage - 1) * rowsPerPage + idx + 1}
+                </td>
+                <td className="text-center">{item.name || "Tidak ada data"}</td>
+                <td className="text-center">{item.address || "Tidak ada data"}</td>
+                <td className="text-center">{item.region || "Tidak ada data"}</td>
+                <td className="text-center">{item.subdistrict || "Tidak ada data"}</td>
+                <td className="text-center">
+                  {item.suratK ? (
+                    <CheckCircleIcon className="w-5 h-5 text-success mx-auto" />
+                  ) : (
+                    <XCircleIcon className="w-5 h-5 text-error mx-auto" />
+                  )}
+                </td>
+                <td className="text-center">{item.date || "Tidak ada data"}</td>
+                <td className="text-center">
+                  <button
+                    className="btn btn-sm btn-primary mr-1"
+                    onClick={() => navigate(`/app/EducationUnit/Detail/${item.id}`)}
+                  >
+                    <EyeIcon className="w-5 h-5" />
+                  </button>
+                  {role === "admin" && (
+                    <>
+                      <button
+                        className="btn btn-sm btn-warning mr-1"
+                        onClick={() => navigate(`/app/EducationUnit/Edit/${item.id}`)}
+                      >
+                        <PencilSquareIcon className="w-5 h-5" />
+                      </button>
+                      <button
+                        className="btn btn-sm btn-error"
+                        onClick={() => handleDelete(item.id)}
+                      >
+                        <TrashIcon className="w-5 h-5" />
+                      </button>
+                    </>
+                  )}
+                </td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan={8} className="text-center py-4">
+                Tidak ada data
+              </td>
+            </tr>
+          )}
+        </tbody>
+
+
+      </table>
+    </div>
+  {/* Pagination Controls */ }
+<<<<<<< HEAD
+  <div className="flex flex-col sm:flex-row items-center justify-between gap-2 mt-4">
+=======
+        <div className="flex flex-wrap items-center justify-between mt-4 gap-2">
+>>>>>>> d5a14c6e850c0701228ec0e9d41ea04ffb65fb97
+      {/* Prev Button */}
+      <button
+        onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+        disabled={currentPage === 1}
+        className="btn btn-sm btn-outline"
+      >
+        ← Prev
+      </button>
+
+<<<<<<< HEAD
+  {/* Page Numbers */ }
+  <div className="flex items-center gap-1 flex-wrap justify-center overflow-x-auto max-w-full px-2">
+=======
+          {/* Page Numbers - scrollable on small screens */}
+    <div className="flex items-center gap-1 overflow-x-auto max-w-full px-1 sm:justify-center flex-nowrap">
+>>>>>>> d5a14c6e850c0701228ec0e9d41ea04ffb65fb97
+      {currentPage > 3 && (
+        <>
+          <button
+            onClick={() => setCurrentPage(1)}
+            className="btn btn-sm btn-outline"
+          >
+            1
+          </button>
+          {currentPage > 4 && (
+            <span className="px-2 text-gray-500">...</span>
+          )}
+        </>
+      )}
+
+      {Array.from({ length: 5 }, (_, i) => {
+        const page = currentPage - 2 + i;
+        if (page < 1 || page > totalPages) return null;
+        return (
+          <button
+            key={page}
+            onClick={() => setCurrentPage(page)}
+<<<<<<< HEAD
+            className={`btn btn-sm ${page === currentPage ? "btn-primary" : "btn-outline"
+              }`}
+=======
+                  className={`btn btn-sm ${page === currentPage ? "btn-primary" : "btn-outline"}`}
+>>>>>>> d5a14c6e850c0701228ec0e9d41ea04ffb65fb97
+          >
+            {page}
+          </button>
+        );
+      })}
+
+      {currentPage < totalPages - 2 && (
+        <>
+          {currentPage < totalPages - 3 && (
+            <span className="px-2 text-gray-500">...</span>
+          )}
+          <button
+            onClick={() => setCurrentPage(totalPages)}
+            className="btn btn-sm btn-outline"
+          >
+            {totalPages}
+          </button>
+        </>
+      )}
+    </div>
+
+    {/* Next Button */}
+    <button
+      onClick={() =>
+        setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+      }
+      disabled={currentPage === totalPages}
+      className="btn btn-sm btn-outline"
+    >
+      Next →
+    </button>
+  </div>
+
+      </div >
+    </div >
   );
 };
 

@@ -63,11 +63,30 @@ const GameEdit = () => {
 
   return (
     <div className="min-h-screen bg-base-100 py-8 px-4 sm:px-6 lg:px-8">
-      <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold text-primary mt-4">
-          Edit <span className="text-secondary">Game</span>
-        </h1>
+  <div className="text-center mb-8">
+    <h1 className="text-2xl sm:text-3xl font-bold text-primary mt-4">
+      Edit <span className="text-secondary">Game</span>
+    </h1>
+  </div>
+
+  <form onSubmit={handleSubmit} className="max-w-3xl mx-auto space-y-6">
+    {/* Informasi Satuan Pendidikan */}
+    <div className="border rounded-lg shadow-sm">
+      <div className="bg-secondary px-4 py-2 font-semibold text-white rounded-t-lg">
+        📘 Game Quizizz
       </div>
+      <div className="grid grid-cols-1 gap-4 p-4">
+        <input
+          name="quizizz_url"
+          value={form.quizizz_url}
+          onChange={handleChange}
+          placeholder="Link Quizizz"
+          className="input input-bordered w-full"
+          type="url"
+          required
+        />
+      </div>
+<<<<<<< HEAD:frontend/src/features/Game/Edit/index.js
 
       <form onSubmit={handleSubmit} className="max-w-4xl mx-auto space-y-6">
         <div className="border rounded-lg shadow-sm">
@@ -94,7 +113,19 @@ const GameEdit = () => {
           Simpan Data
         </button>
       </form>
+=======
+>>>>>>> d5a14c6e850c0701228ec0e9d41ea04ffb65fb97:frontend/src/features/Game/gameMasyarakat/Edit/index.js
     </div>
+
+    <button
+      type="submit"
+      className="w-full py-2 rounded-md text-white bg-primary hover:bg-primary-focus transition"
+    >
+      Simpan Data
+    </button>
+  </form>
+</div>
+
   );
 };
 

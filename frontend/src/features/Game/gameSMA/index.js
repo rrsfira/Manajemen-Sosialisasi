@@ -31,21 +31,21 @@ const GameSMA = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-base-200 px-6 py-10 relative">
-      <div className="bg-base-100 p-6 rounded-xl shadow-lg">
-        <h2 className="text-xl font-bold mb-4">
+    <div className="min-h-screen bg-base-200 px-4 py-6 sm:px-6 sm:py-10 relative">
+      <div className="bg-base-100 p-4 sm:p-6 rounded-xl shadow-lg">
+        <h2 className="text-lg sm:text-xl font-bold mb-4">
           Games Tingkat SMA
         </h2>
 
-        <div className="w-full max-w-5xl mx-auto h-[400px] rounded-lg overflow-hidden mb-4">
-          <iframe
-            src={iframeUrl}
-            title="Quizizz Game"
-            width="100%"
-            height="100%"
-            allowFullScreen
-            className="rounded-lg border-none"
-          />
+        <div className="w-full mb-4">
+          <div className="w-full aspect-[9/16] sm:aspect-[16/9] max-w-4xl mx-auto">
+            <iframe
+              src={iframeUrl}
+              title="Quizizz Game"
+              className="w-full h-full rounded-lg border-none"
+              allowFullScreen
+            />
+          </div>
         </div>
 
         {gameSMAId && (

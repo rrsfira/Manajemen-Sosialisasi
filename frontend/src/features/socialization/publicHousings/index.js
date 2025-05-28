@@ -170,32 +170,36 @@ const PublicHousing = () => {
       <div className="bg-base-100 p-6 rounded-xl shadow-lg">
         <h2 className="text-xl font-bold mb-4">Data Tabel Rusun</h2>
 
-        <div className="flex flex-col sm:flex-row sm:justify-between gap-4 mb-4">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-4">
           <input
             type="text"
             placeholder="Search"
-            className="input input-bordered w-full sm:w-1/3"
+            className="input input-bordered w-full sm:max-w-xs"
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
           />
-          <div className="flex gap-2 w-full sm:w-1/3 justify-end">
-            <button className="btn btn-outline btn-info flex items-center text-sm h-10">
+
+          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto sm:justify-end">
+            <button className="btn btn-outline btn-info flex items-center justify-center text-sm h-10">
               <FunnelIcon className="w-5 h-5 mr-1" />
               Filter
             </button>
+
             {role === "admin" && (
               <>
                 <button
                   onClick={handleExportExcel}
-                  className="btn btn-outline btn-success"
+                  className="btn btn-outline btn-success flex items-center justify-center text-sm h-10"
                 >
                   <DocumentArrowDownIcon className="w-4 h-4 mr-1" />
                   Excel
                 </button>
+
                 <button
-                  className={`btn btn-primary flex items-center text-lg cursor-pointer ${
-                    currentPath === "/app/PublicHousing/Create" ? "font-bold text-primary" : ""
-                  }`}
+                  className={`btn btn-primary flex items-center justify-center text-sm h-10 ${currentPath === "/app/PublicHousing/Create"
+                      ? "font-bold text-primary"
+                      : ""
+                    }`}
                   onClick={() => navigate("/app/PublicHousing/Create")}
                 >
                   <PlusIcon className="w-4 h-4 mr-1" />
@@ -205,6 +209,7 @@ const PublicHousing = () => {
             )}
           </div>
         </div>
+
 
         {/* Table */}
         <div className="overflow-x-auto">
@@ -287,7 +292,7 @@ const PublicHousing = () => {
         </div>
 
         {/* Pagination Controls */}
-        <div className="flex items-center justify-between mt-4">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-2 mt-4">
           {/* Prev Button */}
           <button
             onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
@@ -298,7 +303,7 @@ const PublicHousing = () => {
           </button>
 
           {/* Page Numbers */}
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1 flex-wrap justify-center overflow-x-auto max-w-full px-2">
             {currentPage > 3 && (
               <>
                 <button
@@ -320,9 +325,8 @@ const PublicHousing = () => {
                 <button
                   key={page}
                   onClick={() => setCurrentPage(page)}
-                  className={`btn btn-sm ${
-                    page === currentPage ? "btn-primary" : "btn-outline"
-                  }`}
+                  className={`btn btn-sm ${page === currentPage ? "btn-primary" : "btn-outline"
+                    }`}
                 >
                   {page}
                 </button>
