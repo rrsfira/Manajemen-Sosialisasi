@@ -122,8 +122,8 @@ function Header() {
                     { to: "/app/Mall", label: "Mall" },
                     { to: "/app/Hotel", label: "Hotel" },
                     { to: "/app/Office", label: "Perkantoran" },
-                    { to: "/app/Apartement", label: "Apartement" },
-                    { to: "/app/UrbanVillages", label: "Kelurahan Tangguh" },
+                    { to: "/app/Apartment", label: "Apartment" },
+                    { to: "/app/UrbanVillage", label: "Kelurahan Tangguh" },
                   ].map(({ to, label }) => (
                     <Link
                       key={to}
