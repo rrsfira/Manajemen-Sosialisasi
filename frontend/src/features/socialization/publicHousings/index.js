@@ -265,6 +265,7 @@ const PublicHousing = () => {
       {/* Table + Filter */}
       <div className="bg-base-100 p-6 rounded-xl shadow-lg">
         <h2 className="text-xl font-bold mb-4">Data Tabel Rusun</h2>
+
 <div className="flex flex-col sm:flex-row justify-between items-center mb-4">
           <div className="flex gap-2 w-full sm:w-1/2">
             <input
@@ -281,24 +282,29 @@ const PublicHousing = () => {
               onClick={() => setIsFilterVisible(true)}
               className="btn btn-outline btn-[#7B74DA]"
             >
+
               <FunnelIcon className="w-5 h-5 mr-1" />
               Filter
             </button>
+
             {role === "admin" && (
               <>
                 <button
                   onClick={handleExportExcel}
-                  className="btn btn-outline btn-success"
+                  className="btn btn-outline btn-success flex items-center justify-center text-sm h-10"
                 >
                   <DocumentArrowDownIcon className="w-4 h-4 mr-1" />
                   Excel
                 </button>
+
                 <button
+
                   className={`btn btn-primary flex items-center text-lg cursor-pointer ${
                     currentPath === "/app/PublicHousing/Create"
                       ? "font-bold"
                       : ""
                   }`}
+
                   onClick={() => navigate("/app/PublicHousing/Create")}
                 >
                   <PlusIcon className="w-4 h-4 mr-1" />
@@ -395,8 +401,10 @@ const PublicHousing = () => {
           </table>
         </div>
 
+
        {/* Pagination Controls */}
         <div className="flex items-center justify-between mt-4">
+
           {/* Prev Button */}
           <button
             onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
@@ -407,7 +415,7 @@ const PublicHousing = () => {
           </button>
 
           {/* Page Numbers */}
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1 flex-wrap justify-center overflow-x-auto max-w-full px-2">
             {currentPage > 3 && (
               <>
                 <button
@@ -429,9 +437,8 @@ const PublicHousing = () => {
                 <button
                   key={page}
                   onClick={() => setCurrentPage(page)}
-                  className={`btn btn-sm ${
-                    page === currentPage ? "btn-primary" : "btn-outline"
-                  }`}
+                  className={`btn btn-sm ${page === currentPage ? "btn-primary" : "btn-outline"
+                    }`}
                 >
                   {page}
                 </button>

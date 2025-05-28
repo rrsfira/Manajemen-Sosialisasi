@@ -4,7 +4,7 @@ import axios from "axios";
 
 const GameTK = () => {
   const [iframeUrl, setIframeUrl] = useState("");
-  const [gameTKId, setGameTKId] = useState(""); // untuk link explore
+  const [gameTKId, setGameTKId] = useState("");
   const [role, setRole] = useState("");
   const navigate = useNavigate();
 
@@ -16,8 +16,7 @@ const GameTK = () => {
       try {
         const res = await axios.get("http://localhost:5000/games/1");
         setIframeUrl(res.data.quizizz_url);
-        
-        // jika ingin ambil ID quiz dari URL Quizizz
+
         const match = res.data.quizizz_url.match(/quiz\/([^/?]+)/);
         if (match) {
           setGameTKId(match[1]);
@@ -33,9 +32,7 @@ const GameTK = () => {
   return (
     <div className="min-h-screen bg-base-200 px-6 py-10 relative">
       <div className="bg-base-100 p-6 rounded-xl shadow-lg">
-        <h2 className="text-xl font-bold mb-4">
-          Games Tingkat TK
-        </h2>
+        <h2 className="text-xl font-bold mb-4">Games Tingkat TK</h2>
 
         <div className="w-full max-w-5xl mx-auto h-[400px] rounded-lg overflow-hidden mb-4">
           <iframe
@@ -64,7 +61,7 @@ const GameTK = () => {
         {role === "admin" && (
           <div className="flex justify-end mt-6">
             <button
-              onClick={() => navigate(`/app/Game/Edit/${1}`)} 
+              onClick={() => navigate(`/app/Game/Edit/1`)}
               className="btn bg-[#2F2FAF] text-white hover:bg-[#1f1f8f] min-w-[100px]"
             >
               Edit

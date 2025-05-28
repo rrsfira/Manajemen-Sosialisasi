@@ -264,6 +264,7 @@ const Mall = () => {
       {/* Table + Filter */}
       <div className="bg-base-100 p-6 rounded-xl shadow-lg">
         <h2 className="text-xl font-bold mb-4">Data Tabel Mall</h2>
+
 <div className="flex flex-col sm:flex-row justify-between items-center mb-4">
           <div className="flex gap-2 w-full sm:w-1/2">
             <input
@@ -283,16 +284,19 @@ const Mall = () => {
               <FunnelIcon className="w-5 h-5 mr-1" />
               Filter
             </button>
+
             {role === "admin" && (
               <>
                 <button
                   onClick={handleExportExcel}
-                  className="btn btn-outline btn-success"
+                  className="btn btn-outline btn-success flex items-center justify-center text-sm h-10 w-full sm:w-auto"
                 >
                   <DocumentArrowDownIcon className="w-4 h-4 mr-1" />
                   Excel
                 </button>
+
                 <button
+
                   className={`btn btn-primary flex items-center text-lg cursor-pointer ${
                     currentPath === "/app/Mall/Create"
                       ? "font-bold"
@@ -394,6 +398,7 @@ const Mall = () => {
           </table>
         </div>
 
+
          {/* Pagination Controls */}
         <div className="flex items-center justify-between mt-4">
           {/* Prev Button */}
@@ -406,7 +411,7 @@ const Mall = () => {
           </button>
 
           {/* Page Numbers */}
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1 flex-wrap justify-center overflow-x-auto max-w-full px-2">
             {currentPage > 3 && (
               <>
                 <button
@@ -428,9 +433,11 @@ const Mall = () => {
                 <button
                   key={page}
                   onClick={() => setCurrentPage(page)}
+
                   className={`btn btn-sm ${
                     page === currentPage ? "btn-primary" : "btn-outline"
                   }`}
+
                 >
                   {page}
                 </button>

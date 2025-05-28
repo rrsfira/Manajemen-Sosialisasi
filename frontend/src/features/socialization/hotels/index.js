@@ -311,6 +311,7 @@ const handleReset = () => {
           </div>
         </div>
 
+
         {/* Table */}
         <div className="overflow-x-auto">
           <table className="table w-full">
@@ -397,7 +398,7 @@ const handleReset = () => {
         </div>
 
         {/* Pagination Controls */}
-        <div className="flex items-center justify-between mt-4">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-2 mt-4">
           {/* Prev Button */}
           <button
             onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
@@ -408,7 +409,7 @@ const handleReset = () => {
           </button>
 
           {/* Page Numbers */}
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1 flex-wrap justify-center overflow-x-auto max-w-full px-2">
             {currentPage > 3 && (
               <>
                 <button

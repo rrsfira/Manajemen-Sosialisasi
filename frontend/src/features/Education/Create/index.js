@@ -18,32 +18,28 @@ const EducationCreate = () => {
     setForm({ ...form, [name]: value });
   };
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  const formData = new FormData();
-  formData.append("name", form.name);
-  if (materi) {
-    formData.append("materi", materi);
-  }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const formData = new FormData();
+    formData.append("name", form.name);
+    if (materi) {
+      formData.append("materi", materi);
+    }
+    try {
+      await axios.post("http://localhost:5000/educations", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      alert("Data berhasil disimpan");
+      setForm({ name: "", materi: "" });
+      setMateri(null);
+    } catch (error) {
+      console.error("Gagal upload:", error);
+      alert("Gagal menyimpan data");
+    }
+  };
 
-  try {
-    const response = await axios.post("http://localhost:5000/educations", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
-
-    alert("Data berhasil disimpan");
-    setForm({ name: "", materi: "" });
-    setMateri(null);
-
-    const newId = response.data.id;
-    navigate(`/app/Education/Details/${newId}`);
-  } catch (error) {
-    console.error("Gagal upload:", error);
-    alert("Gagal menyimpan data");
-  }
-};
 
 
   return (
@@ -67,7 +63,7 @@ const handleSubmit = async (e) => {
               onChange={handleChange}
               required
               placeholder="Nama Materi"
-              className="input"
+              className="input w-full"
             />
 
             <div>
@@ -86,7 +82,7 @@ const handleSubmit = async (e) => {
               )}
               <input
                 type="file"
-                accept=".pdf,.ppt,.pptx"
+                accept=".pdf,.ppt,.pptx,.doc,.docx"
                 onChange={(e) => setMateri(e.target.files[0])}
                 className="file-input file-input-bordered w-full"
               />
@@ -96,12 +92,13 @@ const handleSubmit = async (e) => {
 
         <button
           type="submit"
-          className="w-full py-2 rounded-md text-white bg-primary"
+          className="w-full py-2 rounded-md text-white bg-primary hover:bg-primary-focus transition"
         >
           Simpan Data
         </button>
       </form>
     </div>
+
   );
 };
 

@@ -57,6 +57,7 @@ const EducationUnits = () => {
   const handleDelete = async (id) => {
     const isDarkMode = document.documentElement.classList.contains("dark");
 
+
     Swal.fire({
       title: "Yakin ingin menghapus?",
       text: "Data yang dihapus tidak dapat dikembalikan.",
@@ -107,11 +108,14 @@ const EducationUnits = () => {
     });
   };
 
+
   // fungsi untuk klik summary card
   const handleGroupCardClick = (group) => {
     setSelectedGroup(group);
   };
   // jika filter menggunakan button maka filter menggunakan search akan nonaktif
+
+
 
   const convertToISODate = (dateStr) => {
     if (!dateStr) return null; // hindari error jika null
@@ -142,6 +146,8 @@ const EducationUnits = () => {
     (currentPage - 1) * rowsPerPage,
     currentPage * rowsPerPage
   );
+
+
 
   const totalPages = Math.ceil(currentData.length / rowsPerPage);
 
@@ -232,7 +238,7 @@ const EducationUnits = () => {
       const matchDate =
         !filterDate ||
         moment(item.date, ["DD-MM-YYYY"]).format("DD-MM-YYYY") ===
-          moment(filterDate, "YYYY-MM-DD").format("DD-MM-YYYY");
+        moment(filterDate, "YYYY-MM-DD").format("DD-MM-YYYY");
 
       const matchName = filterName
         ? item.name?.toLowerCase().includes(filterName.toLowerCase())
@@ -268,15 +274,12 @@ const EducationUnits = () => {
   // Panggil applyFilterAndSearch setiap filter/search berubah
   useEffect(() => {
     applyFilterAndSearch();
-  }, [
-    data,
-    filterDate,
-    filterName,
-    filterAddress,
-    filterRegion,
-    searchText,
-    selectedGroup,
-  ]);
+  }, [data, filterDate, filterName, filterAddress, filterRegion, searchText, selectedGroup]);
+
+
+
+
+
 
   //reset filter button
   const resetFilter = () => {
@@ -333,8 +336,9 @@ const EducationUnits = () => {
       {/* Table */}
       <div className="bg-base-100 p-6 rounded-xl shadow-lg">
         <h2 className="text-xl font-bold mb-4">Data Tabel Satuan Pendidikan</h2>
-        <div className="flex flex-col sm:flex-row justify-between items-center mb-4">
-          <div className="flex gap-2 w-full sm:w-1/2">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4 mb-4 w-full">
+          {/* Search input (kiri) */}
+          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-1/2">
             <input
               type="text"
               placeholder="Search"
@@ -344,44 +348,50 @@ const EducationUnits = () => {
             />
             <button
               onClick={handleReset}
-              className="btn btn-secondary whitespace-nowrap"
+              className="btn btn-secondary whitespace-nowrap w-full sm:w-auto"
             >
               Reset Search
             </button>
           </div>
-          <div className="flex gap-2 w-full sm:w-1/3 justify-end">
-            <button
-              onClick={() => setIsFilterVisible(true)}
-              className="btn btn-outline btn-[#7B74DA]"
-            >
-              <FunnelIcon className="w-5 h-5 mr-1" />
-              Filter
-            </button>
-            {role === "admin" && (
-              <>
-                <button
-                  onClick={handleExportExcel}
-                  className="btn btn-outline btn-success"
-                >
-                  <DocumentArrowDownIcon className="w-4 h-4 mr-1" />
-                  Excel
-                </button>
-                <button
-                  className={`btn btn-primary flex items-center text-lg cursor-pointer ${
-                    currentPath === "/app/EducationUnit/Create"
-                      ? "font-bold"
+
+
+
+          {/* Action Buttons (kanan) */}
+          <div className="flex flex-col sm:flex-row flex-wrap gap-2 w-full sm:w-auto sm:justify-end">
+            <div className="flex flex-wrap gap-2 justify-start sm:justify-end">
+              <button
+                onClick={() => setIsFilterVisible(true)}
+                className="btn btn-outline text-[#7B74DA] flex items-center whitespace-nowrap w-full sm:w-auto"
+              >
+                <FunnelIcon className="w-5 h-5 mr-1" />
+                Filter
+              </button>
+              {role === "admin" && (
+                <>
+                  <button
+                    onClick={handleExportExcel}
+                    className="btn btn-outline btn-success flex items-center whitespace-nowrap w-full sm:w-auto"
+                  >
+                    <DocumentArrowDownIcon className="w-4 h-4 mr-1" />
+                    Excel
+                  </button>
+                  <button
+                    className={`btn btn-primary flex items-center text-lg whitespace-nowrap w-full sm:w-auto ${currentPath === "/app/EducationUnitCreate"
+                      ? "font-bold text-primary"
                       : ""
-                  }`}
-                  onClick={() => navigate("/app/EducationUnit/Create")}
-                >
-                  <PlusIcon className="w-4 h-4 mr-1" />
-                  Tambah
-                </button>
-              </>
-            )}
+                      }`}
+                    onClick={() => navigate("/app/EducationUnit/Create")}
+                  >
+                    <PlusIcon className="w-4 h-4 mr-1" />
+                    Tambah
+                  </button>
+                </>
+              )}
+            </div>
           </div>
         </div>
 
+        {/* table */}
         <div className="overflow-x-auto">
           <table className="table w-full">
             <thead>
@@ -403,18 +413,10 @@ const EducationUnits = () => {
                     <td className="text-center">
                       {(currentPage - 1) * rowsPerPage + idx + 1}
                     </td>
-                    <td className="text-center">
-                      {item.name || "Tidak ada data"}
-                    </td>
-                    <td className="text-center">
-                      {item.address || "Tidak ada data"}
-                    </td>
-                    <td className="text-center">
-                      {item.region || "Tidak ada data"}
-                    </td>
-                    <td className="text-center">
-                      {item.subdistrict || "Tidak ada data"}
-                    </td>
+                    <td className="text-center">{item.name || "Tidak ada data"}</td>
+                    <td className="text-center">{item.address || "Tidak ada data"}</td>
+                    <td className="text-center">{item.region || "Tidak ada data"}</td>
+                    <td className="text-center">{item.subdistrict || "Tidak ada data"}</td>
                     <td className="text-center">
                       {item.suratK ? (
                         <CheckCircleIcon className="w-5 h-5 text-success mx-auto" />
@@ -422,15 +424,11 @@ const EducationUnits = () => {
                         <XCircleIcon className="w-5 h-5 text-error mx-auto" />
                       )}
                     </td>
-                    <td className="text-center">
-                      {item.date || "Tidak ada data"}
-                    </td>
+                    <td className="text-center">{item.date || "Tidak ada data"}</td>
                     <td className="text-center">
                       <button
                         className="btn btn-sm btn-primary mr-1"
-                        onClick={() =>
-                          navigate(`/app/EducationUnit/Detail/${item.id}`)
-                        }
+                        onClick={() => navigate(`/app/EducationUnit/Detail/${item.id}`)}
                       >
                         <EyeIcon className="w-5 h-5" />
                       </button>
@@ -438,9 +436,7 @@ const EducationUnits = () => {
                         <>
                           <button
                             className="btn btn-sm btn-warning mr-1"
-                            onClick={() =>
-                              navigate(`/app/EducationUnit/Edit/${item.id}`)
-                            }
+                            onClick={() => navigate(`/app/EducationUnit/Edit/${item.id}`)}
                           >
                             <PencilSquareIcon className="w-5 h-5" />
                           </button>
@@ -463,10 +459,14 @@ const EducationUnits = () => {
                 </tr>
               )}
             </tbody>
+
+
           </table>
         </div>
         {/* Pagination Controls */}
-        <div className="flex items-center justify-between mt-4">
+
+        <div className="flex flex-wrap items-center justify-between mt-4 gap-2">
+
           {/* Prev Button */}
           <button
             onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
@@ -476,8 +476,9 @@ const EducationUnits = () => {
             ← Prev
           </button>
 
-          {/* Page Numbers */}
-          <div className="flex items-center gap-1">
+          {/* Page Numbers - scrollable on small screens */}
+          <div className="flex items-center gap-1 overflow-x-auto max-w-full px-1 sm:justify-center flex-nowrap">
+
             {currentPage > 3 && (
               <>
                 <button
@@ -499,9 +500,9 @@ const EducationUnits = () => {
                 <button
                   key={page}
                   onClick={() => setCurrentPage(page)}
-                  className={`btn btn-sm ${
-                    page === currentPage ? "btn-primary" : "btn-outline"
-                  }`}
+
+                  className={`btn btn-sm ${page === currentPage ? "btn-primary" : "btn-outline"}`}
+
                 >
                   {page}
                 </button>
@@ -534,8 +535,9 @@ const EducationUnits = () => {
             Next →
           </button>
         </div>
-      </div>
-    </div>
+
+      </div >
+    </div >
   );
 };
 

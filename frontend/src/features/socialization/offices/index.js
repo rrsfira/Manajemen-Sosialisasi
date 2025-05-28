@@ -285,21 +285,23 @@ const Office = () => {
               <FunnelIcon className="w-5 h-5 mr-1" />
               Filter
             </button>
+
             {role === "admin" && (
               <>
                 <button
                   onClick={handleExportExcel}
-                  className="btn btn-outline btn-success"
+                  className="btn btn-outline btn-success flex items-center justify-center text-sm h-10 w-full sm:w-auto"
                 >
                   <DocumentArrowDownIcon className="w-4 h-4 mr-1" />
                   Excel
                 </button>
+
                 <button
                   className={`btn btn-primary flex items-center text-lg cursor-pointer ${
                     currentPath === "/app/Office/Create"
                       ? "font-bold"
                       : ""
-                  }`}
+                    }`}
                   onClick={() => navigate("/app/Office/Create")}
                 >
                   <PlusIcon className="w-4 h-4 mr-1" />
@@ -309,6 +311,7 @@ const Office = () => {
             )}
           </div>
         </div>
+
 
         {/* Table */}
         <div className="overflow-x-auto">
@@ -395,8 +398,10 @@ const Office = () => {
           </table>
         </div>
 
+
          {/* Pagination Controls */}
         <div className="flex items-center justify-between mt-4">
+
           {/* Prev Button */}
           <button
             onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
@@ -407,7 +412,7 @@ const Office = () => {
           </button>
 
           {/* Page Numbers */}
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1 flex-wrap justify-center overflow-x-auto max-w-full px-2">
             {currentPage > 3 && (
               <>
                 <button
@@ -429,9 +434,11 @@ const Office = () => {
                 <button
                   key={page}
                   onClick={() => setCurrentPage(page)}
+
                   className={`btn btn-sm ${
                     page === currentPage ? "btn-primary" : "btn-outline"
                   }`}
+
                 >
                   {page}
                 </button>
