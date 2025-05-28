@@ -36,12 +36,12 @@ const UrbanFilterSidebar = ({
         {/* Kolom Nama Sekolah */}
         <div>
           <label className="text-base font-medium text-gray-700 dark:text-gray-200 mb-1" htmlFor="namaSekolah">
-            Nama Sekolah
+            Nama Kelurahan Tangguh
           </label>
           <input
             type="text"
             id="namaSekolah"
-            placeholder="Masukkan nama sekolah"
+            placeholder="Masukkan nama kelurahan tangguh"
             className="block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-md shadow-sm p-2 text-base"
             value={filterName}
             onChange={(e) => setFilterName(e.target.value)}

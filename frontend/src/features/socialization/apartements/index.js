@@ -26,14 +26,14 @@ const Apartement = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage] = useState(5);
   const [role, setRole] = useState("");
-   const [filteredData, setFilteredData] = useState([]); // untuk menampilkan data yang telah di filter di cards dan search
- const [currentData, setCurrentData] = useState([]);
- const [filterDate, setFilterDate] = useState("");
+  const [filteredData, setFilteredData] = useState([]); // untuk menampilkan data yang telah di filter di cards dan search
+  const [currentData, setCurrentData] = useState([]);
+  const [filterDate, setFilterDate] = useState("");
   const [filterName, setFilterName] = useState("");
-   const [filterAddress, setFilterAddress] = useState("");
-   const [filterRegion, setFilterRegion] = useState("");
-    const [selectedGroup, setSelectedGroup] = useState(null); // untuk menampilkan data yang telah di filter di cards
-const [isFilterVisible, setIsFilterVisible] = useState(false); // untuk menampilkan filter
+  const [filterAddress, setFilterAddress] = useState("");
+  const [filterRegion, setFilterRegion] = useState("");
+  const [selectedGroup, setSelectedGroup] = useState(null); // untuk menampilkan data yang telah di filter di cards
+  const [isFilterVisible, setIsFilterVisible] = useState(false); // untuk menampilkan filter
   const [searchedData, setSearchedData] = useState([]);
 
 
@@ -57,7 +57,7 @@ const [isFilterVisible, setIsFilterVisible] = useState(false); // untuk menampil
     }
   };
 
-  
+
   // filter button untuk hari
   const convertToISODate = (dateStr) => {
     if (!dateStr) return null; // hindari error jika null
@@ -175,13 +175,13 @@ const [isFilterVisible, setIsFilterVisible] = useState(false); // untuk menampil
   };
 
 
-const applyFilterAndSearch = () => {
+  const applyFilterAndSearch = () => {
     // Filter dulu dari sidebar filter
     const filtered = data.filter((item) => {
       const matchDate =
         !filterDate ||
         moment(item.date, ["DD-MM-YYYY"]).format("DD-MM-YYYY") ===
-          moment(filterDate, "YYYY-MM-DD").format("DD-MM-YYYY");
+        moment(filterDate, "YYYY-MM-DD").format("DD-MM-YYYY");
 
       const matchName = filterName
         ? item.name?.toLowerCase().includes(filterName.toLowerCase())
@@ -256,56 +256,57 @@ const applyFilterAndSearch = () => {
         />
       )}
 
-  {/* Drilldown Chart */}
+      {/* Drilldown Chart */}
       <ApartementsChart />
 
       {/* Table + Filter */}
       <div className="bg-base-100 p-6 rounded-xl shadow-lg">
-        <h2 className="text-xl font-bold mb-4">Data Tabel Apartments</h2>
+        <h2 className="text-xl font-bold mb-4">Data Tabel Apartment</h2>
 
-        <div className="flex flex-col sm:flex-row justify-between items-center mb-4">
-                  <div className="flex gap-2 w-full sm:w-1/2">
-                    <input
-                      type="text"
-                      placeholder="Search"
-                      className="input input-bordered w-full"
-                      value={searchText}
-                      onChange={(e) => setSearchText(e.target.value)}
-                    />
-                    
-                  </div>
-                  <div className="flex gap-2 w-full sm:w-1/3 justify-end">
-                    <button
-                      onClick={() => setIsFilterVisible(true)}
-                      className="btn btn-outline btn-[#7B74DA]"
-                    >
-                      <FunnelIcon className="w-5 h-5 mr-1" />
-                      Filter
-                    </button>
-                    {role === "admin" && (
-                      <>
-                        <button
-                          onClick={handleExportExcel}
-                          className="btn btn-outline btn-success"
-                        >
-                          <DocumentArrowDownIcon className="w-4 h-4 mr-1" />
-                          Excel
-                        </button>
-                        <button
-                          className={`btn btn-primary flex items-center text-lg cursor-pointer ${
-                            currentPath === "/app/Apartments/Create"
-                              ? "font-bold"
-                              : ""
-                          }`}
-                          onClick={() => navigate("/app/Apartment/Create")}
-                        >
-                          <PlusIcon className="w-4 h-4 mr-1" />
-                          Tambah
-                        </button>
-                      </>
-                    )}
-                  </div>
-                </div>
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between mb-4">
+          {/* Search */}
+          <div className="w-full sm:w-1/2">
+            <input
+              type="text"
+              placeholder="Search"
+              className="input input-bordered w-full"
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
+            />
+          </div>
+
+          {/* Filter & Admin Buttons */}
+          <div className="flex flex-wrap gap-2 w-full sm:w-1/2 sm:justify-end">
+            <button
+              onClick={() => setIsFilterVisible(true)}
+              className="btn btn-outline text-[#7B74DA] w-full sm:w-auto"
+            >
+              <FunnelIcon className="w-5 h-5 mr-1" />
+              Filter
+            </button>
+
+            {role === "admin" && (
+              <>
+                <button
+                  onClick={handleExportExcel}
+                  className="btn btn-outline btn-success flex items-center text-sm h-10 w-full sm:w-auto"
+                >
+                  <DocumentArrowDownIcon className="w-4 h-4 mr-1" />
+                  Excel
+                </button>
+
+                <button
+                  className={`btn btn-primary flex items-center text-sm h-10 w-full sm:w-auto ${currentPath === "/app/Apartments/Create" ? "font-bold" : ""
+                    }`}
+                  onClick={() => navigate("/app/Apartment/Create")}
+                >
+                  <PlusIcon className="w-4 h-4 mr-1" />
+                  Tambah
+                </button>
+              </>
+            )}
+          </div>
+        </div>
 
         {/* Table */}
         <div className="overflow-x-auto">
@@ -322,73 +323,73 @@ const applyFilterAndSearch = () => {
                 <th className="text-center">Action</th>
               </tr>
             </thead>
-           <tbody>
-                         {paginatedData.length > 0 ? (
-                           paginatedData.map((item, idx) => (
-                             <tr key={idx}>
-                               <td className="text-center">
-                                 {(currentPage - 1) * rowsPerPage + idx + 1}
-                               </td>
-                               <td className="text-center">
-                                 {item.name || "Tidak ada data"}
-                               </td>
-                               <td className="text-center">
-                                 {item.address || "Tidak ada data"}
-                               </td>
-                               <td className="text-center">
-                                 {item.region || "Tidak ada data"}
-                               </td>
-                               <td className="text-center">
-                                 {item.subdistrict || "Tidak ada data"}
-                               </td>
-                               <td className="text-center">
-                                 {item.suratK ? (
-                                   <CheckCircleIcon className="w-5 h-5 text-success mx-auto" />
-                                 ) : (
-                                   <XCircleIcon className="w-5 h-5 text-error mx-auto" />
-                                 )}
-                               </td>
-                               <td className="text-center">
-                                 {item.date || "Tidak ada data"}
-                               </td>
-                               <td className="text-center">
-                                 <button
-                                   className="btn btn-sm btn-primary mr-1"
-                                   onClick={() =>
-                                     navigate(`/app/Apartment/Detail/${item.id}`)
-                                   }
-                                 >
-                                   <EyeIcon className="w-5 h-5" />
-                                 </button>
-                                 {role === "admin" && (
-                                   <>
-                                     <button
-                                       className="btn btn-sm btn-warning mr-1"
-                                       onClick={() =>
-                                         navigate(`/app/Apartment/Edit/${item.id}`)
-                                       }
-                                     >
-                                       <PencilSquareIcon className="w-5 h-5" />
-                                     </button>
-                                     <button
-                                       className="btn btn-sm btn-error"
-                                       onClick={() => handleDelete(item.id)}
-                                     >
-                                       <TrashIcon className="w-5 h-5" />
-                                     </button>
-                                   </>
-                                 )}
-                               </td>
-                             </tr>
-                           ))
-                         ) : (
-                           <tr>
-                             <td colSpan={8} className="text-center py-4">
-                               Tidak ada data
-                             </td>
-                           </tr>
-                         )}
-                       </tbody>
+            <tbody>
+              {paginatedData.length > 0 ? (
+                paginatedData.map((item, idx) => (
+                  <tr key={idx}>
+                    <td className="text-center">
+                      {(currentPage - 1) * rowsPerPage + idx + 1}
+                    </td>
+                    <td className="text-center">
+                      {item.name || "Tidak ada data"}
+                    </td>
+                    <td className="text-center">
+                      {item.address || "Tidak ada data"}
+                    </td>
+                    <td className="text-center">
+                      {item.region || "Tidak ada data"}
+                    </td>
+                    <td className="text-center">
+                      {item.subdistrict || "Tidak ada data"}
+                    </td>
+                    <td className="text-center">
+                      {item.suratK ? (
+                        <CheckCircleIcon className="w-5 h-5 text-success mx-auto" />
+                      ) : (
+                        <XCircleIcon className="w-5 h-5 text-error mx-auto" />
+                      )}
+                    </td>
+                    <td className="text-center">
+                      {item.date || "Tidak ada data"}
+                    </td>
+                    <td className="text-center">
+                      <button
+                        className="btn btn-sm btn-primary mr-1"
+                        onClick={() =>
+                          navigate(`/app/Apartment/Detail/${item.id}`)
+                        }
+                      >
+                        <EyeIcon className="w-5 h-5" />
+                      </button>
+                      {role === "admin" && (
+                        <>
+                          <button
+                            className="btn btn-sm btn-warning mr-1"
+                            onClick={() =>
+                              navigate(`/app/Apartment/Edit/${item.id}`)
+                            }
+                          >
+                            <PencilSquareIcon className="w-5 h-5" />
+                          </button>
+                          <button
+                            className="btn btn-sm btn-error"
+                            onClick={() => handleDelete(item.id)}
+                          >
+                            <TrashIcon className="w-5 h-5" />
+                          </button>
+                        </>
+                      )}
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={8} className="text-center py-4">
+                    Tidak ada data
+                  </td>
+                </tr>
+              )}
+            </tbody>
           </table>
         </div>
 
@@ -419,16 +420,15 @@ const applyFilterAndSearch = () => {
               </>
             )}
 
-           {Array.from({ length: 5 }, (_, i) => {
+            {Array.from({ length: 5 }, (_, i) => {
               const page = currentPage - 2 + i;
               if (page < 1 || page > totalPages) return null;
               return (
                 <button
                   key={page}
                   onClick={() => setCurrentPage(page)}
-                  className={`btn btn-sm ${
-                    page === currentPage ? "btn-primary" : "btn-outline"
-                  }`}
+                  className={`btn btn-sm ${page === currentPage ? "btn-primary" : "btn-outline"
+                    }`}
                 >
                   {page}
                 </button>
