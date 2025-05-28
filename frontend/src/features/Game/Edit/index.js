@@ -86,7 +86,7 @@ const GameEdit = () => {
           required
         />
       </div>
-<<<<<<< HEAD:frontend/src/features/Game/Edit/index.js
+
 
       <form onSubmit={handleSubmit} className="max-w-4xl mx-auto space-y-6">
         <div className="border rounded-lg shadow-sm">
@@ -113,8 +113,6 @@ const GameEdit = () => {
           Simpan Data
         </button>
       </form>
-=======
->>>>>>> d5a14c6e850c0701228ec0e9d41ea04ffb65fb97:frontend/src/features/Game/gameMasyarakat/Edit/index.js
     </div>
 
     <button
