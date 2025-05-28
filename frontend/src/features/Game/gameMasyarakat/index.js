@@ -64,11 +64,8 @@ const GameMasyarakat = () => {
         {role === "admin" && (
           <div className="flex justify-end mt-6">
             <button
-<<<<<<< HEAD
-              onClick={() => navigate(`/app/Game/Edit/${5}`)} // 5 adalah ID untuk GameMasyarakat
-=======
+
               onClick={() => navigate("/app/GameMasyarakat/Edit")}
->>>>>>> d5a14c6e850c0701228ec0e9d41ea04ffb65fb97
               className="btn bg-[#2F2FAF] text-white hover:bg-[#1f1f8f] min-w-[100px]"
             >
               Edit

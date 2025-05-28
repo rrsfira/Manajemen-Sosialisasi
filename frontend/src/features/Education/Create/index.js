@@ -25,27 +25,6 @@ const EducationCreate = () => {
     if (materi) {
       formData.append("materi", materi);
     }
-
-<<<<<<< HEAD
-  try {
-    const response = await axios.post("http://localhost:5000/educations", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
-
-    alert("Data berhasil disimpan");
-    setForm({ name: "", materi: "" });
-    setMateri(null);
-
-    const newId = response.data.id;
-    navigate(`/app/Education/Details/${newId}`);
-  } catch (error) {
-    console.error("Gagal upload:", error);
-    alert("Gagal menyimpan data");
-  }
-};
-=======
     try {
       await axios.post("http://localhost:5000/educations", formData, {
         headers: {
@@ -60,7 +39,7 @@ const EducationCreate = () => {
       alert("Gagal menyimpan data");
     }
   };
->>>>>>> d5a14c6e850c0701228ec0e9d41ea04ffb65fb97
+
 
 
   return (
