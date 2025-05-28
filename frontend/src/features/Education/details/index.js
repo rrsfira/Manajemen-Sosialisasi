@@ -36,8 +36,8 @@ const EducationDetail = () => {
   }, [id]);
 
   return (
-    <div className="min-h-screen bg-base-200 px-6 py-10 relative">
-      <div className="bg-base-100 p-6 rounded-xl shadow-lg">
+    <div className="min-h-screen bg-base-200 px-4 py-10 sm:px-6 lg:px-8 relative">
+      <div className="bg-base-100 p-6 rounded-xl shadow-lg max-w-5xl mx-auto">
         <h2 className="text-xl font-bold mb-4 text-left">Detail Materi</h2>
 
         {error ? (
@@ -46,16 +46,17 @@ const EducationDetail = () => {
           <p>Loading...</p>
         ) : fileExt === "pdf" ? (
           // PDF viewer
-          <div className="w-full h-[calc(100vh-200px)] overflow-auto">
-            <Worker
-              workerUrl={`https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js`}
-            >
-              <Viewer fileUrl={fileUrl} plugins={[defaultLayoutPluginInstance]} />
+          <div className="w-full h-[calc(100vh-220px)] sm:h-[calc(100vh-240px)] overflow-auto rounded-md border">
+            <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js">
+              <Viewer
+                fileUrl={fileUrl}
+                plugins={[defaultLayoutPluginInstance]}
+              />
             </Worker>
           </div>
         ) : fileExt === "ppt" || fileExt === "pptx" ? (
           // PPT/PPTX embed via Google Docs Viewer
-          <div className="w-full h-[calc(100vh-200px)]">
+          <div className="w-full h-[calc(100vh-220px)] sm:h-[calc(100vh-240px)] rounded-md border overflow-hidden">
             <iframe
               title="ppt-viewer"
               src={`https://docs.google.com/gview?url=${encodeURIComponent(
@@ -63,6 +64,7 @@ const EducationDetail = () => {
               )}&embedded=true`}
               style={{ width: "100%", height: "100%" }}
               frameBorder="0"
+              allowFullScreen
             />
           </div>
         ) : (
