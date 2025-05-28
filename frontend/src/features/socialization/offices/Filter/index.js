@@ -1,5 +1,6 @@
 import React from "react";
-const EducationFilterSidebar = ({
+
+const OfficesFilterSidebar = ({
   filterDate,
   setFilterDate,
   filterName,
@@ -13,12 +14,11 @@ const EducationFilterSidebar = ({
   onClose,
 }) => {
   return (
-    <div className="fixed inset-0 lg:inset-auto lg:top-0 lg:right-0 w-full max-w-sm lg:w-96 h-full bg-white dark:bg-gray-900 shadow-lg z-50 p-6 overflow-y-auto text-gray-800 dark:text-gray-100 mx-auto lg:mx-0">
+     <div className="fixed top-0 right-0 w-96 h-full bg-white dark:bg-gray-900 shadow-lg z-50 p-6 overflow-y-auto text-gray-800 dark:text-gray-100">
       <h3 className="text-2xl font-bold mb-6 text-center">Filter</h3>
 
       {/* Form untuk filter */}
-      <div className="space-y-5 pb-32"> {/* atau pb-40 jika masih kurang */}
-
+      <div className="space-y-5">
         {/* Kolom Tanggal */}
         <div>
           <label className="text-base font-medium text-gray-700 dark:text-gray-200 mb-1" htmlFor="tanggal">
@@ -50,7 +50,7 @@ const EducationFilterSidebar = ({
 
         {/* Kolom Alamat */}
         <div>
-          <label className="text-base font-medium text-gray-700 dark:text-gray-200 mb-1" htmlFor="alamat">
+           <label className="text-base font-medium text-gray-700 dark:text-gray-200 mb-1" htmlFor="alamat">
             Alamat
           </label>
           <input
@@ -65,12 +65,12 @@ const EducationFilterSidebar = ({
 
         {/* Kolom Wilayah (Dropdown) */}
         <div>
-          <label className="text-base font-medium text-gray-700 dark:text-gray-200 mb-1" htmlFor="wilayah">
+           <label className="text-base font-medium text-gray-700 dark:text-gray-200 mb-1" htmlFor="wilayah">
             Wilayah
           </label>
           <select
             id="wilayah"
-            className="block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-md shadow-sm p-2 text-base appearance-none min-h-[2.5rem] z-[60] relative"
+            className="block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-md shadow-sm p-2 text-base"
             value={filterRegion}
             onChange={(e) => setFilterRegion(e.target.value)}
           >
@@ -80,9 +80,7 @@ const EducationFilterSidebar = ({
             <option value="barat">Barat</option>
             <option value="timur">Timur</option>
             <option value="selatan">Selatan</option>
-            <option value="pusat">Pusat</option>
           </select>
-
         </div>
 
         {/* Tombol Aksi */}
@@ -99,8 +97,7 @@ const EducationFilterSidebar = ({
         </div>
       </div>
     </div>
-
   );
 };
 
-export default EducationFilterSidebar;
+export default OfficesFilterSidebar;

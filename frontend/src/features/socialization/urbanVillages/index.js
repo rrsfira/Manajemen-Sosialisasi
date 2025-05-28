@@ -4,6 +4,7 @@ import * as XLSX from "xlsx";
 import Swal from "sweetalert2"; // popup notif
 import axios from "axios";
 import UrbanVillageChart from "./chart/index";
+import UrbanFilterSidebar from "./Filter"; // import button filter
 import {
   DocumentArrowDownIcon,
   FunnelIcon,
@@ -14,6 +15,7 @@ import {
   TrashIcon,
   PlusIcon,
 } from "@heroicons/react/24/outline";
+import moment from "moment";
 
 const UrbanVillage = () => {
   const navigate = useNavigate(); // hook untuk navigasi
@@ -24,6 +26,19 @@ const UrbanVillage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage] = useState(5);
   const [role, setRole] = useState("");
+   //filter cards dan search
+   
+    const [isFilterVisible, setIsFilterVisible] = useState(false); // untuk menampilkan filter
+    const [selectedGroup, setSelectedGroup] = useState(null); // untuk menampilkan data yang telah di filter di cards
+    const [filteredData, setFilteredData] = useState([]); // untuk menampilkan data yang telah di filter di cards dan search
+    // untuk menampilkan data yang telah di filter di button filter
+    const [filterDate, setFilterDate] = useState("");
+    const [filterName, setFilterName] = useState("");
+    const [filterAddress, setFilterAddress] = useState("");
+    const [filterRegion, setFilterRegion] = useState("");
+    const [currentData, setCurrentData] = useState([]);
+  
+    const [searchedData, setSearchedData] = useState([]);
 
   useEffect(() => {
     const storedRole = localStorage.getItem("role");
@@ -43,19 +58,15 @@ const UrbanVillage = () => {
     }
   };
 
-  // Filtering data based on the search text
-  const filteredData = data.filter((item) =>
-    Object.values(item).some((val) =>
-      String(val).toLowerCase().includes(searchText.toLowerCase())
-    )
-  );
+
   // filter button untuk hari
-  const convertToISODate = (dateStr) => {
+ const convertToISODate = (dateStr) => {
     if (!dateStr) return null; // hindari error jika null
     const [day, month, year] = dateStr.split("-");
     return `${year}-${month}-${day}`;
   };
-  const sortedData = filteredData.slice().sort((a, b) => {
+
+  const sortedData = searchedData.slice().sort((a, b) => {
     const dateA = new Date(convertToISODate(a.date));
     const dateB = new Date(convertToISODate(b.date));
 
@@ -73,12 +84,13 @@ const UrbanVillage = () => {
     }
   });
 
-  const currentData = sortedData.slice(
+  // Ganti nama currentData lokal jadi paginatedData
+  const paginatedData = currentData.slice(
     (currentPage - 1) * rowsPerPage,
     currentPage * rowsPerPage
   );
 
-  const totalPages = Math.ceil(filteredData.length / rowsPerPage);
+  const totalPages = Math.ceil(currentData.length / rowsPerPage);
 
   // popup notifikasi hapus data
   const handleDelete = async (id) => {
@@ -159,9 +171,93 @@ const UrbanVillage = () => {
 
     XLSX.writeFile(workbook, "Kelurahan Tangguh.xlsx");
   };
+//button reset filter sebelah search untuk reset cards dan search
+  const handleReset = () => {
+    setSearchText("");
+    setSelectedGroup(null);
+  };
+
+  const applyFilterAndSearch = () => {
+    // Filter dulu dari sidebar filter
+    const filtered = data.filter((item) => {
+      const matchDate =
+        !filterDate ||
+        moment(item.date, ["DD-MM-YYYY"]).format("DD-MM-YYYY") ===
+          moment(filterDate, "YYYY-MM-DD").format("DD-MM-YYYY");
+
+      const matchName = filterName
+        ? item.name?.toLowerCase().includes(filterName.toLowerCase())
+        : true;
+
+      const matchAddress = filterAddress
+        ? item.address?.toLowerCase().includes(filterAddress.toLowerCase())
+        : true;
+
+      const matchRegion = filterRegion
+        ? item.region?.toLowerCase() === filterRegion.toLowerCase()
+        : true;
+
+      return matchDate && matchName && matchAddress && matchRegion;
+    });
+
+    // Lalu search dari hasil filtered tadi
+    const searchedData = filtered.filter((item) => {
+      const matchesSearch = Object.values(item).some((val) =>
+        String(val).toLowerCase().includes(searchText.toLowerCase())
+      );
+      const matchesGroup = selectedGroup
+        ? item.group?.trim() === selectedGroup
+        : true;
+
+      return matchesSearch && matchesGroup;
+    });
+
+    setCurrentData(searchedData);
+    setCurrentPage(1);
+  };
+
+  // Panggil applyFilterAndSearch setiap filter/search berubah
+  useEffect(() => {
+    applyFilterAndSearch();
+  }, [
+    data,
+    filterDate,
+    filterName,
+    filterAddress,
+    filterRegion,
+    searchText,
+    selectedGroup,
+  ]);
+
+  //reset filter button
+  const resetFilter = () => {
+    setFilterDate("");
+    setFilterName("");
+    setFilterAddress("");
+    setFilterRegion("");
+    setFilteredData(data);
+    setCurrentPage(1);
+  };
+
 
   return (
     <div className="min-h-screen bg-base-200 px-6 py-10 space-y-12">
+      {/* Filter Sidebar (button) */}
+      {isFilterVisible && (
+        <UrbanFilterSidebar
+          filterDate={filterDate}
+          setFilterDate={setFilterDate}
+          filterName={filterName}
+          setFilterName={setFilterName}
+          filterAddress={filterAddress}
+          setFilterAddress={setFilterAddress}
+          filterRegion={filterRegion}
+          setFilterRegion={setFilterRegion}
+          applyFilterAndSearch={applyFilterAndSearch}
+          resetFilter={resetFilter}
+          onClose={() => setIsFilterVisible(false)}
+        />
+      )}
       {/* Pie Chart */}
       <UrbanVillageChart />
 
@@ -169,17 +265,23 @@ const UrbanVillage = () => {
       <div className="bg-base-100 p-6 rounded-xl shadow-lg">
         <h2 className="text-xl font-bold mb-4">Data Tabel Kelurahan Tangguh</h2>
 
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
-          <input
-            type="text"
-            placeholder="Search"
-            className="input input-bordered w-full sm:max-w-xs"
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
-          />
+<div className="flex flex-col sm:flex-row justify-between items-center mb-4">
+          <div className="flex gap-2 w-full sm:w-1/2">
+            <input
+              type="text"
+              placeholder="Search"
+              className="input input-bordered w-full"
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
+            />
+            
+          </div>
+          <div className="flex gap-2 w-full sm:w-1/3 justify-end">
+            <button
+              onClick={() => setIsFilterVisible(true)}
+              className="btn btn-outline btn-[#7B74DA]"
+            >
 
-          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto sm:justify-end">
-            <button className="btn btn-outline btn-info flex items-center justify-center text-sm h-10 w-full sm:w-auto">
               <FunnelIcon className="w-5 h-5 mr-1" />
               Filter
             </button>
@@ -195,8 +297,11 @@ const UrbanVillage = () => {
                 </button>
 
                 <button
-                  className={`btn btn-primary flex items-center justify-center text-sm h-10 w-full sm:w-auto ${currentPath === "/app/UrbanVillage/Create"
-                      ? "font-bold text-primary"
+
+                  className={`btn btn-primary flex items-center text-lg cursor-pointer ${
+                    currentPath === "/app/UrbanVillage/Create"
+                      ? "font-bold"
+
                       : ""
                     }`}
                   onClick={() => navigate("/app/UrbanVillage/Create")}
@@ -225,142 +330,149 @@ const UrbanVillage = () => {
                 <th className="text-center">Action</th>
               </tr>
             </thead>
-            <tbody>
-              {currentData.map((item, idx) => {
-                console.log(item); // Add this to see the structure of the item
-                return (
-                  <tr key={idx}>
-                    <td className="text-center">
-                      {(currentPage - 1) * rowsPerPage + idx + 1}
-                    </td>
-                    <td className="text-center">
-                      {item.name || "Tidak ada data"}
-                    </td>
-                    <td className="text-center">
-                      {item.address || "Tidak ada data"}
-                    </td>
-                    <td className="text-center">
-                      {item.region || "Tidak ada data"}
-                    </td>
-                    <td className="text-center">
-                      {item.subdistrict || "Tidak ada data"}
-                    </td>
-                    <td className="text-center">
-                      {item.suratK ? (
-                        <CheckCircleIcon className="w-5 h-5 text-success mx-auto" />
-                      ) : (
-                        <XCircleIcon className="w-5 h-5 text-error mx-auto" />
-                      )}
-                    </td>
-                    <td className="text-center">
-                      {item.date || "Tidak ada data"}
-                    </td>
-                    <td className="text-center flex justify-center gap-1">
-                      <button
-                        className="btn btn-sm btn-primary mr-1"
-                        onClick={() =>
-                          navigate(`/app/UrbanVillage/Detail/${item.id}`)
-                        }
-                      >
-                        <EyeIcon className="w-5 h-5" />
-                      </button>
-                      {role === "admin" && (
-                        <>
-                          <button
-                            className="btn btn-sm btn-warning mr-1"
-                            onClick={() =>
-                              navigate(`/app/UrbanVillage/Edit/${item.id}`)
-                            }
-                          >
-                            <PencilSquareIcon className="w-5 h-5" />
-                          </button>
-                          <button
-                            className="btn btn-sm btn-error"
-                            onClick={() => handleDelete(item.id)}
-                          >
-                            <TrashIcon className="w-5 h-5" />
-                          </button>
-                        </>
-                      )}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
 
-        {/* Pagination Controls */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-2 mt-4">
-          {/* Prev Button */}
-          <button
-            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-            disabled={currentPage === 1}
-            className="btn btn-sm btn-outline"
-          >
-            ← Prev
-          </button>
-
-          {/* Page Numbers */}
-          <div className="flex items-center gap-1 flex-wrap justify-center overflow-x-auto max-w-full px-2">
-            {currentPage > 3 && (
-              <>
-                <button
-                  onClick={() => setCurrentPage(1)}
-                  className="btn btn-sm btn-outline"
-                >
-                  1
-                </button>
-                {currentPage > 4 && (
-                  <span className="px-2 text-gray-500">...</span>
-                )}
-              </>
-            )}
-
-            {Array.from({ length: 5 }, (_, i) => {
-              const page = currentPage - 2 + i;
-              if (page < 1 || page > totalPages) return null;
-              return (
-                <button
-                  key={page}
-                  onClick={() => setCurrentPage(page)}
-                  className={`btn btn-sm ${page === currentPage ? "btn-primary" : "btn-outline"
-                    }`}
-                >
-                  {page}
-                </button>
-              );
-            })}
-
-            {currentPage < totalPages - 2 && (
-              <>
-                {currentPage < totalPages - 3 && (
-                  <span className="px-2 text-gray-500">...</span>
-                )}
-                <button
-                  onClick={() => setCurrentPage(totalPages)}
-                  className="btn btn-sm btn-outline"
-                >
-                  {totalPages}
-                </button>
-              </>
-            )}
-          </div>
-
-          {/* Next Button */}
-          <button
-            onClick={() =>
-              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-            }
-            disabled={currentPage === totalPages}
-            className="btn btn-sm btn-outline"
-          >
-            Next →
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
+           <tbody>
+                         {paginatedData.length > 0 ? (
+                           paginatedData.map((item, idx) => (
+                             <tr key={idx}>
+                               <td className="text-center">
+                                 {(currentPage - 1) * rowsPerPage + idx + 1}
+                               </td>
+                               <td className="text-center">
+                                 {item.name || "Tidak ada data"}
+                               </td>
+                               <td className="text-center">
+                                 {item.address || "Tidak ada data"}
+                               </td>
+                               <td className="text-center">
+                                 {item.region || "Tidak ada data"}
+                               </td>
+                               <td className="text-center">
+                                 {item.subdistrict || "Tidak ada data"}
+                               </td>
+                               <td className="text-center">
+                                 {item.suratK ? (
+                                   <CheckCircleIcon className="w-5 h-5 text-success mx-auto" />
+                                 ) : (
+                                   <XCircleIcon className="w-5 h-5 text-error mx-auto" />
+                                 )}
+                               </td>
+                               <td className="text-center">
+                                 {item.date || "Tidak ada data"}
+                               </td>
+                               <td className="text-center">
+                                 <button
+                                   className="btn btn-sm btn-primary mr-1"
+                                   onClick={() =>
+                                     navigate(`/app/UrbanVillage/Detail/${item.id}`)
+                                   }
+                                 >
+                                   <EyeIcon className="w-5 h-5" />
+                                 </button>
+                                 {role === "admin" && (
+                                   <>
+                                     <button
+                                       className="btn btn-sm btn-warning mr-1"
+                                       onClick={() =>
+                                         navigate(`/app/UrbanVillage/Edit/${item.id}`)
+                                       }
+                                     >
+                                       <PencilSquareIcon className="w-5 h-5" />
+                                     </button>
+                                     <button
+                                       className="btn btn-sm btn-error"
+                                       onClick={() => handleDelete(item.id)}
+                                     >
+                                       <TrashIcon className="w-5 h-5" />
+                                     </button>
+                                   </>
+                                 )}
+                               </td>
+                             </tr>
+                           ))
+                         ) : (
+                           <tr>
+                             <td colSpan={8} className="text-center py-4">
+                               Tidak ada data
+                             </td>
+                           </tr>
+                         )}
+                       </tbody>
+                     </table>
+                   </div>
+                   {/* Pagination Controls */}
+                   <div className="flex items-center justify-between mt-4">
+                     {/* Prev Button */}
+                     <button
+                       onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                       disabled={currentPage === 1}
+                       className="btn btn-sm btn-outline"
+                     >
+                       ← Prev
+                     </button>
+           
+                     {/* Page Numbers */}
+                     <div className="flex items-center gap-1">
+                       {currentPage > 3 && (
+                         <>
+                           <button
+                             onClick={() => setCurrentPage(1)}
+                             className="btn btn-sm btn-outline"
+                           >
+                             1
+                           </button>
+                           {currentPage > 4 && (
+                             <span className="px-2 text-gray-500">...</span>
+                           )}
+                         </>
+                       )}
+           
+                       {Array.from({ length: 5 }, (_, i) => {
+                         const page = currentPage - 2 + i;
+                         if (page < 1 || page > totalPages) return null;
+                         return (
+                           <button
+                             key={page}
+                             onClick={() => setCurrentPage(page)}
+                             className={`btn btn-sm ${
+                               page === currentPage ? "btn-primary" : "btn-outline"
+                             }`}
+                           >
+                             {page}
+                           </button>
+                         );
+                       })}
+           
+                       {currentPage < totalPages - 2 && (
+                         <>
+                           {currentPage < totalPages - 3 && (
+                             <span className="px-2 text-gray-500">...</span>
+                           )}
+                           <button
+                             onClick={() => setCurrentPage(totalPages)}
+                             className="btn btn-sm btn-outline"
+                           >
+                             {totalPages}
+                           </button>
+                         </>
+                       )}
+                     </div>
+           
+                     {/* Next Button */}
+                     <button
+                       onClick={() =>
+                         setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                       }
+                       disabled={currentPage === totalPages}
+                       className="btn btn-sm btn-outline"
+                     >
+                       Next →
+                     </button>
+                   </div>
+                 </div>
+               </div>
+             );
+           };
+           
 
 export default UrbanVillage;
