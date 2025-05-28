@@ -42,27 +42,58 @@ const Education = () => {
     currentPage * rowsPerPage
   );
 
+   // popup notifikasi hapus data
   const handleDelete = async (id) => {
-    const result = await Swal.fire({
-      title: "Yakin ingin hapus materi ini?",
-      text: "Data akan dihapus permanen!",
+    const isDarkMode = document.documentElement.classList.contains("dark");
+
+    Swal.fire({
+      title: "Yakin ingin menghapus?",
+      text: "Data yang dihapus tidak dapat dikembalikan.",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: "#d33",
-      cancelButtonColor: "#3085d6",
       confirmButtonText: "Ya, hapus!",
       cancelButtonText: "Batal",
-    });
+      willOpen: () => {
+        const popup = document.querySelector(".swal2-popup");
+        if (document.documentElement.classList.contains("dark")) {
+          popup.classList.add("swal2-dark");
+          popup
+            .querySelector(".swal2-title")
+            ?.classList.add("swal2-title-dark");
+          popup
+            .querySelector(".swal2-html-container")
+            ?.classList.add("swal2-content-dark");
+          popup
+            .querySelector(".swal2-confirm")
+            ?.classList.add("swal2-confirm-dark");
+          popup
+            .querySelector(".swal2-cancel")
+            ?.classList.add("swal2-cancel-dark");
+        }
+      },
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const token = localStorage.getItem("token");
 
-    if (result.isConfirmed) {
-      try {
-        await axios.delete(`http://localhost:5000/educations/${id}`);
-        fetchEducations();
-        Swal.fire("Berhasil!", "Materi berhasil dihapus.", "success");
-      } catch (err) {
-        Swal.fire("Gagal", "Terjadi kesalahan saat menghapus.", "error");
+          await axios.delete(`http://localhost:5000/educations/${id}`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+
+          fetchEducations();
+          Swal.fire("Terhapus!", "Data berhasil dihapus.", "success");
+        } catch (error) {
+          console.error("Gagal menghapus data:", error);
+          Swal.fire(
+            "Gagal!",
+            "Terjadi kesalahan saat menghapus data.",
+            "error"
+          );
+        }
       }
-    }
+    });
   };
 
   return (

@@ -402,7 +402,8 @@ router.get("/count", (req, res) => {
       SUM(CASE WHEN hf.category = 'Puskesmas' THEN 1 ELSE 0 END) AS puskesmas,
       SUM(CASE WHEN hf.category = 'Klinik' THEN 1 ELSE 0 END) AS klinik,
       SUM(CASE WHEN hf.category = 'Rumah Sakit' THEN 1 ELSE 0 END) AS rumah_sakit
-    FROM health_facilities hf
+    FROM health_facilities hf 
+      WHERE hf.deleted_at IS NULL
   `;
 
   db.query(query, (err, results) => {
