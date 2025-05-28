@@ -1,6 +1,6 @@
 import React from "react";
 
-const EducationFilterSidebar = ({
+const HealthFacilitiesFilterSidebar = ({
   filterDate,
   setFilterDate,
   filterName,
@@ -35,13 +35,13 @@ const EducationFilterSidebar = ({
 
         {/* Kolom Nama Sekolah */}
         <div>
-          <label className="text-base font-medium text-gray-700 dark:text-gray-200 mb-1" htmlFor="namaSekolah">
-            Nama Sekolah
+          <label className="text-base font-medium text-gray-700 dark:text-gray-200 mb-1" htmlFor="namaFasilitasKesehatan">
+            Nama Fasilitas Kesehatan
           </label>
           <input
             type="text"
-            id="namaSekolah"
-            placeholder="Masukkan nama sekolah"
+            id="namaFasilitasKesehatan"
+            placeholder="Masukkan nama fasilitas kesehatan"
             className="block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-md shadow-sm p-2 text-base"
             value={filterName}
             onChange={(e) => setFilterName(e.target.value)}
@@ -100,4 +100,4 @@ const EducationFilterSidebar = ({
   );
 };
 
-export default EducationFilterSidebar;
+export default HealthFacilitiesFilterSidebar;

@@ -1,6 +1,6 @@
 import React from "react";
 
-const EducationFilterSidebar = ({
+const OfficesFilterSidebar = ({
   filterDate,
   setFilterDate,
   filterName,
@@ -100,4 +100,4 @@ const EducationFilterSidebar = ({
   );
 };
 
-export default EducationFilterSidebar;
+export default OfficesFilterSidebar;

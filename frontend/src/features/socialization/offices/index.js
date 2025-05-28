@@ -4,6 +4,7 @@ import * as XLSX from "xlsx";
 import Swal from "sweetalert2"; // popup notif
 import axios from "axios";
 import OfficesChart from "./chart";
+import OfficesFilterSidebar from "./Filter";
 import {
   DocumentArrowDownIcon,
   FunnelIcon,
@@ -14,6 +15,7 @@ import {
   TrashIcon,
   PlusIcon,
 } from "@heroicons/react/24/outline";
+import moment from "moment";
 
 const Office = () => {
   const navigate = useNavigate(); // hook untuk navigasi
@@ -24,6 +26,20 @@ const Office = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage] = useState(5);
   const [role, setRole] = useState("");
+
+ //filter cards dan search
+  const [isFilterVisible, setIsFilterVisible] = useState(false); // untuk menampilkan filter
+  const [selectedGroup, setSelectedGroup] = useState(null); // untuk menampilkan data yang telah di filter di cards
+  const [filteredData, setFilteredData] = useState([]); // untuk menampilkan data yang telah di filter di cards dan search
+  // untuk menampilkan data yang telah di filter di button filter
+  const [filterDate, setFilterDate] = useState("");
+  const [filterName, setFilterName] = useState("");
+  const [filterAddress, setFilterAddress] = useState("");
+  const [filterRegion, setFilterRegion] = useState("");
+  const [currentData, setCurrentData] = useState([]);
+
+  const [searchedData, setSearchedData] = useState([]);
+
 
   useEffect(() => {
     const storedRole = localStorage.getItem("role");
@@ -43,19 +59,15 @@ const Office = () => {
     }
   };
 
-  // Filtering data based on the search text
-  const filteredData = data.filter((item) =>
-    Object.values(item).some((val) =>
-      String(val).toLowerCase().includes(searchText.toLowerCase())
-    )
-  );
+
   // filter button untuk hari
   const convertToISODate = (dateStr) => {
     if (!dateStr) return null; // hindari error jika null
     const [day, month, year] = dateStr.split("-");
     return `${year}-${month}-${day}`;
   };
-  const sortedData = filteredData.slice().sort((a, b) => {
+
+  const sortedData = searchedData.slice().sort((a, b) => {
     const dateA = new Date(convertToISODate(a.date));
     const dateB = new Date(convertToISODate(b.date));
 
@@ -73,12 +85,13 @@ const Office = () => {
     }
   });
 
-  const currentData = sortedData.slice(
+  // Ganti nama currentData lokal jadi paginatedData
+  const paginatedData = currentData.slice(
     (currentPage - 1) * rowsPerPage,
     currentPage * rowsPerPage
   );
 
-  const totalPages = Math.ceil(filteredData.length / rowsPerPage);
+  const totalPages = Math.ceil(currentData.length / rowsPerPage);
 
   // popup notifikasi hapus data
   const handleDelete = async (id) => {
@@ -160,25 +173,115 @@ const Office = () => {
     XLSX.writeFile(workbook, "Office.xlsx");
   };
 
+   //button reset filter sebelah search untuk reset cards dan search
+    const handleReset = () => {
+      setSearchText("");
+      setSelectedGroup(null);
+    };
+  
+    const applyFilterAndSearch = () => {
+      // Filter dulu dari sidebar filter
+      const filtered = data.filter((item) => {
+        const matchDate =
+          !filterDate ||
+          moment(item.date, ["DD-MM-YYYY"]).format("DD-MM-YYYY") ===
+            moment(filterDate, "YYYY-MM-DD").format("DD-MM-YYYY");
+  
+        const matchName = filterName
+          ? item.name?.toLowerCase().includes(filterName.toLowerCase())
+          : true;
+  
+        const matchAddress = filterAddress
+          ? item.address?.toLowerCase().includes(filterAddress.toLowerCase())
+          : true;
+  
+        const matchRegion = filterRegion
+          ? item.region?.toLowerCase() === filterRegion.toLowerCase()
+          : true;
+  
+        return matchDate && matchName && matchAddress && matchRegion;
+      });
+  
+      // Lalu search dari hasil filtered tadi
+      const searchedData = filtered.filter((item) => {
+        const matchesSearch = Object.values(item).some((val) =>
+          String(val).toLowerCase().includes(searchText.toLowerCase())
+        );
+        const matchesGroup = selectedGroup
+          ? item.group?.trim() === selectedGroup
+          : true;
+  
+        return matchesSearch && matchesGroup;
+      });
+  
+      setCurrentData(searchedData);
+      setCurrentPage(1);
+    };
+  
+    // Panggil applyFilterAndSearch setiap filter/search berubah
+    useEffect(() => {
+      applyFilterAndSearch();
+    }, [
+      data,
+      filterDate,
+      filterName,
+      filterAddress,
+      filterRegion,
+      searchText,
+      selectedGroup,
+    ]);
+  
+    //reset filter button
+    const resetFilter = () => {
+      setFilterDate("");
+      setFilterName("");
+      setFilterAddress("");
+      setFilterRegion("");
+      setFilteredData(data);
+      setCurrentPage(1);
+    };
+
+
   return (
     <div className="min-h-screen bg-base-200 px-6 py-10 space-y-12">
+       {/* Filter Sidebar (button) */}
+      {isFilterVisible && (
+        <OfficesFilterSidebar
+          filterDate={filterDate}
+          setFilterDate={setFilterDate}
+          filterName={filterName}
+          setFilterName={setFilterName}
+          filterAddress={filterAddress}
+          setFilterAddress={setFilterAddress}
+          filterRegion={filterRegion}
+          setFilterRegion={setFilterRegion}
+          applyFilterAndSearch={applyFilterAndSearch}
+          resetFilter={resetFilter}
+          onClose={() => setIsFilterVisible(false)}
+        />
+      )}
       {/* Pie Chart */}
       <OfficesChart />
 
       {/* Table + Filter */}
       <div className="bg-base-100 p-6 rounded-xl shadow-lg">
         <h2 className="text-xl font-bold mb-4">Data Tabel Perkantoran</h2>
-
-        <div className="flex flex-col sm:flex-row sm:justify-between gap-4 mb-4">
-          <input
-            type="text"
-            placeholder="Search"
-            className="input input-bordered w-full sm:w-1/3"
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
-          />
+ <div className="flex flex-col sm:flex-row justify-between items-center mb-4">
+          <div className="flex gap-2 w-full sm:w-1/2">
+            <input
+              type="text"
+              placeholder="Search"
+              className="input input-bordered w-full"
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
+            />
+            
+          </div>
           <div className="flex gap-2 w-full sm:w-1/3 justify-end">
-            <button className="btn btn-outline btn-info flex items-center text-sm h-10">
+            <button
+              onClick={() => setIsFilterVisible(true)}
+              className="btn btn-outline btn-[#7B74DA]"
+            >
               <FunnelIcon className="w-5 h-5 mr-1" />
               Filter
             </button>
@@ -194,7 +297,7 @@ const Office = () => {
                 <button
                   className={`btn btn-primary flex items-center text-lg cursor-pointer ${
                     currentPath === "/app/Office/Create"
-                      ? "font-bold text-primary"
+                      ? "font-bold"
                       : ""
                   }`}
                   onClick={() => navigate("/app/Office/Create")}
@@ -223,71 +326,76 @@ const Office = () => {
               </tr>
             </thead>
             <tbody>
-              {currentData.map((item, idx) => {
-                console.log(item); // Add this to see the structure of the item
-                return (
-                  <tr key={idx}>
-                    <td className="text-center">
-                      {(currentPage - 1) * rowsPerPage + idx + 1}
-                    </td>
-                    <td className="text-center">
-                      {item.name || "Tidak ada data"}
-                    </td>
-                    <td className="text-center">
-                      {item.address || "Tidak ada data"}
-                    </td>
-                    <td className="text-center">
-                      {item.region || "Tidak ada data"}
-                    </td>
-                    <td className="text-center">
-                      {item.subdistrict || "Tidak ada data"}
-                    </td>
-                    <td className="text-center">
-                      {item.suratK ? (
-                        <CheckCircleIcon className="w-5 h-5 text-success mx-auto" />
-                      ) : (
-                        <XCircleIcon className="w-5 h-5 text-error mx-auto" />
-                      )}
-                    </td>
-                    <td className="text-center">
-                      {item.date || "Tidak ada data"}
-                    </td>
-                    <td className="text-center flex justify-center gap-1">
-                      <button
-                        className="btn btn-sm btn-primary mr-1"
-                        onClick={() =>
-                          navigate(`/app/Office/Detail/${item.id}`)
-                        }
-                      >
-                        <EyeIcon className="w-5 h-5" />
-                      </button>
-                      {role === "admin" && (
-                        <>
-                          <button
-                            className="btn btn-sm btn-warning mr-1"
-                            onClick={() =>
-                              navigate(`/app/Office/Edit/${item.id}`)
-                            }
-                          >
-                            <PencilSquareIcon className="w-5 h-5" />
-                          </button>
-                          <button
-                            className="btn btn-sm btn-error"
-                            onClick={() => handleDelete(item.id)}
-                          >
-                            <TrashIcon className="w-5 h-5" />
-                          </button>
-                        </>
-                      )}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
+                         {paginatedData.length > 0 ? (
+                           paginatedData.map((item, idx) => (
+                             <tr key={idx}>
+                               <td className="text-center">
+                                 {(currentPage - 1) * rowsPerPage + idx + 1}
+                               </td>
+                               <td className="text-center">
+                                 {item.name || "Tidak ada data"}
+                               </td>
+                               <td className="text-center">
+                                 {item.address || "Tidak ada data"}
+                               </td>
+                               <td className="text-center">
+                                 {item.region || "Tidak ada data"}
+                               </td>
+                               <td className="text-center">
+                                 {item.subdistrict || "Tidak ada data"}
+                               </td>
+                               <td className="text-center">
+                                 {item.suratK ? (
+                                   <CheckCircleIcon className="w-5 h-5 text-success mx-auto" />
+                                 ) : (
+                                   <XCircleIcon className="w-5 h-5 text-error mx-auto" />
+                                 )}
+                               </td>
+                               <td className="text-center">
+                                 {item.date || "Tidak ada data"}
+                               </td>
+                               <td className="text-center">
+                                 <button
+                                   className="btn btn-sm btn-primary mr-1"
+                                   onClick={() =>
+                                     navigate(`/app/Office/Detail/${item.id}`)
+                                   }
+                                 >
+                                   <EyeIcon className="w-5 h-5" />
+                                 </button>
+                                 {role === "admin" && (
+                                   <>
+                                     <button
+                                       className="btn btn-sm btn-warning mr-1"
+                                       onClick={() =>
+                                         navigate(`/app/Office/Edit/${item.id}`)
+                                       }
+                                     >
+                                       <PencilSquareIcon className="w-5 h-5" />
+                                     </button>
+                                     <button
+                                       className="btn btn-sm btn-error"
+                                       onClick={() => handleDelete(item.id)}
+                                     >
+                                       <TrashIcon className="w-5 h-5" />
+                                     </button>
+                                   </>
+                                 )}
+                               </td>
+                             </tr>
+                           ))
+                         ) : (
+                           <tr>
+                             <td colSpan={8} className="text-center py-4">
+                               Tidak ada data
+                             </td>
+                           </tr>
+                         )}
+                       </tbody>
           </table>
         </div>
 
-        {/* Pagination Controls */}
+         {/* Pagination Controls */}
         <div className="flex items-center justify-between mt-4">
           {/* Prev Button */}
           <button
@@ -321,8 +429,8 @@ const Office = () => {
                 <button
                   key={page}
                   onClick={() => setCurrentPage(page)}
-                  className={`btn btn-sm btn-outline ${
-                    page === currentPage ? "btn-active" : ""
+                  className={`btn btn-sm ${
+                    page === currentPage ? "btn-primary" : "btn-outline"
                   }`}
                 >
                   {page}
