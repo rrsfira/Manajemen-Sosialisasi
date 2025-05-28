@@ -4,7 +4,7 @@ import axios from "axios";
 import HealthFacilitiesChart from "./chart/index.js";
 import * as XLSX from "xlsx";
 import Swal from "sweetalert2"; // popup notif
-import HealthFacilitiesFilterSidebar from "./Filter"; 
+import HealthFacilitiesFilterSidebar from "./Filter";
 import {
   DocumentArrowDownIcon,
   CheckCircleIcon,
@@ -30,13 +30,13 @@ const HealthFacility = () => {
   const currentPath = location.pathname; // untuk mendapatkan path lokasi
   const navigate = useNavigate(); // hook untuk navigasi
   const [currentData, setCurrentData] = useState([]);
-    const [filteredData, setFilteredData] = useState([]); // untuk menampilkan data yang telah di filter di cards dan search
+  const [filteredData, setFilteredData] = useState([]); // untuk menampilkan data yang telah di filter di cards dan search
 
-   const [filterDate, setFilterDate] = useState("");
-    const [filterName, setFilterName] = useState("");
-    const [filterAddress, setFilterAddress] = useState("");
-    const [filterRegion, setFilterRegion] = useState("");
-   
+  const [filterDate, setFilterDate] = useState("");
+  const [filterName, setFilterName] = useState("");
+  const [filterAddress, setFilterAddress] = useState("");
+  const [filterRegion, setFilterRegion] = useState("");
+
   const [searchedData, setSearchedData] = useState([]);
 
   useEffect(() => {
@@ -44,7 +44,7 @@ const HealthFacility = () => {
     if (storedRole) setRole(storedRole);
   }, []);
 
-  
+
 
   const handleReset = () => {
     setSearchText("");
@@ -56,7 +56,7 @@ const HealthFacility = () => {
     const [day, month, year] = dateStr.split("-");
     return `${year}-${month}-${day}`;
   };
-   const sortedData = searchedData.slice().sort((a, b) => {
+  const sortedData = searchedData.slice().sort((a, b) => {
     const dateA = new Date(convertToISODate(a.date));
     const dateB = new Date(convertToISODate(b.date));
 
@@ -74,7 +74,7 @@ const HealthFacility = () => {
     }
   });
 
-   const paginatedData = currentData.slice(
+  const paginatedData = currentData.slice(
     (currentPage - 1) * rowsPerPage,
     currentPage * rowsPerPage
   );
@@ -202,13 +202,13 @@ const HealthFacility = () => {
     });
   };
 
-const applyFilterAndSearch = () => {
+  const applyFilterAndSearch = () => {
     // Filter dulu dari sidebar filter
     const filtered = data.filter((item) => {
       const matchDate =
         !filterDate ||
         moment(item.date, ["DD-MM-YYYY"]).format("DD-MM-YYYY") ===
-          moment(filterDate, "YYYY-MM-DD").format("DD-MM-YYYY");
+        moment(filterDate, "YYYY-MM-DD").format("DD-MM-YYYY");
 
       const matchName = filterName
         ? item.name?.toLowerCase().includes(filterName.toLowerCase())
@@ -313,8 +313,9 @@ const applyFilterAndSearch = () => {
           Data Tabel Fasilitas Kesehatan
         </h2>
 
-        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-4">
-          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-[66%]">
+        <div className="flex flex-col gap-4 mb-4 sm:flex-row sm:items-start sm:justify-between">
+          {/* Search & Reset */}
+          <div className="flex flex-col sm:flex-row gap-2 sm:w-2/3 w-full">
             <input
               type="text"
               placeholder="Search"
@@ -324,12 +325,14 @@ const applyFilterAndSearch = () => {
             />
             <button
               onClick={handleReset}
-              className="btn btn-secondary whitespace-nowrap w-full sm:w-auto"
+              className="btn btn-secondary w-full sm:w-auto whitespace-nowrap"
             >
               Reset Search
             </button>
           </div>
-          <div className="flex flex-wrap gap-2 w-full sm:w-[66%] sm:justify-end">
+
+          {/* Filter & Admin Buttons */}
+          <div className="flex flex-wrap gap-2 w-full sm:w-1/3 sm:justify-end">
             <button
               onClick={() => setIsFilterVisible(true)}
               className="btn btn-outline text-[#7B74DA] w-full sm:w-auto"
@@ -337,6 +340,7 @@ const applyFilterAndSearch = () => {
               <FunnelIcon className="w-5 h-5 mr-1" />
               Filter
             </button>
+
             {role === "admin" && (
               <>
                 <button
@@ -359,6 +363,7 @@ const applyFilterAndSearch = () => {
           </div>
         </div>
 
+
         {/* Table */}
         <div className="overflow-x-auto">
           <table className="table w-full">
@@ -374,73 +379,73 @@ const applyFilterAndSearch = () => {
                 <th className="text-center">Action</th>
               </tr>
             </thead>
-             <tbody>
-                          {paginatedData.length > 0 ? (
-                            paginatedData.map((item, idx) => (
-                              <tr key={idx}>
-                                <td className="text-center">
-                                  {(currentPage - 1) * rowsPerPage + idx + 1}
-                                </td>
-                                <td className="text-center">
-                                  {item.name || "Tidak ada data"}
-                                </td>
-                                <td className="text-center">
-                                  {item.address || "Tidak ada data"}
-                                </td>
-                                <td className="text-center">
-                                  {item.region || "Tidak ada data"}
-                                </td>
-                                <td className="text-center">
-                                  {item.subdistrict || "Tidak ada data"}
-                                </td>
-                                <td className="text-center">
-                                  {item.suratK ? (
-                                    <CheckCircleIcon className="w-5 h-5 text-success mx-auto" />
-                                  ) : (
-                                    <XCircleIcon className="w-5 h-5 text-error mx-auto" />
-                                  )}
-                                </td>
-                                <td className="text-center">
-                                  {item.date || "Tidak ada data"}
-                                </td>
-                                <td className="text-center">
-                                  <button
-                                    className="btn btn-sm btn-primary mr-1"
-                                    onClick={() =>
-                                      navigate(`/app/HealthFacility/Detail/${item.id}`)
-                                    }
-                                  >
-                                    <EyeIcon className="w-5 h-5" />
-                                  </button>
-                                  {role === "admin" && (
-                                    <>
-                                      <button
-                                        className="btn btn-sm btn-warning mr-1"
-                                        onClick={() =>
-                                          navigate(`/app/HealthFacility/Edit/${item.id}`)
-                                        }
-                                      >
-                                        <PencilSquareIcon className="w-5 h-5" />
-                                      </button>
-                                      <button
-                                        className="btn btn-sm btn-error"
-                                        onClick={() => handleDelete(item.id)}
-                                      >
-                                        <TrashIcon className="w-5 h-5" />
-                                      </button>
-                                    </>
-                                  )}
-                                </td>
-                              </tr>
-                            ))
-                          ) : (
-                            <tr>
-                              <td colSpan={8} className="text-center py-4">
-                                Tidak ada data
-                              </td>
-                            </tr>
-                          )}
-                        </tbody>
+            <tbody>
+              {paginatedData.length > 0 ? (
+                paginatedData.map((item, idx) => (
+                  <tr key={idx}>
+                    <td className="text-center">
+                      {(currentPage - 1) * rowsPerPage + idx + 1}
+                    </td>
+                    <td className="text-center">
+                      {item.name || "Tidak ada data"}
+                    </td>
+                    <td className="text-center">
+                      {item.address || "Tidak ada data"}
+                    </td>
+                    <td className="text-center">
+                      {item.region || "Tidak ada data"}
+                    </td>
+                    <td className="text-center">
+                      {item.subdistrict || "Tidak ada data"}
+                    </td>
+                    <td className="text-center">
+                      {item.suratK ? (
+                        <CheckCircleIcon className="w-5 h-5 text-success mx-auto" />
+                      ) : (
+                        <XCircleIcon className="w-5 h-5 text-error mx-auto" />
+                      )}
+                    </td>
+                    <td className="text-center">
+                      {item.date || "Tidak ada data"}
+                    </td>
+                    <td className="text-center">
+                      <button
+                        className="btn btn-sm btn-primary mr-1"
+                        onClick={() =>
+                          navigate(`/app/HealthFacility/Detail/${item.id}`)
+                        }
+                      >
+                        <EyeIcon className="w-5 h-5" />
+                      </button>
+                      {role === "admin" && (
+                        <>
+                          <button
+                            className="btn btn-sm btn-warning mr-1"
+                            onClick={() =>
+                              navigate(`/app/HealthFacility/Edit/${item.id}`)
+                            }
+                          >
+                            <PencilSquareIcon className="w-5 h-5" />
+                          </button>
+                          <button
+                            className="btn btn-sm btn-error"
+                            onClick={() => handleDelete(item.id)}
+                          >
+                            <TrashIcon className="w-5 h-5" />
+                          </button>
+                        </>
+                      )}
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={8} className="text-center py-4">
+                    Tidak ada data
+                  </td>
+                </tr>
+              )}
+            </tbody>
           </table>
         </div>
         {/* Pagination Controls */}

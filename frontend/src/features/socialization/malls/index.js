@@ -4,7 +4,7 @@ import * as XLSX from "xlsx";
 import Swal from "sweetalert2"; // popup notif
 import axios from "axios";
 import MallsChart from "./chart/index.js";
-import MallsFilterSidebar from "./Filter"; 
+import MallsFilterSidebar from "./Filter";
 import {
   DocumentArrowDownIcon,
   FunnelIcon,
@@ -26,7 +26,7 @@ const Mall = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage] = useState(5);
   const [role, setRole] = useState("");
- //filter cards dan search
+  //filter cards dan search
   const [isFilterVisible, setIsFilterVisible] = useState(false); // untuk menampilkan filter
   const [selectedGroup, setSelectedGroup] = useState(null); // untuk menampilkan data yang telah di filter di cards
   const [filteredData, setFilteredData] = useState([]); // untuk menampilkan data yang telah di filter di cards dan search
@@ -170,78 +170,78 @@ const Mall = () => {
     XLSX.writeFile(workbook, "Mall.xlsx");
   };
 
-   //button reset filter sebelah search untuk reset cards dan search
-    const handleReset = () => {
-      setSearchText("");
-      setSelectedGroup(null);
-    };
-  
-    const applyFilterAndSearch = () => {
-      // Filter dulu dari sidebar filter
-      const filtered = data.filter((item) => {
-        const matchDate =
-          !filterDate ||
-          moment(item.date, ["DD-MM-YYYY"]).format("DD-MM-YYYY") ===
-            moment(filterDate, "YYYY-MM-DD").format("DD-MM-YYYY");
-  
-        const matchName = filterName
-          ? item.name?.toLowerCase().includes(filterName.toLowerCase())
-          : true;
-  
-        const matchAddress = filterAddress
-          ? item.address?.toLowerCase().includes(filterAddress.toLowerCase())
-          : true;
-  
-        const matchRegion = filterRegion
-          ? item.region?.toLowerCase() === filterRegion.toLowerCase()
-          : true;
-  
-        return matchDate && matchName && matchAddress && matchRegion;
-      });
-  
-      // Lalu search dari hasil filtered tadi
-      const searchedData = filtered.filter((item) => {
-        const matchesSearch = Object.values(item).some((val) =>
-          String(val).toLowerCase().includes(searchText.toLowerCase())
-        );
-        const matchesGroup = selectedGroup
-          ? item.group?.trim() === selectedGroup
-          : true;
-  
-        return matchesSearch && matchesGroup;
-      });
-  
-      setCurrentData(searchedData);
-      setCurrentPage(1);
-    };
-  
-    // Panggil applyFilterAndSearch setiap filter/search berubah
-    useEffect(() => {
-      applyFilterAndSearch();
-    }, [
-      data,
-      filterDate,
-      filterName,
-      filterAddress,
-      filterRegion,
-      searchText,
-      selectedGroup,
-    ]);
-  
-    //reset filter button
-    const resetFilter = () => {
-      setFilterDate("");
-      setFilterName("");
-      setFilterAddress("");
-      setFilterRegion("");
-      setFilteredData(data);
-      setCurrentPage(1);
-    };
+  //button reset filter sebelah search untuk reset cards dan search
+  const handleReset = () => {
+    setSearchText("");
+    setSelectedGroup(null);
+  };
+
+  const applyFilterAndSearch = () => {
+    // Filter dulu dari sidebar filter
+    const filtered = data.filter((item) => {
+      const matchDate =
+        !filterDate ||
+        moment(item.date, ["DD-MM-YYYY"]).format("DD-MM-YYYY") ===
+        moment(filterDate, "YYYY-MM-DD").format("DD-MM-YYYY");
+
+      const matchName = filterName
+        ? item.name?.toLowerCase().includes(filterName.toLowerCase())
+        : true;
+
+      const matchAddress = filterAddress
+        ? item.address?.toLowerCase().includes(filterAddress.toLowerCase())
+        : true;
+
+      const matchRegion = filterRegion
+        ? item.region?.toLowerCase() === filterRegion.toLowerCase()
+        : true;
+
+      return matchDate && matchName && matchAddress && matchRegion;
+    });
+
+    // Lalu search dari hasil filtered tadi
+    const searchedData = filtered.filter((item) => {
+      const matchesSearch = Object.values(item).some((val) =>
+        String(val).toLowerCase().includes(searchText.toLowerCase())
+      );
+      const matchesGroup = selectedGroup
+        ? item.group?.trim() === selectedGroup
+        : true;
+
+      return matchesSearch && matchesGroup;
+    });
+
+    setCurrentData(searchedData);
+    setCurrentPage(1);
+  };
+
+  // Panggil applyFilterAndSearch setiap filter/search berubah
+  useEffect(() => {
+    applyFilterAndSearch();
+  }, [
+    data,
+    filterDate,
+    filterName,
+    filterAddress,
+    filterRegion,
+    searchText,
+    selectedGroup,
+  ]);
+
+  //reset filter button
+  const resetFilter = () => {
+    setFilterDate("");
+    setFilterName("");
+    setFilterAddress("");
+    setFilterRegion("");
+    setFilteredData(data);
+    setCurrentPage(1);
+  };
 
 
   return (
     <div className="min-h-screen bg-base-200 px-6 py-10 space-y-12">
-       {/* Filter Sidebar (button) */}
+      {/* Filter Sidebar (button) */}
       {isFilterVisible && (
         <MallsFilterSidebar
           filterDate={filterDate}
@@ -264,9 +264,9 @@ const Mall = () => {
       {/* Table + Filter */}
       <div className="bg-base-100 p-6 rounded-xl shadow-lg">
         <h2 className="text-xl font-bold mb-4">Data Tabel Mall</h2>
-
-<div className="flex flex-col sm:flex-row justify-between items-center mb-4">
-          <div className="flex gap-2 w-full sm:w-1/2">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between mb-4">
+          {/* Search */}
+          <div className="w-full sm:w-1/2 flex gap-2">
             <input
               type="text"
               placeholder="Search"
@@ -274,12 +274,13 @@ const Mall = () => {
               value={searchText}
               onChange={(e) => setSearchText(e.target.value)}
             />
-           
           </div>
-          <div className="flex gap-2 w-full sm:w-1/3 justify-end">
+
+          {/* Buttons */}
+          <div className="flex flex-wrap gap-2 w-full sm:w-1/2 sm:justify-end">
             <button
               onClick={() => setIsFilterVisible(true)}
-              className="btn btn-outline btn-[#7B74DA]"
+              className="btn btn-outline text-[#7B74DA] w-full sm:w-auto"
             >
               <FunnelIcon className="w-5 h-5 mr-1" />
               Filter
@@ -289,19 +290,15 @@ const Mall = () => {
               <>
                 <button
                   onClick={handleExportExcel}
-                  className="btn btn-outline btn-success flex items-center justify-center text-sm h-10 w-full sm:w-auto"
+                  className="btn btn-outline btn-success flex items-center text-sm h-10 w-full sm:w-auto"
                 >
                   <DocumentArrowDownIcon className="w-4 h-4 mr-1" />
                   Excel
                 </button>
 
                 <button
-
-                  className={`btn btn-primary flex items-center text-lg cursor-pointer ${
-                    currentPath === "/app/Mall/Create"
-                      ? "font-bold"
-                      : ""
-                  }`}
+                  className={`btn btn-primary flex items-center text-sm h-10 w-full sm:w-auto ${currentPath === "/app/Mall/Create" ? "font-bold" : ""
+                    }`}
                   onClick={() => navigate("/app/Mall/Create")}
                 >
                   <PlusIcon className="w-4 h-4 mr-1" />
@@ -311,6 +308,7 @@ const Mall = () => {
             )}
           </div>
         </div>
+
 
 
         {/* Table */}
@@ -329,77 +327,77 @@ const Mall = () => {
               </tr>
             </thead>
             <tbody>
-                         {paginatedData.length > 0 ? (
-                           paginatedData.map((item, idx) => (
-                             <tr key={idx}>
-                               <td className="text-center">
-                                 {(currentPage - 1) * rowsPerPage + idx + 1}
-                               </td>
-                               <td className="text-center">
-                                 {item.name || "Tidak ada data"}
-                               </td>
-                               <td className="text-center">
-                                 {item.address || "Tidak ada data"}
-                               </td>
-                               <td className="text-center">
-                                 {item.region || "Tidak ada data"}
-                               </td>
-                               <td className="text-center">
-                                 {item.subdistrict || "Tidak ada data"}
-                               </td>
-                               <td className="text-center">
-                                 {item.suratK ? (
-                                   <CheckCircleIcon className="w-5 h-5 text-success mx-auto" />
-                                 ) : (
-                                   <XCircleIcon className="w-5 h-5 text-error mx-auto" />
-                                 )}
-                               </td>
-                               <td className="text-center">
-                                 {item.date || "Tidak ada data"}
-                               </td>
-                               <td className="text-center">
-                                 <button
-                                   className="btn btn-sm btn-primary mr-1"
-                                   onClick={() =>
-                                     navigate(`/app/Mall/Detail/${item.id}`)
-                                   }
-                                 >
-                                   <EyeIcon className="w-5 h-5" />
-                                 </button>
-                                 {role === "admin" && (
-                                   <>
-                                     <button
-                                       className="btn btn-sm btn-warning mr-1"
-                                       onClick={() =>
-                                         navigate(`/app/Mall/Edit/${item.id}`)
-                                       }
-                                     >
-                                       <PencilSquareIcon className="w-5 h-5" />
-                                     </button>
-                                     <button
-                                       className="btn btn-sm btn-error"
-                                       onClick={() => handleDelete(item.id)}
-                                     >
-                                       <TrashIcon className="w-5 h-5" />
-                                     </button>
-                                   </>
-                                 )}
-                               </td>
-                             </tr>
-                           ))
-                         ) : (
-                           <tr>
-                             <td colSpan={8} className="text-center py-4">
-                               Tidak ada data
-                             </td>
-                           </tr>
-                         )}
-                       </tbody>
+              {paginatedData.length > 0 ? (
+                paginatedData.map((item, idx) => (
+                  <tr key={idx}>
+                    <td className="text-center">
+                      {(currentPage - 1) * rowsPerPage + idx + 1}
+                    </td>
+                    <td className="text-center">
+                      {item.name || "Tidak ada data"}
+                    </td>
+                    <td className="text-center">
+                      {item.address || "Tidak ada data"}
+                    </td>
+                    <td className="text-center">
+                      {item.region || "Tidak ada data"}
+                    </td>
+                    <td className="text-center">
+                      {item.subdistrict || "Tidak ada data"}
+                    </td>
+                    <td className="text-center">
+                      {item.suratK ? (
+                        <CheckCircleIcon className="w-5 h-5 text-success mx-auto" />
+                      ) : (
+                        <XCircleIcon className="w-5 h-5 text-error mx-auto" />
+                      )}
+                    </td>
+                    <td className="text-center">
+                      {item.date || "Tidak ada data"}
+                    </td>
+                    <td className="text-center">
+                      <button
+                        className="btn btn-sm btn-primary mr-1"
+                        onClick={() =>
+                          navigate(`/app/Mall/Detail/${item.id}`)
+                        }
+                      >
+                        <EyeIcon className="w-5 h-5" />
+                      </button>
+                      {role === "admin" && (
+                        <>
+                          <button
+                            className="btn btn-sm btn-warning mr-1"
+                            onClick={() =>
+                              navigate(`/app/Mall/Edit/${item.id}`)
+                            }
+                          >
+                            <PencilSquareIcon className="w-5 h-5" />
+                          </button>
+                          <button
+                            className="btn btn-sm btn-error"
+                            onClick={() => handleDelete(item.id)}
+                          >
+                            <TrashIcon className="w-5 h-5" />
+                          </button>
+                        </>
+                      )}
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={8} className="text-center py-4">
+                    Tidak ada data
+                  </td>
+                </tr>
+              )}
+            </tbody>
           </table>
         </div>
 
 
-         {/* Pagination Controls */}
+        {/* Pagination Controls */}
         <div className="flex items-center justify-between mt-4">
           {/* Prev Button */}
           <button
@@ -434,9 +432,8 @@ const Mall = () => {
                   key={page}
                   onClick={() => setCurrentPage(page)}
 
-                  className={`btn btn-sm ${
-                    page === currentPage ? "btn-primary" : "btn-outline"
-                  }`}
+                  className={`btn btn-sm ${page === currentPage ? "btn-primary" : "btn-outline"
+                    }`}
 
                 >
                   {page}
