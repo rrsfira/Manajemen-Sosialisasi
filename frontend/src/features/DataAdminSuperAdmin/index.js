@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import * as XLSX from "xlsx";
 import Swal from "sweetalert2";
 import {
   DocumentArrowDownIcon,
@@ -39,13 +38,6 @@ const DataAdminSuperAdmin = () => {
   );
 
   const totalPages = Math.ceil(filteredData.length / rowsPerPage);
-
-  const handleExportExcel = () => {
-    const worksheet = XLSX.utils.json_to_sheet(filteredData);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Tabel Admin");
-    XLSX.writeFile(workbook, "Tabel Admin.xlsx");
-  };
 
   const handleDelete = (id) => {
     Swal.fire({
@@ -95,13 +87,6 @@ const DataAdminSuperAdmin = () => {
             onChange={(e) => setSearchText(e.target.value)}
           />
           <div className="flex gap-2 w-full sm:w-1/3 justify-end">
-            <button
-              onClick={handleExportExcel}
-              className="btn btn-outline btn-success"
-            >
-              <DocumentArrowDownIcon className="w-4 h-4 mr-1" />
-              Excel
-            </button>
             <button
               onClick={() => navigate("/spr/SuperAdmin/AdminCreate")}
               className="btn btn-primary flex items-center"

@@ -76,7 +76,7 @@ const AdminEdit = () => {
           text: "Data admin berhasil diperbarui.",
           confirmButtonColor: "#23286B",
         }).then(() => {
-          navigate("/spr/userSuperAdmin");
+        navigate("/spr/SuperAdmin/DataAdmin");
         });
       } else {
         const errorData = await response.json();
