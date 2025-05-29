@@ -5,6 +5,7 @@ import Swal from "sweetalert2"; // popup notif
 import axios from "axios";
 import UrbanVillageChart from "./chart/index";
 import UrbanFilterSidebar from "./Filter"; // import button filter
+import moment from "moment";
 import {
   DocumentArrowDownIcon,
   FunnelIcon,
@@ -15,7 +16,6 @@ import {
   TrashIcon,
   PlusIcon,
 } from "@heroicons/react/24/outline";
-import moment from "moment";
 
 const UrbanVillage = () => {
   const navigate = useNavigate(); // hook untuk navigasi
@@ -38,8 +38,6 @@ const UrbanVillage = () => {
   const [filterRegion, setFilterRegion] = useState("");
   const [currentData, setCurrentData] = useState([]);
 
-  const [searchedData, setSearchedData] = useState([]);
-
   useEffect(() => {
     const storedRole = localStorage.getItem("role");
     if (storedRole) setRole(storedRole);
@@ -57,32 +55,6 @@ const UrbanVillage = () => {
       console.error("Error fetching urban_village data:", error);
     }
   };
-
-
-  // filter button untuk hari
-  const convertToISODate = (dateStr) => {
-    if (!dateStr) return null; // hindari error jika null
-    const [day, month, year] = dateStr.split("-");
-    return `${year}-${month}-${day}`;
-  };
-
-  const sortedData = searchedData.slice().sort((a, b) => {
-    const dateA = new Date(convertToISODate(a.date));
-    const dateB = new Date(convertToISODate(b.date));
-
-    const validA = !isNaN(dateA);
-    const validB = !isNaN(dateB);
-
-    if (validA && validB) {
-      return dateB - dateA;
-    } else if (validA) {
-      return -1; // valid tanggal dulu
-    } else if (validB) {
-      return 1;
-    } else {
-      return b.id - a.id;
-    }
-  });
 
   // Ganti nama currentData lokal jadi paginatedData
   const paginatedData = currentData.slice(
@@ -149,8 +121,8 @@ const UrbanVillage = () => {
   //export excel
   const handleExportExcel = () => {
     const exportSource = filteredData.length > 0 ? filteredData : data;
-    const exportData = exportSource.map((item) => ({
-      ID: item.id,
+    const exportData = exportSource.map((item, index) => ({
+      No: index + 1,
       Nama: item.name,
       Kegiatan: item.activity,
       Wilayah: item.region,
@@ -171,11 +143,6 @@ const UrbanVillage = () => {
 
     XLSX.writeFile(workbook, "Kelurahan Tangguh.xlsx");
   };
-  //button reset filter sebelah search untuk reset cards dan search
-  const handleReset = () => {
-    setSearchText("");
-    setSelectedGroup(null);
-  };
 
   const applyFilterAndSearch = () => {
     // Filter dulu dari sidebar filter
@@ -183,7 +150,7 @@ const UrbanVillage = () => {
       const matchDate =
         !filterDate ||
         moment(item.date, ["DD-MM-YYYY"]).format("DD-MM-YYYY") ===
-        moment(filterDate, "YYYY-MM-DD").format("DD-MM-YYYY");
+          moment(filterDate, "YYYY-MM-DD").format("DD-MM-YYYY");
 
       const matchName = filterName
         ? item.name?.toLowerCase().includes(filterName.toLowerCase())
@@ -211,8 +178,32 @@ const UrbanVillage = () => {
 
       return matchesSearch && matchesGroup;
     });
+    // Sort hasil pencarian berdasarkan tanggal terbaru
+    const sortedByDate = searchedData.slice().sort((a, b) => {
+      const convertToISODate = (dateStr) => {
+        if (!dateStr) return null;
+        const [day, month, year] = dateStr.split("-");
+        return `${year}-${month}-${day}`;
+      };
 
-    setCurrentData(searchedData);
+      const dateA = new Date(convertToISODate(a.date));
+      const dateB = new Date(convertToISODate(b.date));
+
+      const validA = !isNaN(dateA);
+      const validB = !isNaN(dateB);
+
+      if (validA && validB) {
+        return dateB - dateA; // Descending (terbaru ke terlama)
+      } else if (validA) {
+        return -1;
+      } else if (validB) {
+        return 1;
+      } else {
+        return b.id - a.id;
+      }
+    });
+
+    setCurrentData(sortedByDate);
     setCurrentPage(1);
   };
 
@@ -238,7 +229,6 @@ const UrbanVillage = () => {
     setFilteredData(data);
     setCurrentPage(1);
   };
-
 
   return (
     <div className="min-h-screen bg-base-200 px-6 py-10 space-y-12">
@@ -298,8 +288,11 @@ const UrbanVillage = () => {
                 </button>
 
                 <button
-                  className={`btn btn-primary flex items-center text-sm h-10 w-full sm:w-auto ${currentPath === "/app/UrbanVillage/Create" ? "font-bold" : ""
-                    }`}
+                  className={`btn btn-primary flex items-center text-sm h-10 w-full sm:w-auto ${
+                    currentPath === "/app/UrbanVillage/Create"
+                      ? "font-bold"
+                      : ""
+                  }`}
                   onClick={() => navigate("/app/UrbanVillage/Create")}
                 >
                   <PlusIcon className="w-4 h-4 mr-1" />
@@ -309,7 +302,6 @@ const UrbanVillage = () => {
             )}
           </div>
         </div>
-
 
         {/* Table */}
         <div className="overflow-x-auto">
@@ -430,7 +422,9 @@ const UrbanVillage = () => {
                 <button
                   key={page}
                   onClick={() => setCurrentPage(page)}
-                  className={`btn btn-sm ${page === currentPage ? "btn-primary" : "btn-outline"}`}
+                  className={`btn btn-sm ${
+                    page === currentPage ? "btn-primary" : "btn-outline"
+                  }`}
                 >
                   {page}
                 </button>
@@ -454,18 +448,18 @@ const UrbanVillage = () => {
 
           {/* Next Button */}
           <button
-            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+            onClick={() =>
+              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+            }
             disabled={currentPage === totalPages}
             className="btn btn-sm btn-outline"
           >
             Next →
           </button>
         </div>
-
       </div>
     </div>
   );
 };
-
 
 export default UrbanVillage;

@@ -5,6 +5,7 @@ import axios from "axios";
 import HousingChart from "./chart/index";
 import PublicHousingFilterSidebar from "./Filter";
 import Swal from "sweetalert2"; // popup notif
+import moment from "moment";
 import {
   DocumentArrowDownIcon,
   FunnelIcon,
@@ -15,7 +16,6 @@ import {
   TrashIcon,
   PlusIcon,
 } from "@heroicons/react/24/outline";
-import moment from "moment";
 
 const PublicHousing = () => {
   const navigate = useNavigate(); // hook untuk navigasi
@@ -27,7 +27,6 @@ const PublicHousing = () => {
   const [rowsPerPage] = useState(5);
   const [role, setRole] = useState("");
 
-
   const [isFilterVisible, setIsFilterVisible] = useState(false); // untuk menampilkan filter
   const [selectedGroup, setSelectedGroup] = useState(null); // untuk menampilkan data yang telah di filter di cards
   const [filteredData, setFilteredData] = useState([]); // untuk menampilkan data yang telah di filter di cards dan search
@@ -37,15 +36,11 @@ const PublicHousing = () => {
   const [filterAddress, setFilterAddress] = useState("");
   const [filterRegion, setFilterRegion] = useState("");
   const [currentData, setCurrentData] = useState([]);
-
-  const [searchedData, setSearchedData] = useState([]);
-
+  
   useEffect(() => {
     const storedRole = localStorage.getItem("role");
     if (storedRole) setRole(storedRole);
   }, []);
-
-
 
   useEffect(() => {
     fetchApartments();
@@ -59,31 +54,6 @@ const PublicHousing = () => {
       console.error("Error fetching public_housings data:", error);
     }
   };
-
-  // filter button untuk hari
-  const convertToISODate = (dateStr) => {
-    if (!dateStr) return null; // hindari error jika null
-    const [day, month, year] = dateStr.split("-");
-    return `${year}-${month}-${day}`;
-  };
-
-  const sortedData = searchedData.slice().sort((a, b) => {
-    const dateA = new Date(convertToISODate(a.date));
-    const dateB = new Date(convertToISODate(b.date));
-
-    const validA = !isNaN(dateA);
-    const validB = !isNaN(dateB);
-
-    if (validA && validB) {
-      return dateB - dateA;
-    } else if (validA) {
-      return -1; // valid tanggal dulu
-    } else if (validB) {
-      return 1;
-    } else {
-      return b.id - a.id;
-    }
-  });
 
   // Ganti nama currentData lokal jadi paginatedData
   const paginatedData = currentData.slice(
@@ -150,14 +120,14 @@ const PublicHousing = () => {
   //export excel
   const handleExportExcel = () => {
     const exportSource = filteredData.length > 0 ? filteredData : data;
-    const exportData = exportSource.map((item) => ({
-      ID: item.id,
+    const exportData = exportSource.map((item, index) => ({
+      No: index + 1,
       Nama: item.name,
       Kegiatan: item.activity,
       Wilayah: item.region,
       Kecamatan: item.subdistrict,
       Alamat: item.address,
-      Tanggal: item.date,
+      Tanggal: moment(item.date, "DD-MM-YYYY").format("YYYY-MM-DD"),
       "Ketua Tim": item.leader,
       SK: item.suratK,
       Perempuan: item.gender_woman,
@@ -173,18 +143,13 @@ const PublicHousing = () => {
     XLSX.writeFile(workbook, "Rusun.xlsx");
   };
 
-  const handleReset = () => {
-    setSearchText("");
-    setSelectedGroup(null);
-  };
-
   const applyFilterAndSearch = () => {
     // Filter dulu dari sidebar filter
     const filtered = data.filter((item) => {
       const matchDate =
         !filterDate ||
         moment(item.date, ["DD-MM-YYYY"]).format("DD-MM-YYYY") ===
-        moment(filterDate, "YYYY-MM-DD").format("DD-MM-YYYY");
+          moment(filterDate, "YYYY-MM-DD").format("DD-MM-YYYY");
 
       const matchName = filterName
         ? item.name?.toLowerCase().includes(filterName.toLowerCase())
@@ -212,8 +177,32 @@ const PublicHousing = () => {
 
       return matchesSearch && matchesGroup;
     });
+    // Sort hasil pencarian berdasarkan tanggal terbaru
+    const sortedByDate = searchedData.slice().sort((a, b) => {
+      const convertToISODate = (dateStr) => {
+        if (!dateStr) return null;
+        const [day, month, year] = dateStr.split("-");
+        return `${year}-${month}-${day}`;
+      };
 
-    setCurrentData(searchedData);
+      const dateA = new Date(convertToISODate(a.date));
+      const dateB = new Date(convertToISODate(b.date));
+
+      const validA = !isNaN(dateA);
+      const validB = !isNaN(dateB);
+
+      if (validA && validB) {
+        return dateB - dateA; // Descending (terbaru ke terlama)
+      } else if (validA) {
+        return -1;
+      } else if (validB) {
+        return 1;
+      } else {
+        return b.id - a.id;
+      }
+    });
+
+    setCurrentData(sortedByDate);
     setCurrentPage(1);
   };
 
@@ -239,7 +228,6 @@ const PublicHousing = () => {
     setFilteredData(data);
     setCurrentPage(1);
   };
-
 
   return (
     <div className="min-h-screen bg-base-200 px-6 py-10 space-y-12">
@@ -276,12 +264,6 @@ const PublicHousing = () => {
               value={searchText}
               onChange={(e) => setSearchText(e.target.value)}
             />
-            <button
-              onClick={handleReset}
-              className="btn btn-secondary w-full sm:w-auto whitespace-nowrap"
-            >
-              Reset Search
-            </button>
           </div>
 
           {/* Filter & Admin Buttons */}
@@ -304,8 +286,11 @@ const PublicHousing = () => {
                   Excel
                 </button>
                 <button
-                  className={`btn btn-primary flex items-center text-sm w-full sm:w-auto ${currentPath === "/app/EducationUnit/Create" ? "font-bold" : ""
-                    }`}
+                  className={`btn btn-primary flex items-center text-sm w-full sm:w-auto ${
+                    currentPath === "/app/EducationUnit/Create"
+                      ? "font-bold"
+                      : ""
+                  }`}
                   onClick={() => navigate("/app/EducationUnit/Create")}
                 >
                   <PlusIcon className="w-4 h-4 mr-1" />
@@ -315,9 +300,6 @@ const PublicHousing = () => {
             )}
           </div>
         </div>
-
-
-
 
         {/* Table */}
         <div className="overflow-x-auto">
@@ -404,10 +386,8 @@ const PublicHousing = () => {
           </table>
         </div>
 
-
         {/* Pagination Controls */}
         <div className="flex items-center justify-between mt-4">
-
           {/* Prev Button */}
           <button
             onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
@@ -440,8 +420,9 @@ const PublicHousing = () => {
                 <button
                   key={page}
                   onClick={() => setCurrentPage(page)}
-                  className={`btn btn-sm ${page === currentPage ? "btn-primary" : "btn-outline"
-                    }`}
+                  className={`btn btn-sm ${
+                    page === currentPage ? "btn-primary" : "btn-outline"
+                  }`}
                 >
                   {page}
                 </button>
@@ -478,6 +459,5 @@ const PublicHousing = () => {
     </div>
   );
 };
-
 
 export default PublicHousing;
