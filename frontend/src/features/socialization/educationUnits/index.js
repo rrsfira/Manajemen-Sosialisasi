@@ -119,24 +119,6 @@ const EducationUnits = () => {
     return `${year}-${month}-${day}`;
   };
 
-  const sortedData = searchedData.slice().sort((a, b) => {
-    const dateA = new Date(convertToISODate(a.date));
-    const dateB = new Date(convertToISODate(b.date));
-
-    const validA = !isNaN(dateA);
-    const validB = !isNaN(dateB);
-
-    if (validA && validB) {
-      return dateB - dateA;
-    } else if (validA) {
-      return -1; // valid tanggal dulu
-    } else if (validB) {
-      return 1;
-    } else {
-      return b.id - a.id;
-    }
-  });
-
   // Ganti nama currentData lokal jadi paginatedData
   const paginatedData = currentData.slice(
     (currentPage - 1) * rowsPerPage,
@@ -260,8 +242,25 @@ const EducationUnits = () => {
 
       return matchesSearch && matchesGroup;
     });
+    // URUTKAN berdasarkan tanggal (terbaru ke lama)
+    const sortedByDate = searchedData.slice().sort((a, b) => {
+      const dateA = new Date(convertToISODate(a.date));
+      const dateB = new Date(convertToISODate(b.date));
+      const validA = !isNaN(dateA);
+      const validB = !isNaN(dateB);
 
-    setCurrentData(searchedData);
+      if (validA && validB) {
+        return dateB - dateA;
+      } else if (validA) {
+        return -1;
+      } else if (validB) {
+        return 1;
+      } else {
+        return b.id - a.id;
+      }
+    });
+
+    setCurrentData(sortedByDate);
     setCurrentPage(1);
   };
 

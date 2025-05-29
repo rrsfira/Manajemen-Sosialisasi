@@ -264,7 +264,7 @@ const routes = [
     component: EducationEdit,
   },
   {
-    path: "/Education/Details/:id",
+    path: "/Education/Detail/:id",
     component: EducationDetail,
   },
 

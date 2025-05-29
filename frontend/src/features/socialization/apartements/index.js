@@ -136,7 +136,10 @@ const Apartement = () => {
 
   //export excel
   const handleExportExcel = () => {
-    const exportSource = filteredData.length > 0 ? filteredData : data;
+    const exportSource = (filteredData.length > 0 ? filteredData : data).filter(
+      (item) => !item.deleted_at // Ini artinya hanya ambil item yang `deleted_at === null`
+    );
+
     const exportData = exportSource.map((item) => ({
       ID: item.id,
       Nama: item.name,

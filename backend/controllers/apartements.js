@@ -47,7 +47,7 @@ router.get("/", (req, res) => {
   FROM apartments hf
   LEFT JOIN regions r ON hf.region_id = r.id
   LEFT JOIN subdistricts s ON hf.subdistrict_id = s.id
-  WHERE hf.deleted_at IS NULL
+  WHERE hf.deleted_at IS NULL 
   ORDER BY hf.id ASC
 `;
 

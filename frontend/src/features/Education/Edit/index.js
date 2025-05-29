@@ -16,9 +16,11 @@ const EducationEdit = () => {
     const fetchData = async () => {
       try {
         const res = await axios.get(`http://localhost:5000/educations/${id}`);
+        console.log(res.data); // cek di console dulu
+
         setForm({
-          name: res.data.data.name,
-          materi: res.data.data.materi,
+          name: res.data.name,
+          materi: res.data.materi,
         });
       } catch (error) {
         console.error("Gagal mengambil data materi:", error);
@@ -35,22 +37,12 @@ const EducationEdit = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validasi file ukuran max 10MB (optional)
-    if (materi && materi.size > 10 * 1024 * 1024) {
-      alert("Ukuran file maksimal 10MB");
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append("name", form.name);
-    if (materi) formData.append("materi", materi);
-
     try {
-      await axios.put(`http://localhost:5000/educations/${id}`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
+      await axios.put(`http://localhost:5000/educations/${id}`, form, {
+        headers: { "Content-Type": "application/json" },
       });
       alert("Data berhasil diperbarui");
-      navigate("/app/Education"); // redirect ke list
+      navigate("/app/Education");
     } catch (err) {
       console.error("Gagal update:", err);
       alert("Terjadi kesalahan saat update");
@@ -71,36 +63,28 @@ const EducationEdit = () => {
             📘 Data Materi
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
-            <input
-              name="name"
-              value={form.name}
-              onChange={handleChange}
-              required
-              placeholder="Nama Materi"
-              className="input"
-            />
+            <div>
+              <label className="block mb-1 font-medium">Nama Materi</label>
+              <input
+                name="name"
+                value={form.name}
+                onChange={handleChange}
+                required
+                placeholder="Nama Materi"
+                className="input input-bordered w-full"
+              />
+            </div>
 
             <div>
-              <label className="block mb-1 font-medium">
-                📄 Materi (PDF, DOC, DOCX)
-              </label>
-              {form.materi ? (
-                <a
-                  href={`http://localhost:5000/uploads/materi/${form.materi}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block text-blue-600 underline mb-2"
-                >
-                  Lihat Materi
-                </a>
-              ) : (
-                <span className="text-gray-400 italic">Tidak ada file</span>
-              )}
+              <label className="block mb-1 font-medium">Link Materi</label>
               <input
-                type="file"
-                accept=".pdf,.doc,.docx"
-                onChange={(e) => setMateri(e.target.files[0])}
-                className="file-input file-input-bordered w-full"
+                type="url"
+                name="materi"
+                value={form.materi}
+                onChange={handleChange}
+                placeholder="https://example.com/materi.pdf"
+                className="input input-bordered w-full"
+                required
               />
             </div>
           </div>

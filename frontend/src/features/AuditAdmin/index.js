@@ -75,7 +75,7 @@ const AuditAdminSuper = () => {
             <option value="malls">Mall</option>
             <option value="hotels">Hotel</option>
             <option value="offices">Perkantoran</option>
-            <option value="apartements">Apartement</option>
+            <option value="apartments">Apartemen</option>
             <option value="urban_villages">Kelurahan Tangguh</option>
             <option value="educations">Materi</option>
             <option value="games">Game</option>

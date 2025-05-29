@@ -156,7 +156,7 @@ const Education = () => {
                     <div className="flex justify-center gap-1">
                       <button
                         onClick={() =>
-                          navigate(`/app/Education/Details/${item.id}`)
+                          navigate(`/app/Education/Detail/${item.id}`)
                         }
                         className="btn btn-sm btn-info"
                       >
