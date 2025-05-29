@@ -52,7 +52,7 @@ router.get("/:table", (req, res) => {
       malls: "m",
       hotels: "ht",
       offices: "of",
-      apartements: "ap",
+      apartments: "ap",
       urban_villages: "uv",
       educations: "ed",
     };
