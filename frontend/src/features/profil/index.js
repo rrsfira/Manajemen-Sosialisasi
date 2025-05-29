@@ -3,34 +3,35 @@ import axios from "axios";
 import Swal from "sweetalert2";
 
 function Profile() {
+  const [user, setUser] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [showChangePassword, setShowChangePassword] = useState(false);
+  const [oldPassword, setOldPassword] = useState("");
+
+  // Form fields
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [contact, setContact] = useState("");
-  const [isEditing, setIsEditing] = useState(false);
-  const [originalData, setOriginalData] = useState({});
+  const [newPassword, setNewPassword] = useState("");
+
+  // User role, untuk cek apakah superadmin (ambil dari user data)
+  const [role, setRole] = useState("");
 
   useEffect(() => {
     const token = localStorage.getItem("token");
 
     axios
-      .get(`http://localhost:5000/users`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+      .get("http://localhost:5000/users", {
+        headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => {
-        const user = res.data;
-        setName(user.name);
-        setEmail(user.email);
-        setContact(user.contact || "");
-        setOriginalData({
-          name: user.name,
-          email: user.email,
-          contact: user.contact || "",
-        });
+        setUser(res.data);
+        setRole(res.data.role); // asumsi data user ada property role
+        setName(res.data.name);
+        setEmail(res.data.email);
+        setContact(res.data.contact || "");
       })
-      .catch((err) => {
-        console.error("Failed to fetch user", err);
+      .catch(() => {
         Swal.fire(
           "Gagal",
           "Gagal memuat profil. Silakan login ulang.",
@@ -39,52 +40,89 @@ function Profile() {
       });
   }, []);
 
+  // Reset form ke original user data
+  const resetForm = () => {
+    if (!user) return;
+    setName(user.name);
+    setEmail(user.email);
+    setContact(user.contact || "");
+    setNewPassword("");
+    setShowChangePassword(false);
+  };
+
+  const handleCancel = () => {
+    resetForm();
+    setIsEditing(false);
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Cek apakah ada perubahan data sebelum submit
-    if (
-      name === originalData.name &&
-      email === originalData.email &&
-      contact === originalData.contact
-    ) {
-      Swal.fire("Info", "Silahkan Edit Profile", "info");
+    const profileChanged =
+      name !== user.name ||
+      email !== user.email ||
+      contact !== (user.contact || "");
+
+    const passwordChanged =
+      showChangePassword &&
+      oldPassword.trim() !== "" &&
+      newPassword.trim() !== "";
+
+    if (!profileChanged && !passwordChanged) {
+      Swal.fire(
+        "Info",
+        "Silakan ubah data",
+        "info"
+      );
       return;
     }
 
     const token = localStorage.getItem("token");
+    const updateData = { name, email, contact };
 
     axios
-      .put(
-        `http://localhost:5000/users`,
-        { name, email, contact },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      )
+      .put("http://localhost:5000/users", updateData, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
       .then(() => {
-        setOriginalData({ name, email, contact });
-        setIsEditing(false);
+        if (passwordChanged && role === "superadmin") {
+          // Kirim password lama dan baru untuk validasi
+          return axios.put(
+            "http://localhost:5000/users/password",
+            { oldPassword, newPassword },
+            { headers: { Authorization: `Bearer ${token}` } }
+          );
+        }
+      })
+      .then(() => {
         Swal.fire("Berhasil", "Profil berhasil diperbarui!", "success");
+        setIsEditing(false);
+        setShowChangePassword(false);
+        setOldPassword("");
+        setNewPassword("");
+        // reload user data
+        return axios.get("http://localhost:5000/users", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      })
+      .then((res) => {
+        setUser(res.data);
+        resetForm();
       })
       .catch((err) => {
-        console.error("Update failed", err);
-        Swal.fire("Gagal", "Gagal memperbarui profil", "error");
+        console.error(err);
+        let msg = "Gagal memperbarui profil atau password";
+        if (err.response && err.response.data && err.response.data.message) {
+          msg = err.response.data.message;
+        }
+        Swal.fire("Gagal", msg, "error");
       });
   };
 
-  const handleCancel = () => {
-    setName(originalData.name);
-    setEmail(originalData.email);
-    setContact(originalData.contact);
-    setIsEditing(false);
-  };
+  if (!user) return <div>Loading...</div>;
 
   return (
     <div className="min-h-screen bg-base-100 px-4">
-      {/* Logo dan Judul di Atas */}
       <div className="text-center py-8">
         <img src="/logo192.png" alt="Logo" className="w-24 h-24 mx-auto" />
         <h1 className="text-3xl font-bold text-[#ED2025] mt-4">
@@ -92,7 +130,6 @@ function Profile() {
         </h1>
       </div>
 
-      {/* Form di Tengah */}
       <div className="flex items-center justify-center">
         <form
           onSubmit={handleSubmit}
@@ -109,6 +146,7 @@ function Profile() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               disabled={!isEditing}
+              required
             />
           </div>
 
@@ -121,12 +159,13 @@ function Profile() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               disabled={!isEditing}
+              required
             />
           </div>
 
-          {/* Kontak */}
+          {/* Contact */}
           <div className="mb-4">
-            <label className="block text-gray-700 text-sm mb-1">Kontak</label>
+            <label className="block text-gray-700 text-sm mb-1">Contact</label>
             <input
               type="text"
               className="input input-bordered w-full"
@@ -135,6 +174,47 @@ function Profile() {
               disabled={!isEditing}
             />
           </div>
+
+          {/* Tombol Ganti Password hanya muncul jika isEditing dan role superadmin */}
+          {isEditing && role === "superadmin" && (
+            <div className="mb-4">
+              {!showChangePassword ? (
+                <button
+                  type="button"
+                  className="btn btn-warning"
+                  onClick={() => setShowChangePassword(true)}
+                >
+                  Ganti Password
+                </button>
+              ) : (
+                <>
+                  <label className="block text-gray-700 text-sm mb-1 mt-4">
+                    Password Lama
+                  </label>
+                  <input
+                    type="password"
+                    className="input input-bordered w-full mb-3"
+                    value={oldPassword}
+                    onChange={(e) => setOldPassword(e.target.value)}
+                    placeholder="Masukkan password lama"
+                    required
+                  />
+
+                  <label className="block text-gray-700 text-sm mb-1 mt-4">
+                    Password Baru
+                  </label>
+                  <input
+                    type="password"
+                    className="input input-bordered w-full"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    placeholder="Masukkan password baru"
+                    required
+                  />
+                </>
+              )}
+            </div>
+          )}
 
           {/* Tombol */}
           <div className="flex justify-end space-x-2">

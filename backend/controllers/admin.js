@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const db = require("../config/db");
+const bcrypt = require("bcryptjs");
 
 // 🔍 Fetch all users (admin)
 router.get("/", (req, res) => {
@@ -19,7 +20,6 @@ router.get("/", (req, res) => {
     });
 });
 
-// 🔍 Fetch single user by ID
 // GET user by ID
 router.get("/:id", (req, res) => {
   const { id } = req.params;
@@ -39,25 +39,51 @@ router.get("/:id", (req, res) => {
   });
 });
 
-
 // ✏️ Update user by ID
 router.put("/:id", (req, res) => {
     const { id } = req.params;
-    const { name, email, contact, role } = req.body;
+    const { name, email, contact, role, password } = req.body;
 
-    const query = `
-        UPDATE users 
-        SET name = ?, email = ?, contact = ?, role = ?, updated_at = CURRENT_TIMESTAMP 
-        WHERE id = ?
-    `;
+    if (password) {
+        // Hash password dulu
+        bcrypt.hash(password, 10, (err, hashedPassword) => {
+            if (err) {
+                console.error("Error hashing password:", err);
+                return res.status(500).send("Error updating user");
+            }
 
-    db.query(query, [name, email, contact, role, id], (err, result) => {
-        if (err) {
-            console.error("Error updating user:", err);
-            return res.status(500).send("Error updating user");
-        }
-        res.send("User updated successfully");
-    });
+            const query = `
+                UPDATE users 
+                SET name = ?, email = ?, contact = ?, role = ?, password = ?, updated_at = CURRENT_TIMESTAMP 
+                WHERE id = ?
+            `;
+            const values = [name, email, contact, role, hashedPassword, id];
+
+            db.query(query, values, (err, result) => {
+                if (err) {
+                    console.error("Error updating user:", err);
+                    return res.status(500).send("Error updating user");
+                }
+                res.send("User updated successfully");
+            });
+        });
+    } else {
+        // Tanpa ganti password
+        const query = `
+            UPDATE users 
+            SET name = ?, email = ?, contact = ?, role = ?, updated_at = CURRENT_TIMESTAMP 
+            WHERE id = ?
+        `;
+        const values = [name, email, contact, role, id];
+
+        db.query(query, values, (err, result) => {
+            if (err) {
+                console.error("Error updating user:", err);
+                return res.status(500).send("Error updating user");
+            }
+            res.send("User updated successfully");
+        });
+    }
 });
 
 // 🗑️ Delete user by ID
