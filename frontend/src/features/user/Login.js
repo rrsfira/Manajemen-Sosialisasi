@@ -86,6 +86,8 @@ const Login = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
+
+              {/* 
               <div className="text-right mt-1">
                 <a
                   href="/forgot-password"
@@ -94,6 +96,7 @@ const Login = () => {
                   Lupa Password?
                 </a>
               </div>
+                */}
             </div>
 
             <button

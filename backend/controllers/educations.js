@@ -1,43 +1,21 @@
 const express = require("express");
 const router = express.Router();
 const db = require("../config/db");
-const multer = require("multer");
-const path = require("path");
-const fs = require("fs");
+const { verifyToken } = require("../middleware/authMiddleware");
 
-// Pastikan folder uploads/materi/ ada
-const uploadDir = path.join(__dirname, "../uploads/materi");
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-}
+// Fungsi untuk format waktu SQL
+const getNow = () => new Date().toISOString().slice(0, 19).replace("T", " ");
 
-// Konfigurasi penyimpanan file
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, uploadDir);
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + "-" + file.originalname);
-  },
-});
+// ✅ POST data materi (dengan verifyToken)
+router.post("/", verifyToken, (req, res) => {
+  const { name, materi } = req.body;
+  const userId = req.user.id;
 
-const upload = multer({
-  storage: storage,
-  fileFilter: function (req, file, cb) {
-    const allowed = /pdf|ppt|pptx/;
-    const ext = allowed.test(path.extname(file.originalname).toLowerCase());
-    if (ext) cb(null, true);
-    else cb(new Error("Hanya PDF, PPT, dan PPTX yang diperbolehkan"));
-  },
-});
-
-// ✅ POST data materi
-router.post("/", upload.single("materi"), (req, res) => {
-  const { name } = req.body;
-  const fileName = req.file ? req.file.filename : null;
-
-  const sql = "INSERT INTO educations (name, materi) VALUES (?, ?)";
-  db.query(sql, [name, fileName], (err, result) => {
+  const sql = `
+    INSERT INTO educations (name, materi, created_by, created_at)
+    VALUES (?, ?, ?, ?)
+  `;
+  db.query(sql, [name, materi, userId, getNow()], (err) => {
     if (err) {
       console.error("Gagal menyimpan data:", err);
       return res.status(500).json({ error: "Gagal menyimpan data" });
@@ -46,9 +24,9 @@ router.post("/", upload.single("materi"), (req, res) => {
   });
 });
 
-// ✅ GET semua data materi
+// GET: Ambil semua data yang belum dihapus
 router.get("/", (req, res) => {
-  const sql = "SELECT * FROM educations";
+  const sql = "SELECT * FROM educations WHERE deleted_at IS NULL";
   db.query(sql, (err, results) => {
     if (err) {
       console.error("Gagal mengambil data:", err);
@@ -58,10 +36,10 @@ router.get("/", (req, res) => {
   });
 });
 
-// ✅ GET data materi by ID
+// GET: Ambil data materi by ID
 router.get("/:id", (req, res) => {
   const { id } = req.params;
-  const sql = "SELECT * FROM educations WHERE id = ?";
+  const sql = "SELECT * FROM educations WHERE id = ? AND deleted_at IS NULL";
   db.query(sql, [id], (err, results) => {
     if (err) {
       console.error("Gagal mengambil data:", err);
@@ -74,76 +52,44 @@ router.get("/:id", (req, res) => {
   });
 });
 
-// ✅ DELETE data materi by ID
-router.delete("/:id", (req, res) => {
+// ✅ PUT update (tanpa update jika data sudah dihapus)
+router.put("/:id", verifyToken, (req, res) => {
   const { id } = req.params;
+  const { name, materi } = req.body;
+  const userId = req.user.id;
 
-  // Ambil nama file terlebih dahulu
-  const getSql = "SELECT materi FROM educations WHERE id = ?";
-  db.query(getSql, [id], (err, results) => {
-    if (err) {
-      console.error("Gagal mengambil data:", err);
-      return res.status(500).json({ error: "Gagal mengambil data" });
-    }
-
-    if (results.length === 0) {
-      return res.status(404).json({ error: "Data tidak ditemukan" });
-    }
-
-    const fileName = results[0].materi;
-    const filePath = path.join(uploadDir, fileName);
-
-    // Hapus data dari database
-    const deleteSql = "DELETE FROM educations WHERE id = ?";
-    db.query(deleteSql, [id], (err) => {
-      if (err) {
-        console.error("Gagal menghapus data:", err);
-        return res.status(500).json({ error: "Gagal menghapus data" });
-      }
-
-      // Hapus file jika ada
-      if (fileName && fs.existsSync(filePath)) {
-        fs.unlink(filePath, (err) => {
-          if (err) {
-            console.warn("File gagal dihapus:", err);
-          } else {
-          }
-        });
-      }
-
-      res.json({ message: "Data dan file berhasil dihapus" });
-    });
+  const sql = `
+    UPDATE educations
+    SET name = ?, materi = ?, updated_by = ?, updated_at = ?
+    WHERE id = ? AND deleted_at IS NULL
+  `;
+  db.query(sql, [name, materi, userId, getNow(), id], (err, result) => {
+    if (err) return res.status(500).json({ error: "Gagal update data" });
+    if (result.affectedRows === 0)
+      return res
+        .status(404)
+        .json({ error: "Data tidak ditemukan atau sudah dihapus" });
+    res.json({ message: "Data berhasil diperbarui" });
   });
 });
 
-// ✅ PUT update materi
-router.put("/:id", upload.single("materi"), (req, res) => {
+// ✅ DELETE (soft delete)
+router.delete("/:id", verifyToken, (req, res) => {
   const { id } = req.params;
-  const { name } = req.body;
+  const userId = req.user.id;
 
-  // Ambil materi lama untuk hapus file jika diganti
-  const getSql = "SELECT materi FROM educations WHERE id = ?";
-  db.query(getSql, [id], (err, results) => {
-    if (err)
-      return res.status(500).json({ error: "Gagal mengambil data lama" });
-    if (results.length === 0)
-      return res.status(404).json({ error: "Data tidak ditemukan" });
-
-    const oldFile = results[0].materi;
-    const newFile = req.file ? req.file.filename : oldFile;
-
-    const updateSql = "UPDATE educations SET name = ?, materi = ? WHERE id = ?";
-    db.query(updateSql, [name, newFile, id], (err) => {
-      if (err) return res.status(500).json({ error: "Gagal update data" });
-
-      // Hapus file lama jika ada file baru
-      if (req.file && oldFile && oldFile !== newFile) {
-        const oldPath = path.join(uploadDir, oldFile);
-        if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
-      }
-
-      res.json({ message: "Data berhasil diperbarui" });
-    });
+  const sql = `
+    UPDATE educations
+    SET deleted_by = ?, deleted_at = ?
+    WHERE id = ? AND deleted_at IS NULL
+  `;
+  db.query(sql, [userId, getNow(), id], (err, result) => {
+    if (err) return res.status(500).json({ error: "Gagal menghapus data" });
+    if (result.affectedRows === 0)
+      return res
+        .status(404)
+        .json({ error: "Data tidak ditemukan atau sudah dihapus" });
+    res.json({ message: "Data berhasil dihapus (soft delete)" });
   });
 });
 

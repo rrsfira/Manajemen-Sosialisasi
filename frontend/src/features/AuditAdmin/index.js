@@ -17,7 +17,7 @@ const AuditAdminSuper = () => {
     "educations",
     "games"
   );
-  const rowsPerPage = 10;
+  const rowsPerPage = 5;
 
   useEffect(() => {
     const fetchData = async () => {

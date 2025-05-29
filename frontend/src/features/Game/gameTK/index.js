@@ -14,12 +14,20 @@ const GameTK = () => {
 
     const fetchGameData = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/games/1");
-        setIframeUrl(res.data.quizizz_url);
+        const res = await axios.get("http://localhost:5000/games/2");
+        const rawUrl = res.data.quizizz_url;
 
-        const match = res.data.quizizz_url.match(/quiz\/([^/?]+)/);
+        // Ambil ID quiz dari link
+        const match = rawUrl.match(/quiz\/([^/?]+)/);
         if (match) {
-          setGameTKId(match[1]);
+          const quizId = match[1];
+          setGameTKId(quizId);
+
+          // Buat embed URL
+          const embedUrl = `https://quizizz.com/embed/quiz/${quizId}`;
+          setIframeUrl(embedUrl);
+        } else {
+          setIframeUrl(""); // fallback kalau tidak cocok
         }
       } catch (error) {
         console.error("Gagal mengambil data game:", error);

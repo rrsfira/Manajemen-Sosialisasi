@@ -15,12 +15,19 @@ const GameMasyarakat = () => {
     const fetchGameData = async () => {
       try {
         const res = await axios.get("http://localhost:5000/games/5");
-        setIframeUrl(res.data.quizizz_url);
+        const rawUrl = res.data.quizizz_url;
 
-        // jika ingin ambil ID quiz dari URL Quizizz
-        const match = res.data.quizizz_url.match(/quiz\/([^/?]+)/);
+        // Ambil ID quiz dari link
+        const match = rawUrl.match(/quiz\/([^/?]+)/);
         if (match) {
-          setGameMasyarakatId(match[1]);
+          const quizId = match[1];
+          setGameMasyarakatId(quizId);
+
+          // Buat embed URL
+          const embedUrl = `https://quizizz.com/embed/quiz/${quizId}`;
+          setIframeUrl(embedUrl);
+        } else {
+          setIframeUrl(""); // fallback kalau tidak cocok
         }
       } catch (error) {
         console.error("Gagal mengambil data game:", error);
@@ -64,8 +71,7 @@ const GameMasyarakat = () => {
         {role === "admin" && (
           <div className="flex justify-end mt-6">
             <button
-
-              onClick={() => navigate("/app/GameMasyarakat/Edit")}
+              onClick={() => navigate(`/app/Game/Edit/${5}`)} 
               className="btn bg-[#2F2FAF] text-white hover:bg-[#1f1f8f] min-w-[100px]"
             >
               Edit
