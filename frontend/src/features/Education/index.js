@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   EyeIcon,
   PlusIcon,
@@ -16,6 +16,9 @@ const Education = () => {
   const [rowsPerPage] = useState(5);
   const [role, setRole] = useState("");
   const navigate = useNavigate();
+  const location = useLocation(); // untuk mendapatkan lokasi
+  const currentPath = location.pathname; // untuk mendapatkan path lokasi
+  const basePath = currentPath.startsWith("/spr") ? "/spr" : "/app";
 
   useEffect(() => {
     const storedRole = localStorage.getItem("role");
@@ -112,10 +115,10 @@ const Education = () => {
             className="input input-bordered w-full sm:w-60"
           />
 
-          {role === "admin" && (
+           {(role === "admin" || role === "superadmin") && (
             <button
               className="btn btn-primary flex items-center justify-center sm:justify-start"
-              onClick={() => navigate("/app/Education/Create")}
+              onClick={() => navigate(`${basePath}/Education/Create`)}
             >
               <PlusIcon className="w-4 h-4 mr-1" />
               Tambah
@@ -144,18 +147,18 @@ const Education = () => {
                     <div className="flex justify-center gap-1">
                       <button
                         onClick={() =>
-                          navigate(`/app/Education/Details/${item.id}`)
+                          navigate(`${basePath}/Education/Details/${item.id}`)
                         }
                         className="btn btn-sm btn-info"
                       >
                         <EyeIcon className="w-5 h-5" />
                       </button>
-                      {role === "admin" && (
+                       {(role === "admin" || role === "superadmin") && (
                         <>
                           <button
                             className="btn btn-sm btn-warning"
                             onClick={() =>
-                              navigate(`/app/Education/Edit/${item.id}`)
+                              navigate(`${basePath}/Education/Edit/${item.id}`)
                             }
                           >
                             <PencilSquareIcon className="w-5 h-5" />
@@ -213,15 +216,15 @@ const Education = () => {
               </div>
               <div className="flex gap-2">
                 <button
-                  onClick={() => navigate(`/app/Education/Details/${item.id}`)}
+                  onClick={() => navigate(`${basePath}/Education/Details/${item.id}`)}
                   className="btn btn-sm btn-info flex-1"
                 >
                   <EyeIcon className="w-5 h-5" />
                 </button>
-                {role === "admin" && (
+                 {(role === "admin" || role === "superadmin") && (
                   <>
                     <button
-                      onClick={() => navigate(`/app/Education/Edit/${item.id}`)}
+                      onClick={() => navigate(`${basePath}/Education/Edit/${item.id}`)}
                       className="btn btn-sm btn-warning flex-1"
                     >
                       <PencilSquareIcon className="w-5 h-5" />

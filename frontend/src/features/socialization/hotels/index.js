@@ -26,6 +26,7 @@ const Hotel = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage] = useState(5);
   const [role, setRole] = useState("");
+  const basePath = currentPath.startsWith("/spr") ? "/spr" : "/app";
 
   const [isFilterVisible, setIsFilterVisible] = useState(false); // untuk menampilkan filter
   const [selectedGroup, setSelectedGroup] = useState(null); // untuk menampilkan data yang telah di filter di cards
@@ -277,7 +278,7 @@ const Hotel = () => {
               Filter
             </button>
 
-            {role === "admin" && (
+            {(role === "admin" || role === "superadmin") && (
               <>
                 <button
                   onClick={handleExportExcel}
@@ -291,7 +292,7 @@ const Hotel = () => {
                   className={`btn btn-primary flex items-center w-full sm:w-auto text-sm ${
                     currentPath === "/app/Hotel/Create" ? "font-bold" : ""
                   }`}
-                  onClick={() => navigate("/app/Hotel/Create")}
+                  onClick={() => navigate(`${basePath}/Hotel/Create`)}
                 >
                   <PlusIcon className="w-4 h-4 mr-1" />
                   Tambah
@@ -348,16 +349,16 @@ const Hotel = () => {
                     <td className="text-center">
                       <button
                         className="btn btn-sm btn-primary mr-1"
-                        onClick={() => navigate(`/app/Hotel/Detail/${item.id}`)}
+                        onClick={() => navigate(`${basePath}/Hotel/Detail/${item.id}`)}
                       >
                         <EyeIcon className="w-5 h-5" />
                       </button>
-                      {role === "admin" && (
+                     {(role === "admin" || role === "superadmin") && (
                         <>
                           <button
                             className="btn btn-sm btn-warning mr-1"
                             onClick={() =>
-                              navigate(`/app/Hotel/Edit/${item.id}`)
+                              navigate(`${basePath}/Hotel/Edit/${item.id}`)
                             }
                           >
                             <PencilSquareIcon className="w-5 h-5" />

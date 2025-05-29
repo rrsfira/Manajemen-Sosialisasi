@@ -36,7 +36,7 @@ const EducationUnits = () => {
   const [filterRegion, setFilterRegion] = useState("");
   const [data, setData] = useState([]); // state untuk data
   const [currentData, setCurrentData] = useState([]);
-  const [searchedData, setSearchedData] = useState([]);
+  const basePath = currentPath.startsWith("/spr") ? "/spr" : "/app";
 
   // untuk menampilkan data dari backend
   useEffect(() => {
@@ -108,9 +108,9 @@ const EducationUnits = () => {
 
   // fungsi untuk klik summary card
   const handleGroupCardClick = (group) => {
-   setSelectedGroup((prevGroup) => (prevGroup === group ? null : group));
+    setSelectedGroup((prevGroup) => (prevGroup === group ? null : group));
   };
-  
+
   const convertToISODate = (dateStr) => {
     if (!dateStr) return null; // hindari error jika null
     const [day, month, year] = dateStr.split("-");
@@ -357,7 +357,7 @@ const EducationUnits = () => {
                 <FunnelIcon className="w-5 h-5 mr-1" />
                 Filter
               </button>
-              {role === "admin" && (
+              {(role === "admin" || role === "superadmin") && (
                 <>
                   <button
                     onClick={handleExportExcel}
@@ -372,7 +372,7 @@ const EducationUnits = () => {
                         ? "font-bold text-primary"
                         : ""
                     }`}
-                    onClick={() => navigate("/app/EducationUnit/Create")}
+                    onClick={() => navigate(`${basePath}/EducationUnit/Create`)}
                   >
                     <PlusIcon className="w-4 h-4 mr-1" />
                     Tambah
@@ -431,17 +431,21 @@ const EducationUnits = () => {
                       <button
                         className="btn btn-sm btn-primary mr-1"
                         onClick={() =>
-                          navigate(`/app/EducationUnit/Detail/${item.id}`)
+                          navigate(
+                            `${basePath}/EducationUnit/Detail/${item.id}`
+                          )
                         }
                       >
                         <EyeIcon className="w-5 h-5" />
                       </button>
-                      {role === "admin" && (
+                      {(role === "admin" || role === "superadmin") && (
                         <>
                           <button
                             className="btn btn-sm btn-warning mr-1"
                             onClick={() =>
-                              navigate(`/app/EducationUnit/Edit/${item.id}`)
+                              navigate(
+                                `${basePath}/EducationUnit/Edit/${item.id}`
+                              )
                             }
                           >
                             <PencilSquareIcon className="w-5 h-5" />

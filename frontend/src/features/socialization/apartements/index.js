@@ -34,7 +34,7 @@ const Apartement = () => {
   const [filterRegion, setFilterRegion] = useState("");
   const [selectedGroup, setSelectedGroup] = useState(null); // untuk menampilkan data yang telah di filter di cards
   const [isFilterVisible, setIsFilterVisible] = useState(false); // untuk menampilkan filter
-  const [searchedData, setSearchedData] = useState([]);
+  const basePath = currentPath.startsWith("/spr") ? "/spr" : "/app";
 
   useEffect(() => {
     const storedRole = localStorage.getItem("role");
@@ -270,7 +270,7 @@ const Apartement = () => {
               Filter
             </button>
 
-            {role === "admin" && (
+            {(role === "admin" || role === "superadmin") && (
               <>
                 <button
                   onClick={handleExportExcel}
@@ -284,7 +284,7 @@ const Apartement = () => {
                   className={`btn btn-primary flex items-center text-sm h-10 w-full sm:w-auto ${
                     currentPath === "/app/Apartments/Create" ? "font-bold" : ""
                   }`}
-                  onClick={() => navigate("/app/Apartment/Create")}
+                  onClick={() => navigate(`${basePath}/Apartment/Create`)}
                 >
                   <PlusIcon className="w-4 h-4 mr-1" />
                   Tambah
@@ -342,17 +342,17 @@ const Apartement = () => {
                       <button
                         className="btn btn-sm btn-primary mr-1"
                         onClick={() =>
-                          navigate(`/app/Apartment/Detail/${item.id}`)
+                          navigate(`${basePath}/Apartment/Detail/${item.id}`)
                         }
                       >
                         <EyeIcon className="w-5 h-5" />
                       </button>
-                      {role === "admin" && (
+                      {(role === "admin" || role === "superadmin") && (
                         <>
                           <button
                             className="btn btn-sm btn-warning mr-1"
                             onClick={() =>
-                              navigate(`/app/Apartment/Edit/${item.id}`)
+                              navigate(`${basePath}/Apartment/Edit/${item.id}`)
                             }
                           >
                             <PencilSquareIcon className="w-5 h-5" />

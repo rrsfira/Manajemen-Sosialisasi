@@ -36,8 +36,7 @@ const Mall = () => {
   const [filterAddress, setFilterAddress] = useState("");
   const [filterRegion, setFilterRegion] = useState("");
   const [currentData, setCurrentData] = useState([]);
-
-  const [searchedData, setSearchedData] = useState([]);
+  const basePath = currentPath.startsWith("/spr") ? "/spr" : "/app";
 
   useEffect(() => {
     const storedRole = localStorage.getItem("role");
@@ -284,7 +283,7 @@ const Mall = () => {
               Filter
             </button>
 
-            {role === "admin" && (
+            {(role === "admin" || role === "superadmin") && (
               <>
                 <button
                   onClick={handleExportExcel}
@@ -298,7 +297,7 @@ const Mall = () => {
                   className={`btn btn-primary flex items-center text-sm h-10 w-full sm:w-auto ${
                     currentPath === "/app/Mall/Create" ? "font-bold" : ""
                   }`}
-                  onClick={() => navigate("/app/Mall/Create")}
+                  onClick={() => navigate(`${basePath}/Mall/Create`)}
                 >
                   <PlusIcon className="w-4 h-4 mr-1" />
                   Tambah
@@ -355,16 +354,16 @@ const Mall = () => {
                     <td className="text-center">
                       <button
                         className="btn btn-sm btn-primary mr-1"
-                        onClick={() => navigate(`/app/Mall/Detail/${item.id}`)}
+                        onClick={() => navigate(`${basePath}/Mall/Detail/${item.id}`)}
                       >
                         <EyeIcon className="w-5 h-5" />
                       </button>
-                      {role === "admin" && (
+                      {(role === "admin" || role === "superadmin") && (
                         <>
                           <button
                             className="btn btn-sm btn-warning mr-1"
                             onClick={() =>
-                              navigate(`/app/Mall/Edit/${item.id}`)
+                              navigate(`${basePath}/Mall/Edit/${item.id}`)
                             }
                           >
                             <PencilSquareIcon className="w-5 h-5" />
