@@ -4,7 +4,7 @@ import * as XLSX from "xlsx";
 import Swal from "sweetalert2"; // popup notif
 import axios from "axios";
 import ApartementsChart from "./chart";
-import ApartementsFilterSidebar from "./Filter"
+import ApartementsFilterSidebar from "./Filter";
 import {
   DocumentArrowDownIcon,
   FunnelIcon,
@@ -36,7 +36,6 @@ const Apartement = () => {
   const [isFilterVisible, setIsFilterVisible] = useState(false); // untuk menampilkan filter
   const [searchedData, setSearchedData] = useState([]);
 
-
   useEffect(() => {
     const storedRole = localStorage.getItem("role");
     if (storedRole) setRole(storedRole);
@@ -51,12 +50,10 @@ const Apartement = () => {
       console.log("Fetched Data:", response.data); // Log the data
       setData(response.data);
       setFilteredData(response.data); // ← ini penting
-
     } catch (error) {
       console.error("Error fetching apartments data:", error);
     }
   };
-
 
   // filter button untuk hari
   const convertToISODate = (dateStr) => {
@@ -64,23 +61,6 @@ const Apartement = () => {
     const [day, month, year] = dateStr.split("-");
     return `${year}-${month}-${day}`;
   };
-  const sortedData = filteredData.slice().sort((a, b) => {
-    const dateA = new Date(convertToISODate(a.date));
-    const dateB = new Date(convertToISODate(b.date));
-
-    const validA = !isNaN(dateA);
-    const validB = !isNaN(dateB);
-
-    if (validA && validB) {
-      return dateB - dateA;
-    } else if (validA) {
-      return -1; // valid tanggal dulu
-    } else if (validB) {
-      return 1;
-    } else {
-      return b.id - a.id;
-    }
-  });
 
   const paginatedData = currentData.slice(
     (currentPage - 1) * rowsPerPage,
@@ -146,8 +126,8 @@ const Apartement = () => {
   //export excel
   const handleExportExcel = () => {
     const exportSource = filteredData.length > 0 ? filteredData : data;
-    const exportData = exportSource.map((item) => ({
-      ID: item.id,
+    const exportData = exportSource.map((item, index) => ({
+      No: index + 1, // Ganti dengan nomor urut
       Nama: item.name,
       Kegiatan: item.activity,
       Wilayah: item.region,
@@ -169,19 +149,12 @@ const Apartement = () => {
     XLSX.writeFile(workbook, "Apartments.xlsx");
   };
 
-  const handleReset = () => {
-    setSearchText("");
-    setSelectedGroup(null);
-  };
-
-
   const applyFilterAndSearch = () => {
-    // Filter dulu dari sidebar filter
     const filtered = data.filter((item) => {
       const matchDate =
         !filterDate ||
         moment(item.date, ["DD-MM-YYYY"]).format("DD-MM-YYYY") ===
-        moment(filterDate, "YYYY-MM-DD").format("DD-MM-YYYY");
+          moment(filterDate, "YYYY-MM-DD").format("DD-MM-YYYY");
 
       const matchName = filterName
         ? item.name?.toLowerCase().includes(filterName.toLowerCase())
@@ -198,7 +171,6 @@ const Apartement = () => {
       return matchDate && matchName && matchAddress && matchRegion;
     });
 
-    // Lalu search dari hasil filtered tadi
     const searchedData = filtered.filter((item) => {
       const matchesSearch = Object.values(item).some((val) =>
         String(val).toLowerCase().includes(searchText.toLowerCase())
@@ -210,7 +182,20 @@ const Apartement = () => {
       return matchesSearch && matchesGroup;
     });
 
-    setCurrentData(searchedData);
+    // Urutkan hasil pencarian berdasarkan tanggal terbaru
+    const sorted = searchedData.slice().sort((a, b) => {
+      const dateA = new Date(convertToISODate(a.date));
+      const dateB = new Date(convertToISODate(b.date));
+      const validA = !isNaN(dateA);
+      const validB = !isNaN(dateB);
+
+      if (validA && validB) return dateB - dateA;
+      else if (validA) return -1;
+      else if (validB) return 1;
+      else return b.id - a.id;
+    });
+
+    setCurrentData(sorted);
     setCurrentPage(1);
   };
 
@@ -296,8 +281,9 @@ const Apartement = () => {
                 </button>
 
                 <button
-                  className={`btn btn-primary flex items-center text-sm h-10 w-full sm:w-auto ${currentPath === "/app/Apartments/Create" ? "font-bold" : ""
-                    }`}
+                  className={`btn btn-primary flex items-center text-sm h-10 w-full sm:w-auto ${
+                    currentPath === "/app/Apartments/Create" ? "font-bold" : ""
+                  }`}
                   onClick={() => navigate("/app/Apartment/Create")}
                 >
                   <PlusIcon className="w-4 h-4 mr-1" />
@@ -427,8 +413,9 @@ const Apartement = () => {
                 <button
                   key={page}
                   onClick={() => setCurrentPage(page)}
-                  className={`btn btn-sm ${page === currentPage ? "btn-primary" : "btn-outline"
-                    }`}
+                  className={`btn btn-sm ${
+                    page === currentPage ? "btn-primary" : "btn-outline"
+                  }`}
                 >
                   {page}
                 </button>

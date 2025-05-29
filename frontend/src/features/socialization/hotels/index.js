@@ -5,6 +5,7 @@ import Swal from "sweetalert2"; // popup notif
 import axios from "axios";
 import HotelsChart from "./chart";
 import HotelsFilterSidebar from "./Filter";
+import moment from "moment";
 import {
   DocumentArrowDownIcon,
   FunnelIcon,
@@ -15,7 +16,6 @@ import {
   TrashIcon,
   PlusIcon,
 } from "@heroicons/react/24/outline";
-import moment from "moment";
 
 const Hotel = () => {
   const navigate = useNavigate(); // hook untuk navigasi
@@ -37,7 +37,6 @@ const Hotel = () => {
   const [filterRegion, setFilterRegion] = useState("");
   const [currentData, setCurrentData] = useState([]);
   const [filteredData, setFilteredData] = useState([]); // untuk menampilkan data yang telah di filter di cards dan search
-  const [searchedData, setSearchedData] = useState([]);
 
   useEffect(() => {
     const storedRole = localStorage.getItem("role");
@@ -57,32 +56,12 @@ const Hotel = () => {
     }
   };
 
-
   // filter button untuk hari
   const convertToISODate = (dateStr) => {
     if (!dateStr) return null; // hindari error jika null
     const [day, month, year] = dateStr.split("-");
     return `${year}-${month}-${day}`;
   };
-
-  const sortedData = searchedData.slice().sort((a, b) => {
-    const dateA = new Date(convertToISODate(a.date));
-    const dateB = new Date(convertToISODate(b.date));
-
-    const validA = !isNaN(dateA);
-    const validB = !isNaN(dateB);
-
-    if (validA && validB) {
-      return dateB - dateA;
-    } else if (validA) {
-      return -1; // valid tanggal dulu
-    } else if (validB) {
-      return 1;
-    } else {
-      return b.id - a.id;
-    }
-  });
-
 
   // Ganti nama currentData lokal jadi paginatedData
   const paginatedData = currentData.slice(
@@ -149,8 +128,8 @@ const Hotel = () => {
   //export excel
   const handleExportExcel = () => {
     const exportSource = filteredData.length > 0 ? filteredData : data;
-    const exportData = exportSource.map((item) => ({
-      ID: item.id,
+    const exportData = exportSource.map((item, index) => ({
+      No: index + 1,
       Nama: item.name,
       Kegiatan: item.activity,
       Wilayah: item.region,
@@ -172,18 +151,12 @@ const Hotel = () => {
     XLSX.writeFile(workbook, "Hotel.xlsx");
   };
 
-  const handleReset = () => {
-    setSearchText("");
-    setSelectedGroup(null);
-  };
-
   const applyFilterAndSearch = () => {
-    // Filter dulu dari sidebar filter
     const filtered = data.filter((item) => {
       const matchDate =
         !filterDate ||
         moment(item.date, ["DD-MM-YYYY"]).format("DD-MM-YYYY") ===
-        moment(filterDate, "YYYY-MM-DD").format("DD-MM-YYYY");
+          moment(filterDate, "YYYY-MM-DD").format("DD-MM-YYYY");
 
       const matchName = filterName
         ? item.name?.toLowerCase().includes(filterName.toLowerCase())
@@ -200,7 +173,6 @@ const Hotel = () => {
       return matchDate && matchName && matchAddress && matchRegion;
     });
 
-    // Lalu search dari hasil filtered tadi
     const searchedData = filtered.filter((item) => {
       const matchesSearch = Object.values(item).some((val) =>
         String(val).toLowerCase().includes(searchText.toLowerCase())
@@ -212,7 +184,26 @@ const Hotel = () => {
       return matchesSearch && matchesGroup;
     });
 
-    setCurrentData(searchedData);
+    // 🔽 Sorting by latest date
+    const sorted = searchedData.slice().sort((a, b) => {
+      const dateA = new Date(convertToISODate(a.date));
+      const dateB = new Date(convertToISODate(b.date));
+
+      const validA = !isNaN(dateA);
+      const validB = !isNaN(dateB);
+
+      if (validA && validB) {
+        return dateB - dateA;
+      } else if (validA) {
+        return -1;
+      } else if (validB) {
+        return 1;
+      } else {
+        return b.id - a.id;
+      }
+    });
+
+    setCurrentData(sorted);
     setCurrentPage(1);
   };
 
@@ -239,7 +230,6 @@ const Hotel = () => {
     setCurrentPage(1);
   };
 
-
   return (
     <div className="min-h-screen bg-base-200 px-6 py-10 space-y-12">
       {/* Filter Sidebar (button) */}
@@ -258,7 +248,6 @@ const Hotel = () => {
           onClose={() => setIsFilterVisible(false)}
         />
       )}
-
 
       {/* Pie Chart */}
       <HotelsChart />
@@ -299,8 +288,9 @@ const Hotel = () => {
                 </button>
 
                 <button
-                  className={`btn btn-primary flex items-center w-full sm:w-auto text-sm ${currentPath === "/app/Hotel/Create" ? "font-bold" : ""
-                    }`}
+                  className={`btn btn-primary flex items-center w-full sm:w-auto text-sm ${
+                    currentPath === "/app/Hotel/Create" ? "font-bold" : ""
+                  }`}
                   onClick={() => navigate("/app/Hotel/Create")}
                 >
                   <PlusIcon className="w-4 h-4 mr-1" />
@@ -358,9 +348,7 @@ const Hotel = () => {
                     <td className="text-center">
                       <button
                         className="btn btn-sm btn-primary mr-1"
-                        onClick={() =>
-                          navigate(`/app/Hotel/Detail/${item.id}`)
-                        }
+                        onClick={() => navigate(`/app/Hotel/Detail/${item.id}`)}
                       >
                         <EyeIcon className="w-5 h-5" />
                       </button>
@@ -430,8 +418,9 @@ const Hotel = () => {
                 <button
                   key={page}
                   onClick={() => setCurrentPage(page)}
-                  className={`btn btn-sm ${page === currentPage ? "btn-primary" : "btn-outline"
-                    }`}
+                  className={`btn btn-sm ${
+                    page === currentPage ? "btn-primary" : "btn-outline"
+                  }`}
                 >
                   {page}
                 </button>

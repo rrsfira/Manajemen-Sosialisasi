@@ -5,6 +5,7 @@ import HealthFacilitiesChart from "./chart/index.js";
 import * as XLSX from "xlsx";
 import Swal from "sweetalert2"; // popup notif
 import HealthFacilitiesFilterSidebar from "./Filter";
+import moment from "moment";
 import {
   DocumentArrowDownIcon,
   CheckCircleIcon,
@@ -15,10 +16,8 @@ import {
   TrashIcon,
   PlusIcon,
 } from "@heroicons/react/24/outline";
-import moment from "moment";
 
 const HealthFacility = () => {
-  const [healthFacilities, setHealthFacilities] = useState([]);
   const [isFilterVisible, setIsFilterVisible] = useState(false);
   const [data, setData] = useState([]);
   const [searchText, setSearchText] = useState("");
@@ -37,42 +36,15 @@ const HealthFacility = () => {
   const [filterAddress, setFilterAddress] = useState("");
   const [filterRegion, setFilterRegion] = useState("");
 
-  const [searchedData, setSearchedData] = useState([]);
-
   useEffect(() => {
     const storedRole = localStorage.getItem("role");
     if (storedRole) setRole(storedRole);
   }, []);
 
-
-
   const handleReset = () => {
     setSearchText("");
     setSelectedGroup(null);
   };
-  // filter button untuk hari
-  const convertToISODate = (dateStr) => {
-    if (!dateStr) return null; // hindari error jika null
-    const [day, month, year] = dateStr.split("-");
-    return `${year}-${month}-${day}`;
-  };
-  const sortedData = searchedData.slice().sort((a, b) => {
-    const dateA = new Date(convertToISODate(a.date));
-    const dateB = new Date(convertToISODate(b.date));
-
-    const validA = !isNaN(dateA);
-    const validB = !isNaN(dateB);
-
-    if (validA && validB) {
-      return dateB - dateA;
-    } else if (validA) {
-      return -1; // valid tanggal dulu
-    } else if (validB) {
-      return 1;
-    } else {
-      return b.id - a.id;
-    }
-  });
 
   const paginatedData = currentData.slice(
     (currentPage - 1) * rowsPerPage,
@@ -87,7 +59,9 @@ const HealthFacility = () => {
   }, []);
   const fetchHealthFacilities = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/health_facilities");
+      const response = await axios.get(
+        "http://localhost:5000/health_facilities"
+      );
       console.log("Fetched Data:", response.data); // Log the data
       setData(response.data);
     } catch (error) {
@@ -98,7 +72,7 @@ const HealthFacility = () => {
   const handleExportExcel = () => {
     const exportSource = filteredData.length > 0 ? filteredData : data;
     const exportData = exportSource.map((item) => ({
-      ID: item.id,
+      No: data.indexOf(item) + 1,
       Nama: item.name,
       Kategori: item.category,
       Kegiatan: item.activity,
@@ -121,7 +95,6 @@ const HealthFacility = () => {
 
     XLSX.writeFile(workbook, "FasilitasKesehatan.xlsx");
   };
-
 
   const targetGroups = ["puskesmas", "klinik", "rumah sakit"];
   const groupSummary = {
@@ -157,12 +130,12 @@ const HealthFacility = () => {
   ];
   // fungsi untuk klik summary card
   const handleGroupCardClick = (group) => {
-    setSelectedGroup(group);
+    setSelectedGroup((prevGroup) => (prevGroup === group ? null : group));
   };
 
   // popup notifikasi hapus data
   const handleDelete = async (id) => {
-    const isDarkMode = document.documentElement.classList.contains('dark');
+    const isDarkMode = document.documentElement.classList.contains("dark");
 
     Swal.fire({
       title: "Yakin ingin menghapus?",
@@ -172,15 +145,23 @@ const HealthFacility = () => {
       confirmButtonText: "Ya, hapus!",
       cancelButtonText: "Batal",
       willOpen: () => {
-        const popup = document.querySelector('.swal2-popup');
-        if (document.documentElement.classList.contains('dark')) {
-          popup.classList.add('swal2-dark');
-          popup.querySelector('.swal2-title')?.classList.add('swal2-title-dark');
-          popup.querySelector('.swal2-html-container')?.classList.add('swal2-content-dark');
-          popup.querySelector('.swal2-confirm')?.classList.add('swal2-confirm-dark');
-          popup.querySelector('.swal2-cancel')?.classList.add('swal2-cancel-dark');
+        const popup = document.querySelector(".swal2-popup");
+        if (document.documentElement.classList.contains("dark")) {
+          popup.classList.add("swal2-dark");
+          popup
+            .querySelector(".swal2-title")
+            ?.classList.add("swal2-title-dark");
+          popup
+            .querySelector(".swal2-html-container")
+            ?.classList.add("swal2-content-dark");
+          popup
+            .querySelector(".swal2-confirm")
+            ?.classList.add("swal2-confirm-dark");
+          popup
+            .querySelector(".swal2-cancel")
+            ?.classList.add("swal2-cancel-dark");
         }
-      }
+      },
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
@@ -196,19 +177,23 @@ const HealthFacility = () => {
           Swal.fire("Terhapus!", "Data berhasil dihapus.", "success");
         } catch (error) {
           console.error("Gagal menghapus data:", error);
-          Swal.fire("Gagal!", "Terjadi kesalahan saat menghapus data.", "error");
+          Swal.fire(
+            "Gagal!",
+            "Terjadi kesalahan saat menghapus data.",
+            "error"
+          );
         }
       }
     });
   };
 
   const applyFilterAndSearch = () => {
-    // Filter dulu dari sidebar filter
+    // Filter dari sidebar filter
     const filtered = data.filter((item) => {
       const matchDate =
         !filterDate ||
         moment(item.date, ["DD-MM-YYYY"]).format("DD-MM-YYYY") ===
-        moment(filterDate, "YYYY-MM-DD").format("DD-MM-YYYY");
+          moment(filterDate, "YYYY-MM-DD").format("DD-MM-YYYY");
 
       const matchName = filterName
         ? item.name?.toLowerCase().includes(filterName.toLowerCase())
@@ -225,19 +210,38 @@ const HealthFacility = () => {
       return matchDate && matchName && matchAddress && matchRegion;
     });
 
-    // Lalu search dari hasil filtered tadi
+    // Search
     const searchedData = filtered.filter((item) => {
       const matchesSearch = Object.values(item).some((val) =>
         String(val).toLowerCase().includes(searchText.toLowerCase())
       );
       const matchesGroup = selectedGroup
-        ? item.group?.trim() === selectedGroup
+        ? item.category?.trim().toLowerCase() === selectedGroup.toLowerCase()
         : true;
 
       return matchesSearch && matchesGroup;
     });
 
-    setCurrentData(searchedData);
+    // ✅ Sort berdasarkan tanggal terbaru
+    const convertToISODate = (dateStr) => {
+      if (!dateStr) return null;
+      const [day, month, year] = dateStr.split("-");
+      return `${year}-${month}-${day}`;
+    };
+
+    const sorted = searchedData.slice().sort((a, b) => {
+      const dateA = new Date(convertToISODate(a.date));
+      const dateB = new Date(convertToISODate(b.date));
+      const validA = !isNaN(dateA);
+      const validB = !isNaN(dateB);
+
+      if (validA && validB) return dateB - dateA;
+      else if (validA) return -1;
+      else if (validB) return 1;
+      else return b.id - a.id; // fallback
+    });
+
+    setCurrentData(sorted);
     setCurrentPage(1);
   };
 
@@ -263,7 +267,6 @@ const HealthFacility = () => {
     setFilteredData(data);
     setCurrentPage(1);
   };
-
 
   return (
     <div className="min-h-screen bg-base-200 px-6 py-10 space-y-12">
@@ -351,8 +354,11 @@ const HealthFacility = () => {
                   Excel
                 </button>
                 <button
-                  className={`btn btn-primary flex items-center text-sm w-full sm:w-auto ${currentPath === "/app/EducationUnit/Create" ? "font-bold" : ""
-                    }`}
+                  className={`btn btn-primary flex items-center text-sm w-full sm:w-auto ${
+                    currentPath === "/app/EducationUnit/Create"
+                      ? "font-bold"
+                      : ""
+                  }`}
                   onClick={() => navigate("/app/EducationUnit/Create")}
                 >
                   <PlusIcon className="w-4 h-4 mr-1" />
@@ -362,7 +368,6 @@ const HealthFacility = () => {
             )}
           </div>
         </div>
-
 
         {/* Table */}
         <div className="overflow-x-auto">
@@ -482,8 +487,9 @@ const HealthFacility = () => {
                 <button
                   key={page}
                   onClick={() => setCurrentPage(page)}
-                  className={`btn btn-sm ${page === currentPage ? "btn-primary" : "btn-outline"
-                    }`}
+                  className={`btn btn-sm ${
+                    page === currentPage ? "btn-primary" : "btn-outline"
+                  }`}
                 >
                   {page}
                 </button>

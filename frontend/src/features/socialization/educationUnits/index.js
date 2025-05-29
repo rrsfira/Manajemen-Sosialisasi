@@ -36,7 +36,6 @@ const EducationUnits = () => {
   const [filterRegion, setFilterRegion] = useState("");
   const [data, setData] = useState([]); // state untuk data
   const [currentData, setCurrentData] = useState([]);
-
   const [searchedData, setSearchedData] = useState([]);
 
   // untuk menampilkan data dari backend
@@ -56,7 +55,6 @@ const EducationUnits = () => {
   // popup notifikasi hapus data
   const handleDelete = async (id) => {
     const isDarkMode = document.documentElement.classList.contains("dark");
-
 
     Swal.fire({
       title: "Yakin ingin menghapus?",
@@ -108,46 +106,22 @@ const EducationUnits = () => {
     });
   };
 
-
   // fungsi untuk klik summary card
   const handleGroupCardClick = (group) => {
-    setSelectedGroup(group);
+   setSelectedGroup((prevGroup) => (prevGroup === group ? null : group));
   };
-  // jika filter menggunakan button maka filter menggunakan search akan nonaktif
-
-
-
+  
   const convertToISODate = (dateStr) => {
     if (!dateStr) return null; // hindari error jika null
     const [day, month, year] = dateStr.split("-");
     return `${year}-${month}-${day}`;
   };
 
-  const sortedData = searchedData.slice().sort((a, b) => {
-    const dateA = new Date(convertToISODate(a.date));
-    const dateB = new Date(convertToISODate(b.date));
-
-    const validA = !isNaN(dateA);
-    const validB = !isNaN(dateB);
-
-    if (validA && validB) {
-      return dateB - dateA;
-    } else if (validA) {
-      return -1; // valid tanggal dulu
-    } else if (validB) {
-      return 1;
-    } else {
-      return b.id - a.id;
-    }
-  });
-
   // Ganti nama currentData lokal jadi paginatedData
   const paginatedData = currentData.slice(
     (currentPage - 1) * rowsPerPage,
     currentPage * rowsPerPage
   );
-
-
 
   const totalPages = Math.ceil(currentData.length / rowsPerPage);
 
@@ -164,7 +138,7 @@ const EducationUnits = () => {
   const handleExportExcel = () => {
     const exportSource = filteredData.length > 0 ? filteredData : data;
     const exportData = exportSource.map((item) => ({
-      ID: item.id,
+      No: data.indexOf(item) + 1,
       Nama: item.name,
       Jenjang: item.group,
       Kegiatan: item.activity,
@@ -233,12 +207,11 @@ const EducationUnits = () => {
   };
 
   const applyFilterAndSearch = () => {
-    // Filter dulu dari sidebar filter
     const filtered = data.filter((item) => {
       const matchDate =
         !filterDate ||
         moment(item.date, ["DD-MM-YYYY"]).format("DD-MM-YYYY") ===
-        moment(filterDate, "YYYY-MM-DD").format("DD-MM-YYYY");
+          moment(filterDate, "YYYY-MM-DD").format("DD-MM-YYYY");
 
       const matchName = filterName
         ? item.name?.toLowerCase().includes(filterName.toLowerCase())
@@ -255,7 +228,6 @@ const EducationUnits = () => {
       return matchDate && matchName && matchAddress && matchRegion;
     });
 
-    // Lalu search dari hasil filtered tadi
     const searchedData = filtered.filter((item) => {
       const matchesSearch = Object.values(item).some((val) =>
         String(val).toLowerCase().includes(searchText.toLowerCase())
@@ -267,19 +239,40 @@ const EducationUnits = () => {
       return matchesSearch && matchesGroup;
     });
 
-    setCurrentData(searchedData);
+    const sorted = searchedData.slice().sort((a, b) => {
+      const dateA = new Date(convertToISODate(a.date));
+      const dateB = new Date(convertToISODate(b.date));
+
+      const validA = !isNaN(dateA);
+      const validB = !isNaN(dateB);
+
+      if (validA && validB) {
+        return dateB - dateA;
+      } else if (validA) {
+        return -1;
+      } else if (validB) {
+        return 1;
+      } else {
+        return b.id - a.id;
+      }
+    });
+
+    setCurrentData(sorted);
     setCurrentPage(1);
   };
 
   // Panggil applyFilterAndSearch setiap filter/search berubah
   useEffect(() => {
     applyFilterAndSearch();
-  }, [data, filterDate, filterName, filterAddress, filterRegion, searchText, selectedGroup]);
-
-
-
-
-
+  }, [
+    data,
+    filterDate,
+    filterName,
+    filterAddress,
+    filterRegion,
+    searchText,
+    selectedGroup,
+  ]);
 
   //reset filter button
   const resetFilter = () => {
@@ -354,8 +347,6 @@ const EducationUnits = () => {
             </button>
           </div>
 
-
-
           {/* Action Buttons (kanan) */}
           <div className="flex flex-col sm:flex-row flex-wrap gap-2 w-full sm:w-auto sm:justify-end">
             <div className="flex flex-wrap gap-2 justify-start sm:justify-end">
@@ -376,10 +367,11 @@ const EducationUnits = () => {
                     Excel
                   </button>
                   <button
-                    className={`btn btn-primary flex items-center text-lg whitespace-nowrap w-full sm:w-auto ${currentPath === "/app/EducationUnitCreate"
-                      ? "font-bold text-primary"
-                      : ""
-                      }`}
+                    className={`btn btn-primary flex items-center text-lg whitespace-nowrap w-full sm:w-auto ${
+                      currentPath === "/app/EducationUnitCreate"
+                        ? "font-bold text-primary"
+                        : ""
+                    }`}
                     onClick={() => navigate("/app/EducationUnit/Create")}
                   >
                     <PlusIcon className="w-4 h-4 mr-1" />
@@ -413,10 +405,18 @@ const EducationUnits = () => {
                     <td className="text-center">
                       {(currentPage - 1) * rowsPerPage + idx + 1}
                     </td>
-                    <td className="text-center">{item.name || "Tidak ada data"}</td>
-                    <td className="text-center">{item.address || "Tidak ada data"}</td>
-                    <td className="text-center">{item.region || "Tidak ada data"}</td>
-                    <td className="text-center">{item.subdistrict || "Tidak ada data"}</td>
+                    <td className="text-center">
+                      {item.name || "Tidak ada data"}
+                    </td>
+                    <td className="text-center">
+                      {item.address || "Tidak ada data"}
+                    </td>
+                    <td className="text-center">
+                      {item.region || "Tidak ada data"}
+                    </td>
+                    <td className="text-center">
+                      {item.subdistrict || "Tidak ada data"}
+                    </td>
                     <td className="text-center">
                       {item.suratK ? (
                         <CheckCircleIcon className="w-5 h-5 text-success mx-auto" />
@@ -424,11 +424,15 @@ const EducationUnits = () => {
                         <XCircleIcon className="w-5 h-5 text-error mx-auto" />
                       )}
                     </td>
-                    <td className="text-center">{item.date || "Tidak ada data"}</td>
+                    <td className="text-center">
+                      {item.date || "Tidak ada data"}
+                    </td>
                     <td className="text-center">
                       <button
                         className="btn btn-sm btn-primary mr-1"
-                        onClick={() => navigate(`/app/EducationUnit/Detail/${item.id}`)}
+                        onClick={() =>
+                          navigate(`/app/EducationUnit/Detail/${item.id}`)
+                        }
                       >
                         <EyeIcon className="w-5 h-5" />
                       </button>
@@ -436,7 +440,9 @@ const EducationUnits = () => {
                         <>
                           <button
                             className="btn btn-sm btn-warning mr-1"
-                            onClick={() => navigate(`/app/EducationUnit/Edit/${item.id}`)}
+                            onClick={() =>
+                              navigate(`/app/EducationUnit/Edit/${item.id}`)
+                            }
                           >
                             <PencilSquareIcon className="w-5 h-5" />
                           </button>
@@ -459,14 +465,11 @@ const EducationUnits = () => {
                 </tr>
               )}
             </tbody>
-
-
           </table>
         </div>
         {/* Pagination Controls */}
 
         <div className="flex flex-wrap items-center justify-between mt-4 gap-2">
-
           {/* Prev Button */}
           <button
             onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
@@ -478,7 +481,6 @@ const EducationUnits = () => {
 
           {/* Page Numbers - scrollable on small screens */}
           <div className="flex items-center gap-1 overflow-x-auto max-w-full px-1 sm:justify-center flex-nowrap">
-
             {currentPage > 3 && (
               <>
                 <button
@@ -500,9 +502,9 @@ const EducationUnits = () => {
                 <button
                   key={page}
                   onClick={() => setCurrentPage(page)}
-
-                  className={`btn btn-sm ${page === currentPage ? "btn-primary" : "btn-outline"}`}
-
+                  className={`btn btn-sm ${
+                    page === currentPage ? "btn-primary" : "btn-outline"
+                  }`}
                 >
                   {page}
                 </button>
@@ -535,9 +537,8 @@ const EducationUnits = () => {
             Next →
           </button>
         </div>
-
-      </div >
-    </div >
+      </div>
+    </div>
   );
 };
 

@@ -5,6 +5,7 @@ import Swal from "sweetalert2"; // popup notif
 import axios from "axios";
 import MallsChart from "./chart/index.js";
 import MallsFilterSidebar from "./Filter";
+import moment from "moment";
 import {
   DocumentArrowDownIcon,
   FunnelIcon,
@@ -15,7 +16,6 @@ import {
   TrashIcon,
   PlusIcon,
 } from "@heroicons/react/24/outline";
-import moment from "moment";
 
 const Mall = () => {
   const navigate = useNavigate(); // hook untuk navigasi
@@ -57,14 +57,14 @@ const Mall = () => {
     }
   };
 
-
   const convertToISODate = (dateStr) => {
     if (!dateStr) return null; // hindari error jika null
     const [day, month, year] = dateStr.split("-");
     return `${year}-${month}-${day}`;
   };
 
-  const sortedData = searchedData.slice().sort((a, b) => {
+  // ubah sorting supaya dari currentData (hasil filter + search)
+  const sortedData = currentData.slice().sort((a, b) => {
     const dateA = new Date(convertToISODate(a.date));
     const dateB = new Date(convertToISODate(b.date));
 
@@ -74,7 +74,7 @@ const Mall = () => {
     if (validA && validB) {
       return dateB - dateA;
     } else if (validA) {
-      return -1; // valid tanggal dulu
+      return -1;
     } else if (validB) {
       return 1;
     } else {
@@ -82,8 +82,7 @@ const Mall = () => {
     }
   });
 
-  // Ganti nama currentData lokal jadi paginatedData
-  const paginatedData = currentData.slice(
+  const paginatedData = sortedData.slice(
     (currentPage - 1) * rowsPerPage,
     currentPage * rowsPerPage
   );
@@ -147,14 +146,14 @@ const Mall = () => {
   //export excel
   const handleExportExcel = () => {
     const exportSource = filteredData.length > 0 ? filteredData : data;
-    const exportData = exportSource.map((item) => ({
-      ID: item.id,
+    const exportData = exportSource.map((item, index) => ({
+      No: index + 1,
       Nama: item.name,
       Kegiatan: item.activity,
       Wilayah: item.region,
       Kecamatan: item.subdistrict,
       Alamat: item.address,
-      Tanggal: item.date,
+      Tanggal: item.date ? moment(item.date, "DD-MM-YYYY").format("YYYY-MM-DD") : "",
       "Ketua Tim": item.leader,
       SK: item.suratK,
       Perempuan: item.gender_woman,
@@ -182,7 +181,7 @@ const Mall = () => {
       const matchDate =
         !filterDate ||
         moment(item.date, ["DD-MM-YYYY"]).format("DD-MM-YYYY") ===
-        moment(filterDate, "YYYY-MM-DD").format("DD-MM-YYYY");
+          moment(filterDate, "YYYY-MM-DD").format("DD-MM-YYYY");
 
       const matchName = filterName
         ? item.name?.toLowerCase().includes(filterName.toLowerCase())
@@ -237,7 +236,6 @@ const Mall = () => {
     setFilteredData(data);
     setCurrentPage(1);
   };
-
 
   return (
     <div className="min-h-screen bg-base-200 px-6 py-10 space-y-12">
@@ -297,8 +295,9 @@ const Mall = () => {
                 </button>
 
                 <button
-                  className={`btn btn-primary flex items-center text-sm h-10 w-full sm:w-auto ${currentPath === "/app/Mall/Create" ? "font-bold" : ""
-                    }`}
+                  className={`btn btn-primary flex items-center text-sm h-10 w-full sm:w-auto ${
+                    currentPath === "/app/Mall/Create" ? "font-bold" : ""
+                  }`}
                   onClick={() => navigate("/app/Mall/Create")}
                 >
                   <PlusIcon className="w-4 h-4 mr-1" />
@@ -308,8 +307,6 @@ const Mall = () => {
             )}
           </div>
         </div>
-
-
 
         {/* Table */}
         <div className="overflow-x-auto">
@@ -358,9 +355,7 @@ const Mall = () => {
                     <td className="text-center">
                       <button
                         className="btn btn-sm btn-primary mr-1"
-                        onClick={() =>
-                          navigate(`/app/Mall/Detail/${item.id}`)
-                        }
+                        onClick={() => navigate(`/app/Mall/Detail/${item.id}`)}
                       >
                         <EyeIcon className="w-5 h-5" />
                       </button>
@@ -396,7 +391,6 @@ const Mall = () => {
           </table>
         </div>
 
-
         {/* Pagination Controls */}
         <div className="flex items-center justify-between mt-4">
           {/* Prev Button */}
@@ -431,10 +425,9 @@ const Mall = () => {
                 <button
                   key={page}
                   onClick={() => setCurrentPage(page)}
-
-                  className={`btn btn-sm ${page === currentPage ? "btn-primary" : "btn-outline"
-                    }`}
-
+                  className={`btn btn-sm ${
+                    page === currentPage ? "btn-primary" : "btn-outline"
+                  }`}
                 >
                   {page}
                 </button>
@@ -471,6 +464,5 @@ const Mall = () => {
     </div>
   );
 };
-
 
 export default Mall;
