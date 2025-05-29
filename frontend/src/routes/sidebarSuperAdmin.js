@@ -46,8 +46,8 @@ const routes = [
         name: "Perkantoran",
       },
       {
-        path: "/spr/Apartement",
-        name: "Apartement",
+        path: "/spr/Apartment",
+        name: "Apartemen",
       },
       {
         path: "/spr/UrbanVillage",

@@ -37,6 +37,7 @@ const Office = () => {
   const [filterAddress, setFilterAddress] = useState("");
   const [filterRegion, setFilterRegion] = useState("");
   const [currentData, setCurrentData] = useState([]);
+  const basePath = currentPath.startsWith("/spr") ? "/spr" : "/app";
 
   useEffect(() => {
     const storedRole = localStorage.getItem("role");
@@ -264,7 +265,7 @@ const Office = () => {
               Filter
             </button>
 
-            {role === "admin" && (
+            {(role === "admin" || role === "superadmin") && (
               <>
                 <button
                   onClick={handleExportExcel}
@@ -278,7 +279,7 @@ const Office = () => {
                   className={`btn btn-primary flex items-center text-sm h-10 w-full sm:w-auto ${
                     currentPath === "/app/Office/Create" ? "font-bold" : ""
                   }`}
-                  onClick={() => navigate("/app/Office/Create")}
+                  onClick={() => navigate(`${basePath}/Office/Create`)}
                 >
                   <PlusIcon className="w-4 h-4 mr-1" />
                   Tambah
@@ -336,17 +337,17 @@ const Office = () => {
                       <button
                         className="btn btn-sm btn-primary mr-1"
                         onClick={() =>
-                          navigate(`/app/Office/Detail/${item.id}`)
+                          navigate(`${basePath}/Office/Detail/${item.id}`)
                         }
                       >
                         <EyeIcon className="w-5 h-5" />
                       </button>
-                      {role === "admin" && (
+                      {(role === "admin" || role === "superadmin") && (
                         <>
                           <button
                             className="btn btn-sm btn-warning mr-1"
                             onClick={() =>
-                              navigate(`/app/Office/Edit/${item.id}`)
+                              navigate(`${basePath}/Office/Edit/${item.id}`)
                             }
                           >
                             <PencilSquareIcon className="w-5 h-5" />

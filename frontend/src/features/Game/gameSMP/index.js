@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 
 const GameSMP = () => {
@@ -7,6 +7,10 @@ const GameSMP = () => {
   const [gameSMPId, setGameSMPId] = useState(""); // untuk link explore
   const [role, setRole] = useState("");
   const navigate = useNavigate();
+    const location = useLocation(); // untuk mendapatkan lokasi
+    const currentPath = location.pathname; // untuk mendapatkan path lokasi
+    const basePath = currentPath.startsWith("/spr") ? "/spr" : "/app";
+  
 
   useEffect(() => {
     const storedRole = localStorage.getItem("role") || "";
@@ -68,10 +72,10 @@ const GameSMP = () => {
           </div>
         )}
 
-        {role === "admin" && (
+         {(role === "admin" || role === "superadmin") && (
           <div className="flex justify-end mt-6">
             <button
-              onClick={() => navigate(`/app/Game/Edit/${3}`)} 
+              onClick={() => navigate(`${basePath}/Game/Edit/${3}`)} 
               className="btn bg-[#2F2FAF] text-white hover:bg-[#1f1f8f] min-w-[100px]"
             >
               Edit
