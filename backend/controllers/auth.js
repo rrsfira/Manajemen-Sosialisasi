@@ -5,6 +5,7 @@ const bcrypt = require("bcryptjs"); // keamanan bash
 const jwt = require("jsonwebtoken"); // token
 const db = require("../config/db"); // config database
 require("dotenv").config(); // Load variabel lingkungan dari .env
+const tokenBlacklist = require("../middleware/tokenBlacklist");
 
 // ============================
 // REGISTER
@@ -118,5 +119,19 @@ router.post("/login", (req, res) => {
     });
   });
 });
+
+// ============================
+// LOGOUT
+// ============================
+router.post("/logout", (req, res) => {
+  const token = req.headers["authorization"]?.split(" ")[1];
+  if (!token) {
+    return res.status(400).json({ message: "No token provided" });
+  }
+
+  tokenBlacklist.push(token); // Tambahkan token ke blacklist
+  res.json({ message: "Logged out successfully" });
+});
+
 
 module.exports = router;

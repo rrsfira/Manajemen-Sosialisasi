@@ -319,7 +319,7 @@ const HealthFacility = () => {
 
         <div className="flex flex-col gap-4 mb-4 sm:flex-row sm:items-start sm:justify-between">
           {/* Search & Reset */}
-          <div className="flex flex-col sm:flex-row gap-2 sm:w-2/3 w-full">
+          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-1/2">
             <input
               type="text"
               placeholder="Search"
@@ -336,37 +336,39 @@ const HealthFacility = () => {
           </div>
 
           {/* Filter & Admin Buttons */}
-          <div className="flex flex-wrap gap-2 w-full sm:w-1/3 sm:justify-end">
-            <button
-              onClick={() => setIsFilterVisible(true)}
-              className="btn btn-outline text-[#7B74DA] w-full sm:w-auto"
-            >
-              <FunnelIcon className="w-5 h-5 mr-1" />
-              Filter
-            </button>
+          <div className="flex flex-col sm:flex-row flex-wrap gap-2 w-full sm:w-auto sm:justify-end">
+            <div className="flex flex-wrap gap-2 justify-start sm:justify-end">
+              <button
+                onClick={() => setIsFilterVisible(true)}
+                className="btn btn-outline text-[#7B74DA] w-full sm:w-auto"
+              >
+                <FunnelIcon className="w-5 h-5 mr-1" />
+                Filter
+              </button>
 
-            {(role === "admin" || role === "superadmin") && (
-              <>
-                <button
-                  onClick={handleExportExcel}
-                  className="btn btn-outline btn-success flex items-center w-full sm:w-auto"
-                >
-                  <DocumentArrowDownIcon className="w-4 h-4 mr-1" />
-                  Excel
-                </button>
-                <button
-                  className={`btn btn-primary flex items-center text-sm w-full sm:w-auto ${
-                    currentPath === "/app/EducationUnit/Create"
-                      ? "font-bold"
-                      : ""
-                  }`}
-                  onClick={() => navigate(`${basePath}/EducationUnit/Create`)}
-                >
-                  <PlusIcon className="w-4 h-4 mr-1" />
-                  Tambah
-                </button>
-              </>
-            )}
+              {(role === "admin" || role === "superadmin") && (
+                <>
+                  <button
+                    onClick={handleExportExcel}
+                    className="btn btn-outline btn-success flex items-center w-full sm:w-auto"
+                  >
+                    <DocumentArrowDownIcon className="w-4 h-4 mr-1" />
+                    Excel
+                  </button>
+                  <button
+                    className={`btn btn-primary flex items-center text-sm w-full sm:w-auto ${
+                      currentPath === "/app/HealthFacility" ? "font-bold" : ""
+                    }`}
+                    onClick={() =>
+                      navigate(`${basePath}/HealthFacility/Create`)
+                    }
+                  >
+                    <PlusIcon className="w-4 h-4 mr-1" />
+                    Tambah
+                  </button>
+                </>
+              )}
+            </div>
           </div>
         </div>
 
@@ -418,7 +420,9 @@ const HealthFacility = () => {
                       <button
                         className="btn btn-sm btn-primary mr-1"
                         onClick={() =>
-                          navigate(`${basePath}/HealthFacility/Detail/${item.id}`)
+                          navigate(
+                            `${basePath}/HealthFacility/Detail/${item.id}`
+                          )
                         }
                       >
                         <EyeIcon className="w-5 h-5" />
@@ -428,7 +432,9 @@ const HealthFacility = () => {
                           <button
                             className="btn btn-sm btn-warning mr-1"
                             onClick={() =>
-                              navigate(`${basePath}/HealthFacility/Edit/${item.id}`)
+                              navigate(
+                                `${basePath}/HealthFacility/Edit/${item.id}`
+                              )
                             }
                           >
                             <PencilSquareIcon className="w-5 h-5" />

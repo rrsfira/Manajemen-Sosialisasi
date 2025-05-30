@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { XMarkIcon } from "@heroicons/react/24/outline";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const HealthFacilitiesForm = () => {
   const [form, setForm] = useState({
@@ -25,6 +25,9 @@ const HealthFacilitiesForm = () => {
   const [isSubdistrictDisabled, setIsSubdistrictDisabled] = useState(true);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation(); // untuk mendapatkan lokasi
+  const currentPath = location.pathname; // untuk mendapatkan path lokasi
+  const basePath = currentPath.startsWith("/spr") ? "/spr" : "/app";
 
   useEffect(() => {
     const fetchRegions = async () => {
@@ -120,7 +123,7 @@ const HealthFacilitiesForm = () => {
       alert("Data berhasil dikirim");
 
       const newId = response.data.id;
-      navigate(`/app/HealthFacility/Detail/${newId}`);
+      navigate(`${basePath}/HealthFacility/Detail/${newId}`);
 
       // Reset form hanya jika sukses
       setForm({
@@ -178,7 +181,8 @@ const HealthFacilitiesForm = () => {
     <div className="max-w-6xl mx-auto bg-base-100 p-8 rounded-lg shadow space-y-8">
       <div className="text-center mb-8">
         <h1 className="text-3xl font-bold text-primary mt-4">
-          Tambah Data <span className="text-secondary">Fasilitas Kesehatan</span>
+          Tambah Data{" "}
+          <span className="text-secondary">Fasilitas Kesehatan</span>
         </h1>
       </div>
 

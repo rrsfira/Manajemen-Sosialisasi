@@ -1,11 +1,14 @@
-// Import library JWT untuk verifikasi token
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
+const tokenBlacklist = require("./tokenBlacklist");
 
-// Middleware untuk memverifikasi token JWT dari header Authorization
 const verifyToken = (req, res, next) => {
   const token = req.headers["authorization"]?.split(" ")[1];
   if (!token) return res.status(403).json({ message: "Token required" });
+
+  if (tokenBlacklist.includes(token)) {
+    return res.status(403).json({ message: "Token has been revoked (blacklisted)" });
+  }
 
   jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
     if (err) {

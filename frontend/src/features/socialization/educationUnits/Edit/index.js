@@ -2,11 +2,14 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import { XMarkIcon } from "@heroicons/react/24/solid";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const EducationUnitEdit = () => {
   const { id } = useParams(); // Ambil id dari URL
   const navigate = useNavigate();
+  const location = useLocation(); // untuk mendapatkan lokasi
+  const currentPath = location.pathname; // untuk mendapatkan path lokasi
+  const basePath = currentPath.startsWith("/spr") ? "/spr" : "/app";
 
   const [form, setForm] = useState({
     name: "", // Nama unit pendidikan
@@ -212,7 +215,7 @@ const EducationUnitEdit = () => {
       }
 
       alert("Data berhasil disimpan");
-      navigate(`/app/EducationUnit/Detail/${id}`);
+      navigate(`${basePath}/EducationUnit/Detail/${id}`);
     } catch (err) {
       console.error(err);
       alert("Gagal menyimpan data");

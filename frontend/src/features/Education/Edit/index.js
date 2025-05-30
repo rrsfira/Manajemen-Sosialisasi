@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 
 const EducationEdit = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation(); // untuk mendapatkan lokasi
+  const currentPath = location.pathname; // untuk mendapatkan path lokasi
+  const basePath = currentPath.startsWith("/spr") ? "/spr" : "/app";
 
   const [form, setForm] = useState({
     name: "",
     materi: "",
   });
-  const [materi, setMateri] = useState(null); // file baru
 
   useEffect(() => {
     const fetchData = async () => {
@@ -57,7 +59,7 @@ const EducationEdit = () => {
       );
 
       alert("Data berhasil diperbarui");
-     navigate(`/app/Education/Details/${id}`); // redirect ke list
+      navigate(`${basePath}/Education/Details/${id}`); // redirect ke list
     } catch (err) {
       console.error("Gagal update:", err);
       alert("Terjadi kesalahan saat update");

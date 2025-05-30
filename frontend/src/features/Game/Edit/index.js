@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 
 const GameEdit = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation(); // untuk mendapatkan lokasi
+  const currentPath = location.pathname; // untuk mendapatkan path lokasi
+  const basePath = currentPath.startsWith("/spr") ? "/spr" : "/app";
 
   const [form, setForm] = useState({
     quizizz_url: "",
@@ -30,11 +33,11 @@ const GameEdit = () => {
   };
 
   const idToPathMap = {
-    1: "/app/GameTK",
-    2: "/app/GameSD",
-    3: "/app/GameSMP",
-    4: "/app/GameSMA",
-    5: "/app/GameMasyarakat",
+    1: `${basePath}/GameTK`,
+    2: `${basePath}/GameSD`,
+    3: `${basePath}/GameSMP`,
+    4: `${basePath}/GameSMA`,
+    5: `${basePath}/GameMasyarakat`,
   };
 
   const handleSubmit = async (e) => {
@@ -53,7 +56,8 @@ const GameEdit = () => {
       alert("Data berhasil disimpan");
 
       // Navigate ke halaman asal
-      const targetPath = idToPathMap[parseInt(id)] || "/app/GameMasyarakat";
+      const targetPath =
+        idToPathMap[parseInt(id)] || `${basePath}/GameMasyarakat`;
       navigate(targetPath);
     } catch (err) {
       console.error(err);
