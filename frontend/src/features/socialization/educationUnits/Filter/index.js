@@ -13,7 +13,7 @@ const EducationFilterSidebar = ({
   onClose,
 }) => {
   return (
-    <div className="fixed inset-0 lg:inset-auto lg:top-0 lg:right-0 w-full max-w-sm lg:w-96 h-full bg-white dark:bg-gray-900 shadow-lg z-50 p-6 overflow-y-auto text-gray-800 dark:text-gray-100 mx-auto lg:mx-0">
+    <div className="fixed inset-y-0 right-0 w-full max-w-sm lg:w-96 h-full bg-white dark:bg-gray-900 shadow-lg z-50 p-6 overflow-y-auto text-gray-800 dark:text-gray-100">
       <h3 className="text-2xl font-bold mb-6 text-center">Filter</h3>
 
       {/* Form untuk filter */}
@@ -80,7 +80,6 @@ const EducationFilterSidebar = ({
             <option value="barat">Barat</option>
             <option value="timur">Timur</option>
             <option value="selatan">Selatan</option>
-            <option value="pusat">Pusat</option>
           </select>
 
         </div>
