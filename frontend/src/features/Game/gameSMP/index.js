@@ -18,7 +18,7 @@ const GameSMP = () => {
 
     const fetchGameData = async () => {
      try {
-        const res = await axios.get("http://localhost:5000/games/2");
+        const res = await axios.get("http://localhost:5000/games/3");
         const rawUrl = res.data.quizizz_url;
 
         // Ambil ID quiz dari link

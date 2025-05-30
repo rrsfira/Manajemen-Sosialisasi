@@ -257,7 +257,7 @@ const PublicHousing = () => {
 
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
           {/* Search & Reset */}
-          <div className="flex flex-col sm:flex-row gap-2 w-full sm:max-w-[66%]">
+          <div className="w-full sm:w-1/2">
             <input
               type="text"
               placeholder="Search"
@@ -268,7 +268,7 @@ const PublicHousing = () => {
           </div>
 
           {/* Filter & Admin Buttons */}
-          <div className="flex flex-wrap gap-2 w-full sm:justify-end sm:max-w-[34%]">
+          <div className="flex flex-wrap gap-2 w-full sm:w-1/2 sm:justify-end">
             <button
               onClick={() => setIsFilterVisible(true)}
               className="btn btn-outline text-[#7B74DA] w-full sm:w-auto"
@@ -292,7 +292,7 @@ const PublicHousing = () => {
                       ? "font-bold"
                       : ""
                   }`}
-                  onClick={() => navigate(`${basePath}/EducationUnit/Create`)}
+                  onClick={() => navigate(`${basePath}/PublicHousing/Create`)}
                 >
                   <PlusIcon className="w-4 h-4 mr-1" />
                   Tambah
@@ -350,7 +350,7 @@ const PublicHousing = () => {
                       <button
                         className="btn btn-sm btn-primary mr-1"
                         onClick={() =>
-                          navigate(`${basePath}//PublicHousing/Detail/${item.id}`)
+                          navigate(`${basePath}/PublicHousing/Detail/${item.id}`)
                         }
                       >
                         <EyeIcon className="w-5 h-5" />

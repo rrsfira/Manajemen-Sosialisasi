@@ -2,11 +2,14 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import { XMarkIcon } from "@heroicons/react/24/solid";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const UrbanVillageEdit = () => {
   const { id } = useParams(); // Ambil id dari URL
   const navigate = useNavigate();
+  const location = useLocation(); // untuk mendapatkan lokasi
+  const currentPath = location.pathname; // untuk mendapatkan path lokasi
+  const basePath = currentPath.startsWith("/spr") ? "/spr" : "/app";
 
   const [form, setForm] = useState({
     name: "", // Nama UrbanVillage
@@ -183,16 +186,12 @@ const UrbanVillageEdit = () => {
       const token = localStorage.getItem("token"); // ← letakkan di sini
 
       if (id) {
-        await axios.put(
-          `http://localhost:5000/urban_village/${id}`,
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        await axios.put(`http://localhost:5000/urban_village/${id}`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`,
+          },
+        });
       } else {
         const res = await axios.post(
           "http://localhost:5000/urban_village",
@@ -208,7 +207,7 @@ const UrbanVillageEdit = () => {
       }
 
       alert("Data berhasil disimpan");
-      navigate(`/app/UrbanVillage/Detail/${id}`);
+      navigate(`${basePath}/UrbanVillage/Detail/${id}`);
     } catch (err) {
       console.error(err);
       alert("Gagal menyimpan data");

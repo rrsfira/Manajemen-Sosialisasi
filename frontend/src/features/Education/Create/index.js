@@ -1,9 +1,12 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const EducationCreate = () => {
   const navigate = useNavigate();
+  const location = useLocation(); // untuk mendapatkan lokasi
+  const currentPath = location.pathname; // untuk mendapatkan path lokasi
+  const basePath = currentPath.startsWith("/spr") ? "/spr" : "/app";
 
   const [form, setForm] = useState({
     name: "",
@@ -29,7 +32,7 @@ const EducationCreate = () => {
       );
       alert("Data berhasil disimpan");
       const newId = response.data.id;
-      navigate(`/app/Education/Details/${newId}`);
+      navigate(`${basePath}/Education/Details/${newId}`);
       setForm({ name: "", materi: "" });
     } catch (error) {
       console.error("Gagal upload:", error);

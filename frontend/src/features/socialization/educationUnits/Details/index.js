@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
 
 const EducationUnitDetail = () => {
@@ -8,6 +8,9 @@ const EducationUnitDetail = () => {
   const [data, setData] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const navigate = useNavigate();
+  const location = useLocation(); // untuk mendapatkan lokasi
+  const currentPath = location.pathname; // untuk mendapatkan path lokasi
+  const basePath = currentPath.startsWith("/spr") ? "/spr" : "/app";
 
   useEffect(() => {
     fetch(`http://localhost:5000/education_units/${id}`)
@@ -156,11 +159,11 @@ const EducationUnitDetail = () => {
           </div>
         </div>
         <div className="text-center">
-          {role === "admin" && (
+          {(role === "admin" || role === "superadmin") && (
             <>
               <button
                 className="w-full py-1 rounded-md text-white bg-primary"
-                onClick={() => navigate(`/app/EducationUnit/Edit/${data.id}`)}
+                onClick={() => navigate(`${basePath}/EducationUnit/Edit/${data.id}`)}
               >
                 Edit Data
               </button>
@@ -176,7 +179,9 @@ const DetailItem = ({ label, value }) => (
   <div className="flex items-start mb-2">
     <div className="w-40 font-semibold">{label}</div>
     <div className="mr-1">:</div>
-    <div className="flex-1 break-words">{value || <span className="text-gray-400">-</span>}</div>
+    <div className="flex-1 break-words">
+      {value || <span className="text-gray-400">-</span>}
+    </div>
   </div>
 );
 
@@ -200,6 +205,5 @@ const DetailLinkItem = ({ label, value, href }) => (
     </div>
   </div>
 );
-
 
 export default EducationUnitDetail;

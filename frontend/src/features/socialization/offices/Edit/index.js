@@ -2,11 +2,14 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import { XMarkIcon } from "@heroicons/react/24/solid";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const OfficeEdit = () => {
   const { id } = useParams(); // Ambil id dari URL
   const navigate = useNavigate();
+  const location = useLocation(); // untuk mendapatkan lokasi
+  const currentPath = location.pathname; // untuk mendapatkan path lokasi
+  const basePath = currentPath.startsWith("/spr") ? "/spr" : "/app";
 
   const [form, setForm] = useState({
     name: "", // Nama Office
@@ -40,9 +43,7 @@ const OfficeEdit = () => {
     // Ambil data berdasar id
     const fetchData = async () => {
       try {
-        const res = await axios.get(
-          `http://localhost:5000/offices/${id}`
-        );
+        const res = await axios.get(`http://localhost:5000/offices/${id}`);
         const data = res.data;
 
         // data.photo diasumsikan array URL/file lama
@@ -183,16 +184,12 @@ const OfficeEdit = () => {
       const token = localStorage.getItem("token"); // ← letakkan di sini
 
       if (id) {
-        await axios.put(
-          `http://localhost:5000/offices/${id}`,
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        await axios.put(`http://localhost:5000/offices/${id}`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`,
+          },
+        });
       } else {
         const res = await axios.post(
           "http://localhost:5000/offices",
@@ -208,7 +205,7 @@ const OfficeEdit = () => {
       }
 
       alert("Data berhasil disimpan");
-      navigate(`/app/Office/Detail/${id}`);
+      navigate(`${basePath}/Office/Detail/${id}`);
     } catch (err) {
       console.error(err);
       alert("Gagal menyimpan data");
