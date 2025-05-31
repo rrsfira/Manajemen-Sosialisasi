@@ -5,6 +5,7 @@ import Swal from "sweetalert2"; // popup notif
 import axios from "axios";
 import UrbanVillageChart from "./chart/index";
 import UrbanFilterSidebar from "./Filter"; // import button filter
+import { jwtDecode } from "jwt-decode";
 import moment from "moment";
 import {
   DocumentArrowDownIcon,
@@ -25,7 +26,6 @@ const UrbanVillage = () => {
   const [searchText, setSearchText] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage] = useState(5);
-  const [role, setRole] = useState("");
   //filter cards dan search
 
   const [isFilterVisible, setIsFilterVisible] = useState(false); // untuk menampilkan filter
@@ -39,11 +39,22 @@ const UrbanVillage = () => {
   const [currentData, setCurrentData] = useState([]);
   const basePath = currentPath.startsWith("/spr") ? "/spr" : "/app";
 
-  useEffect(() => {
-    const storedRole = localStorage.getItem("role");
-    if (storedRole) setRole(storedRole);
-  }, []);
+  const token = localStorage.getItem("token");
+  let userRole = null;
 
+  if (token) {
+    try {
+      const decoded = jwtDecode(token);
+
+      // Cek apakah token masih berlaku
+      const isTokenValid = decoded.exp * 1000 > Date.now();
+      if (isTokenValid) {
+        userRole = decoded.role; // Harusnya 'admin' atau 'superadmin'
+      }
+    } catch (error) {
+      console.error("Invalid token");
+    }
+  }
   useEffect(() => {
     fetchUrban();
   }, []);
@@ -278,7 +289,7 @@ const UrbanVillage = () => {
               Filter
             </button>
 
-           {(role === "admin" || role === "superadmin") && (
+            {(userRole === "admin" || userRole === "superadmin") && (
               <>
                 <button
                   onClick={handleExportExcel}
@@ -358,12 +369,14 @@ const UrbanVillage = () => {
                       >
                         <EyeIcon className="w-5 h-5" />
                       </button>
-                     {(role === "admin" || role === "superadmin") && (
+                      {(userRole === "admin" || userRole === "superadmin") && (
                         <>
                           <button
                             className="btn btn-sm btn-warning mr-1"
                             onClick={() =>
-                              navigate(`${basePath}/UrbanVillage/Edit/${item.id}`)
+                              navigate(
+                                `${basePath}/UrbanVillage/Edit/${item.id}`
+                              )
                             }
                           >
                             <PencilSquareIcon className="w-5 h-5" />

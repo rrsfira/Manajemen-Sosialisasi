@@ -5,6 +5,7 @@ import { useParams, useNavigate, useLocation } from "react-router-dom";
 const GameEdit = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [game, setGame] = useState({ name: "" });
   const location = useLocation(); // untuk mendapatkan lokasi
   const currentPath = location.pathname; // untuk mendapatkan path lokasi
   const basePath = currentPath.startsWith("/spr") ? "/spr" : "/app";
@@ -18,6 +19,7 @@ const GameEdit = () => {
       try {
         const res = await axios.get(`http://localhost:5000/games/${id}`);
         setForm({ quizizz_url: res.data.quizizz_url || "" });
+        setGame({ name: res.data.name || "" }); // 👈 tambahkan ini
       } catch (error) {
         console.error("Gagal mengambil data:", error);
       }
@@ -70,6 +72,7 @@ const GameEdit = () => {
       <div className="text-center mb-8">
         <h1 className="text-2xl sm:text-3xl font-bold text-primary mt-4">
           Edit <span className="text-secondary">Game</span>
+          {game.name && ` ${game.name}`}
         </h1>
       </div>
 

@@ -5,6 +5,8 @@ import * as XLSX from "xlsx"; //excel
 import Swal from "sweetalert2"; // popup notif
 import EducationFilterSidebar from "./Filter"; // import button filter
 import EducationUnitsChart from "../educationUnits/chart"; // import drilldown chart
+import moment from "moment";
+import { jwtDecode } from 'jwt-decode';
 import {
   DocumentArrowDownIcon,
   FunnelIcon,
@@ -15,11 +17,9 @@ import {
   TrashIcon,
   PlusIcon,
 } from "@heroicons/react/24/outline"; // import icon
-import moment from "moment";
 
 const EducationUnits = () => {
   const navigate = useNavigate(); // hook untuk navigasi
-  const [role, setRole] = useState(""); // untuk memberi hak role
   const location = useLocation(); // untuk mendapatkan lokasi
   const currentPath = location.pathname; // untuk mendapatkan path lokasi
   const [currentPage, setCurrentPage] = useState(1); // untuk pagination
@@ -125,14 +125,22 @@ const EducationUnits = () => {
 
   const totalPages = Math.ceil(currentData.length / rowsPerPage);
 
-  // Gunakan useEffect agar setRole dipanggil sekali saat komponen mount
-  useEffect(() => {
-    const storedRole = localStorage.getItem("role");
-    if (storedRole) {
-      const normalized = storedRole.trim().toLowerCase();
-      setRole(normalized);
+  const token = localStorage.getItem("token");
+  let userRole = null;
+
+  if (token) {
+    try {
+     const decoded = jwtDecode(token);
+
+      // Cek apakah token masih berlaku
+      const isTokenValid = decoded.exp * 1000 > Date.now();
+      if (isTokenValid) {
+        userRole = decoded.role; // Harusnya 'admin' atau 'superadmin'
+      }
+    } catch (error) {
+      console.error("Invalid token");
     }
-  }, []);
+  }
 
   //export excel
   const handleExportExcel = () => {
@@ -357,7 +365,7 @@ const EducationUnits = () => {
                 <FunnelIcon className="w-5 h-5 mr-1" />
                 Filter
               </button>
-              {(role === "admin" || role === "superadmin") && (
+             {(userRole === "admin" || userRole === "superadmin") && (
                 <>
                   <button
                     onClick={handleExportExcel}
@@ -438,7 +446,7 @@ const EducationUnits = () => {
                       >
                         <EyeIcon className="w-5 h-5" />
                       </button>
-                      {(role === "admin" || role === "superadmin") && (
+                    {(userRole === "admin" || userRole === "superadmin") && (
                         <>
                           <button
                             className="btn btn-sm btn-warning mr-1"

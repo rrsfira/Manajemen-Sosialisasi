@@ -6,6 +6,7 @@ import HousingChart from "./chart/index";
 import PublicHousingFilterSidebar from "./Filter";
 import Swal from "sweetalert2"; // popup notif
 import moment from "moment";
+import { jwtDecode } from "jwt-decode";
 import {
   DocumentArrowDownIcon,
   FunnelIcon,
@@ -25,7 +26,6 @@ const PublicHousing = () => {
   const [searchText, setSearchText] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage] = useState(5);
-  const [role, setRole] = useState("");
 
   const [isFilterVisible, setIsFilterVisible] = useState(false); // untuk menampilkan filter
   const [selectedGroup, setSelectedGroup] = useState(null); // untuk menampilkan data yang telah di filter di cards
@@ -37,11 +37,23 @@ const PublicHousing = () => {
   const [filterRegion, setFilterRegion] = useState("");
   const [currentData, setCurrentData] = useState([]);
   const basePath = currentPath.startsWith("/spr") ? "/spr" : "/app";
-  
-  useEffect(() => {
-    const storedRole = localStorage.getItem("role");
-    if (storedRole) setRole(storedRole);
-  }, []);
+
+  const token = localStorage.getItem("token");
+  let userRole = null;
+
+  if (token) {
+    try {
+      const decoded = jwtDecode(token);
+
+      // Cek apakah token masih berlaku
+      const isTokenValid = decoded.exp * 1000 > Date.now();
+      if (isTokenValid) {
+        userRole = decoded.role; // Harusnya 'admin' atau 'superadmin'
+      }
+    } catch (error) {
+      console.error("Invalid token");
+    }
+  }
 
   useEffect(() => {
     fetchApartments();
@@ -277,7 +289,7 @@ const PublicHousing = () => {
               Filter
             </button>
 
-            {(role === "admin" || role === "superadmin") && (
+            {(userRole === "admin" || userRole === "superadmin") && (
               <>
                 <button
                   onClick={handleExportExcel}
@@ -350,17 +362,21 @@ const PublicHousing = () => {
                       <button
                         className="btn btn-sm btn-primary mr-1"
                         onClick={() =>
-                          navigate(`${basePath}/PublicHousing/Detail/${item.id}`)
+                          navigate(
+                            `${basePath}/PublicHousing/Detail/${item.id}`
+                          )
                         }
                       >
                         <EyeIcon className="w-5 h-5" />
                       </button>
-                      {(role === "admin" || role === "superadmin") && (
+                      {(userRole === "admin" || userRole === "superadmin") && (
                         <>
                           <button
                             className="btn btn-sm btn-warning mr-1"
                             onClick={() =>
-                              navigate(`${basePath}/PublicHousing/Edit/${item.id}`)
+                              navigate(
+                                `${basePath}/PublicHousing/Edit/${item.id}`
+                              )
                             }
                           >
                             <PencilSquareIcon className="w-5 h-5" />
