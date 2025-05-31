@@ -6,6 +6,7 @@ import axios from "axios";
 import OfficesChart from "./chart";
 import OfficesFilterSidebar from "./Filter";
 import moment from "moment";
+import { jwtDecode } from "jwt-decode";
 import {
   DocumentArrowDownIcon,
   FunnelIcon,
@@ -25,7 +26,6 @@ const Office = () => {
   const [searchText, setSearchText] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage] = useState(5);
-  const [role, setRole] = useState("");
 
   //filter cards dan search
   const [isFilterVisible, setIsFilterVisible] = useState(false); // untuk menampilkan filter
@@ -39,10 +39,22 @@ const Office = () => {
   const [currentData, setCurrentData] = useState([]);
   const basePath = currentPath.startsWith("/spr") ? "/spr" : "/app";
 
-  useEffect(() => {
-    const storedRole = localStorage.getItem("role");
-    if (storedRole) setRole(storedRole);
-  }, []);
+  const token = localStorage.getItem("token");
+  let userRole = null;
+
+  if (token) {
+    try {
+      const decoded = jwtDecode(token);
+
+      // Cek apakah token masih berlaku
+      const isTokenValid = decoded.exp * 1000 > Date.now();
+      if (isTokenValid) {
+        userRole = decoded.role; // Harusnya 'admin' atau 'superadmin'
+      }
+    } catch (error) {
+      console.error("Invalid token");
+    }
+  }
 
   useEffect(() => {
     fetchoffices();
@@ -265,7 +277,7 @@ const Office = () => {
               Filter
             </button>
 
-            {(role === "admin" || role === "superadmin") && (
+            {(userRole === "admin" || userRole === "superadmin") && (
               <>
                 <button
                   onClick={handleExportExcel}
@@ -342,7 +354,7 @@ const Office = () => {
                       >
                         <EyeIcon className="w-5 h-5" />
                       </button>
-                      {(role === "admin" || role === "superadmin") && (
+                      {(userRole === "admin" || userRole === "superadmin") && (
                         <>
                           <button
                             className="btn btn-sm btn-warning mr-1"

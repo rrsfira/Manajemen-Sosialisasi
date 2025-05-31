@@ -6,6 +6,7 @@ import axios from "axios";
 import HotelsChart from "./chart";
 import HotelsFilterSidebar from "./Filter";
 import moment from "moment";
+import { jwtDecode } from "jwt-decode";
 import {
   DocumentArrowDownIcon,
   FunnelIcon,
@@ -25,7 +26,6 @@ const Hotel = () => {
   const [searchText, setSearchText] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage] = useState(5);
-  const [role, setRole] = useState("");
   const basePath = currentPath.startsWith("/spr") ? "/spr" : "/app";
 
   const [isFilterVisible, setIsFilterVisible] = useState(false); // untuk menampilkan filter
@@ -39,11 +39,22 @@ const Hotel = () => {
   const [currentData, setCurrentData] = useState([]);
   const [filteredData, setFilteredData] = useState([]); // untuk menampilkan data yang telah di filter di cards dan search
 
-  useEffect(() => {
-    const storedRole = localStorage.getItem("role");
-    if (storedRole) setRole(storedRole);
-  }, []);
+  const token = localStorage.getItem("token");
+  let userRole = null;
 
+  if (token) {
+    try {
+      const decoded = jwtDecode(token);
+
+      // Cek apakah token masih berlaku
+      const isTokenValid = decoded.exp * 1000 > Date.now();
+      if (isTokenValid) {
+        userRole = decoded.role; // Harusnya 'admin' atau 'superadmin'
+      }
+    } catch (error) {
+      console.error("Invalid token");
+    }
+  }
   useEffect(() => {
     fetchApartments();
   }, []);
@@ -278,7 +289,7 @@ const Hotel = () => {
               Filter
             </button>
 
-            {(role === "admin" || role === "superadmin") && (
+            {(userRole === "admin" || userRole === "superadmin") && (
               <>
                 <button
                   onClick={handleExportExcel}
@@ -349,11 +360,13 @@ const Hotel = () => {
                     <td className="text-center">
                       <button
                         className="btn btn-sm btn-primary mr-1"
-                        onClick={() => navigate(`${basePath}/Hotel/Detail/${item.id}`)}
+                        onClick={() =>
+                          navigate(`${basePath}/Hotel/Detail/${item.id}`)
+                        }
                       >
                         <EyeIcon className="w-5 h-5" />
                       </button>
-                     {(role === "admin" || role === "superadmin") && (
+                      {(userRole === "admin" || userRole === "superadmin") && (
                         <>
                           <button
                             className="btn btn-sm btn-warning mr-1"

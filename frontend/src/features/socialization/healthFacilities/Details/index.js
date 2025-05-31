@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
+import { jwtDecode } from "jwt-decode";
 
 const HealthFacilitiesDetail = () => {
-  const [role, setRole] = useState(""); // untuk memberi hak role
   const { id } = useParams();
   const [data, setData] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -23,13 +23,22 @@ const HealthFacilitiesDetail = () => {
   }, [id]);
 
   // Gunakan useEffect agar setRole dipanggil sekali saat komponen mount
-  useEffect(() => {
-    const storedRole = localStorage.getItem("role");
-    if (storedRole) {
-      const normalized = storedRole.trim().toLowerCase();
-      setRole(normalized);
+  const token = localStorage.getItem("token");
+  let userRole = null;
+
+  if (token) {
+    try {
+      const decoded = jwtDecode(token);
+
+      // Cek apakah token masih berlaku
+      const isTokenValid = decoded.exp * 1000 > Date.now();
+      if (isTokenValid) {
+        userRole = decoded.role; // Harusnya 'admin' atau 'superadmin'
+      }
+    } catch (error) {
+      console.error("Invalid token");
     }
-  }, []);
+  }
 
   if (!data) return <div className="p-10">Loading...</div>;
 
@@ -157,7 +166,7 @@ const HealthFacilitiesDetail = () => {
           </div>
         </div>
         <div className="text-center">
-          {(role === "admin" || role === "superadmin") && (
+          {(userRole === "admin" || userRole === "superadmin") && (
             <>
               <button
                 className="w-full py-1 rounded-md text-white bg-primary"

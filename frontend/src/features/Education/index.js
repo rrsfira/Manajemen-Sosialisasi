@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
+import { jwtDecode } from "jwt-decode";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
   EyeIcon,
@@ -14,19 +15,27 @@ const Education = () => {
   const [searchText, setSearchText] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage] = useState(5);
-  const [role, setRole] = useState("");
   const navigate = useNavigate();
   const location = useLocation(); // untuk mendapatkan lokasi
   const currentPath = location.pathname; // untuk mendapatkan path lokasi
   const basePath = currentPath.startsWith("/spr") ? "/spr" : "/app";
 
-  useEffect(() => {
-    const storedRole = localStorage.getItem("role");
-    if (storedRole) setRole(storedRole);
+  const token = localStorage.getItem("token");
+  let userRole = null;
 
-    fetchEducations();
-  }, []);
+  if (token) {
+    try {
+      const decoded = jwtDecode(token);
 
+      // Cek apakah token masih berlaku
+      const isTokenValid = decoded.exp * 1000 > Date.now();
+      if (isTokenValid) {
+        userRole = decoded.role; // Harusnya 'admin' atau 'superadmin'
+      }
+    } catch (error) {
+      console.error("Invalid token");
+    }
+  }
   const fetchEducations = async () => {
     try {
       const response = await axios.get("http://localhost:5000/educations");
@@ -35,6 +44,10 @@ const Education = () => {
       console.error("Gagal mengambil data materi:", error);
     }
   };
+
+  useEffect(() => {
+    fetchEducations();
+  }, []);
 
   const filteredData = educations.filter((item) =>
     item.name.toLowerCase().includes(searchText.toLowerCase())
@@ -115,7 +128,7 @@ const Education = () => {
             className="input input-bordered w-full sm:w-60"
           />
 
-           {(role === "admin" || role === "superadmin") && (
+          {(userRole === "admin" || userRole === "superadmin") && (
             <button
               className="btn btn-primary flex items-center justify-center sm:justify-start"
               onClick={() => navigate(`${basePath}/Education/Create`)}
@@ -153,7 +166,7 @@ const Education = () => {
                       >
                         <EyeIcon className="w-5 h-5" />
                       </button>
-                       {(role === "admin" || role === "superadmin") && (
+                       {(userRole === "admin" || userRole === "superadmin") && (
                         <>
                           <button
                             className="btn btn-sm btn-warning"
@@ -216,15 +229,19 @@ const Education = () => {
               </div>
               <div className="flex gap-2">
                 <button
-                  onClick={() => navigate(`${basePath}/Education/Details/${item.id}`)}
+                  onClick={() =>
+                    navigate(`${basePath}/Education/Details/${item.id}`)
+                  }
                   className="btn btn-sm btn-info flex-1"
                 >
                   <EyeIcon className="w-5 h-5" />
                 </button>
-                 {(role === "admin" || role === "superadmin") && (
+                {(userRole === "admin" || userRole === "superadmin") && (
                   <>
                     <button
-                      onClick={() => navigate(`${basePath}/Education/Edit/${item.id}`)}
+                      onClick={() =>
+                        navigate(`${basePath}/Education/Edit/${item.id}`)
+                      }
                       className="btn btn-sm btn-warning flex-1"
                     >
                       <PencilSquareIcon className="w-5 h-5" />
