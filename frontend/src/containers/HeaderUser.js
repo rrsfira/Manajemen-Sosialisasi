@@ -412,7 +412,7 @@ function Header() {
                 <ul className="absolute left-full top-0 ml-2 z-20 bg-secondary p-2 rounded shadow w-40 hidden group-hover:flex group-hover:flex-col">
                   <li>
                     <Link
-                      to="/app/Apartement/Create"
+                      to="/app/Apartment/Create"
                       className={`text-lg cursor-pointer ${
                         currentPath === "/app/Apartment/Create"
                           ? "font-bold text-primary"
